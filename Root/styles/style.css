@@ -1,0 +1,16 @@
+p,
+h1,
+li {
+  color: rgb(147, 64, 94);
+  width: 500px;
+}
+
+img[src] {
+  width: 40%;
+  height: auto;
+}
+
+a:hover
+{
+  color: rgb(51, 128, 167);
+}
