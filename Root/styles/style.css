@@ -1,39 +1,14 @@
-p,
-h1,
-li {
-  color: rgb(147, 64, 94);
-  width: 500px;
-}
-
-img[src] {
-  width: 40%;
-  height: auto;
-}
-
-a:hover {
-  color: rgb(51, 128, 167);
-}
-
-html {
-  background-color: #5cf4e38e;
-}
-
-body {
-  width: 600px;
-  margin: 0 auto;
-  background-color: #ff950092;
-  padding: 0 20px 20px 20px;
-  border: 5px solid black;
-}
-
-h1 {
-  margin: 0 auto;
-  padding: 20px 0;
-  color: #00539f;
-  text-shadow: 3px 3px 1px black;
-}
-
-img {
-  display: block;
-  margin: 0 auto;
+p {
+  font-family: "helvetica neue", helvetica, sans-serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-align: center;
+  border: 2px solid rgb(0 0 200 / 0.6);
+  background: rgb(0 0 200 / 0.6);
+  color: rgb(255 255 255 / 1);
+  box-shadow: 1px 1px 2px rgb(0 0 200 / 0.4);
+  border-radius: 10px;
+  padding: 3px 10px;
+  display: inline-block;
+  cursor: pointer;
 }
