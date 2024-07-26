@@ -1,19 +1,46 @@
-var list = document.querySelector('.output ul')
-list.innerHTML = ''
-var strs = ['MAN675847583748sjt567654;Manchester Piccadilly',
-'GNF576746573fhdg4737dh4;Greenfield',
-'LIV5hg65hd737456236dch46dg4;Liverpool Lime Street',
-'SYB4f65hf75f736463;Stalybridge',
-'HUD5767ghtyfyr4536dh45dg45dg3;Huddersfield'];
+const select = document.querySelector('select');
+const list = document.querySelector('ul');
+const h1 = document.querySelector('h1');
 
-strs.forEach(str => {
-  let stageCode = str.slice(0,3)
+select.addEventListener('change', () => {
+  const choice = select.value;
+  let days
+  switch (choice) {
+    case "January"||"February":
+      days = 3
+      break;
+  
+    default:
+      days = 2
+      break;
+  }
 
-  let name = str.slice(str.indexOf(';') + 1)
-
-  let r = document.createElement('li')
-
-  r.textContent = stageCode + ":\t" + name
-
-  list.appendChild(r)
+  createCalendar(days, choice);
 });
+
+function createCalendar(days, choice) {
+  list.innerHTML = '';
+  h1.textContent = choice;
+  days += 28;
+  for (let i = 1; i <= days; i++) {
+    const listItem = document.createElement('li');
+    listItem.textContent = i;
+    list.appendChild(listItem);
+  }
+}
+
+createCalendar(31,'January');
+
+const selectColor = document.querySelector('select');
+const html = document.querySelector('.output');
+
+select.addEventListener('change', () => {
+  const choice = select.value;
+
+  if
+})
+
+function update(bgColor, textColor) {
+  html.style.backgroundColor = bgColor;
+  html.style.color = textColor;
+}

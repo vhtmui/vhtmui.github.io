@@ -1,38 +1,66 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-US">
 
 <head>
   <meta charset="utf-8">
-
-  <title>猜数字游戏</title>
-
+  <meta name="viewport" content="width=device-width">
+  <title>Function start</title>
   <style>
-    html {
-      font-family: sans-serif;
+    .msgBox {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 200px;
+      background: #eee;
     }
 
-    body {
-      width: 50%;
-      max-width: 800px;
-      min-width: 480px;
-      margin: 0 auto;
+    .msgBox p {
+      line-height: 1.5;
+      padding: 10px 20px;
+      color: #333;
     }
 
-    .lastResult {
-      color: white;
-      padding: 3px;
+    .msgBox button {
+      background: none;
+      border: none;
+      position: absolute;
+      top: 0;
+      right: 0;
+      font-size: 1.1rem;
+      color: #aaa;
     }
   </style>
 </head>
 
 <body>
-  <div class="output">
-    <ul>
-    </ul>
-  </div>
-</body>
+  <button>Display message box</button>
 
-<script src="scripts/main.js">
-</script>
+  <script>
+    const html = document.querySelector("html");
+
+    const panel = document.createElement("div");
+    panel.setAttribute("class", "msgBox");
+
+
+    const msg = document.createElement("p");
+    msg.textContent = "This is a message box";
+    panel.appendChild(msg);
+
+    const closeBtn = document.createElement("button");
+    closeBtn.textContent = "x";
+    panel.appendChild(closeBtn);
+
+    closeBtn.onclick = function () {
+      panel.parentNode.removeChild(panel);
+    };
+
+    document.querySelector("button").addEventListener("click", () => {
+      html.appendChild(panel);
+    }
+    )
+
+  </script>
+</body>
 
 </html>
