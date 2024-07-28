@@ -2,3 +2,13 @@ html{
   background-color: rgb(255, 255, 255);
   color: black;
 }
+
+.full-img{
+  width:400px;
+  height: auto;
+}
+
+img.displayed-img{
+  width: 100%;
+  height: auto;
+}

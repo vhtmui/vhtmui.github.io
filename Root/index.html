@@ -1,66 +1,27 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
-  <title>Function start</title>
-  <style>
-    .msgBox {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 200px;
-      background: #eee;
-    }
+    <title>Image gallery</title>
 
-    .msgBox p {
-      line-height: 1.5;
-      padding: 10px 20px;
-      color: #333;
-    }
+    <link rel="stylesheet" href="style.css">
+    
+  </head>
 
-    .msgBox button {
-      background: none;
-      border: none;
-      position: absolute;
-      top: 0;
-      right: 0;
-      font-size: 1.1rem;
-      color: #aaa;
-    }
-  </style>
-</head>
+  <body>
+    <h1>Image gallery example</h1>
 
-<body>
-  <button>Display message box</button>
+    <div class="full-img">
+      <img class="displayed-img" src="images/pic1.jpg" alt="Closeup of a human eye">
+      <div class="overlay"></div>
+      <button class="dark">Darken</button>
+    </div>
 
-  <script>
-    const html = document.querySelector("html");
-
-    const panel = document.createElement("div");
-    panel.setAttribute("class", "msgBox");
+    <div class="thumb-bar">
 
 
-    const msg = document.createElement("p");
-    msg.textContent = "This is a message box";
-    panel.appendChild(msg);
-
-    const closeBtn = document.createElement("button");
-    closeBtn.textContent = "x";
-    panel.appendChild(closeBtn);
-
-    closeBtn.onclick = function () {
-      panel.parentNode.removeChild(panel);
-    };
-
-    document.querySelector("button").addEventListener("click", () => {
-      html.appendChild(panel);
-    }
-    )
-
-  </script>
-</body>
-
+    </div>
+    <script src="main.js"></script>
+  </body>
 </html>
