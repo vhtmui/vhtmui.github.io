@@ -1,43 +1,44 @@
-h1 {
-  font-family: helvetica, arial, sans-serif;
-  text-align: center;
+/* || general styles */
+
+html {
+  font-family: 'segoe print', helvetica, arial, sans-serif;
 }
 
 body {
-  width: 640px;
+  width: 800px;
   margin: 0 auto;
 }
 
-.full-img {
-  position: relative;
-  display: block;
-  width: 640px;
-  height: 480px;
+/* header styles */
+
+h1 {
+  font-size: 4rem;
+  text-align: center;
 }
 
-.overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 640px;
-  height: 480px;
-  background-color: rgba(0,0,0,0);
+header p {
+  font-size: 1.3rem;
+  font-weight: bold;
+  text-align: center;
 }
 
-button {
-  border: 0;
-  background: rgba(150,150,150,0.6);
-  text-shadow: 1px 1px 1px white;
-  border: 1px solid #999;
-  position: absolute;
-  cursor: pointer;
-  top: 2px;
-  left: 2px;
-}
+/* section styles */
 
-.thumb-bar img {
-  display: block;
-  width: 20%;
+section article {
+  width: 33%;
   float: left;
-  cursor: pointer;
+}
+
+section p {
+  margin: 5px 0;
+}
+
+section ul {
+  margin-top: 0;
+}
+
+h2 {
+  font-size: 2.5rem;
+  letter-spacing: -5px;
+  margin-bottom: 10px;
 }
