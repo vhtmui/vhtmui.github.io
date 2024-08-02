@@ -1,29 +1,24 @@
-function generatePrimes(quota) {
-    function isPrime(n) {
-      for (let c = 2; c <= Math.sqrt(n); ++c) {
-        if (n % c === 0) {
-          return false;
-        }
-      }
-      return true;
+const name = document.querySelector("#name");
+const delay = document.querySelector("#delay");
+const button = document.querySelector("#set-alarm");
+const output = document.querySelector("#output");
+
+function alarm(person, delay) {
+  return new Promise((resolve, reject) => {
+    if (delay < 0) {
+      throw new Error("Alarm delay must not be negative");
     }
-    const primes = [];
-    const maximum = 1000000;
-    while (primes.length < quota) {
-      const candidate = Math.floor(Math.random() * (maximum + 1));
-      if (isPrime(candidate)) {
-        primes.push(candidate);
-      }
-    }
-    return primes;
+    window.setTimeout(() => {
+      resolve(`Wake up, ${person}!`);
+    }, delay);
+  });
+}
+
+button.addEventListener("click", async () => {
+  try {
+    const message = await alarm(name.value, delay.value);
+    output.textContent = message;
+  } catch (error) {
+    output.textContent = `Couldn't set alarm: ${error}`;
   }
-  document.querySelector("#generate").addEventListener("click", () => {
-    const quota = document.querySelector("#quota").value;
-    const primes = generatePrimes(quota);
-    document.querySelector("#output").textContent =
-      `完成！已生成素数${quota}个。`;
-  });
-  document.querySelector("#reload").addEventListener("click", () => {
-    document.location.reload();
-  });
-  
+});
