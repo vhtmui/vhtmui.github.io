@@ -1,30 +1,27 @@
-html, body {
-  margin: 0;
-}
-
-html {
-  font-family: sans-serif;
-  width: 100%;
-  height: 100%;
-}
-
 body {
-  overflow: hidden;
-  height: inherit;
+  background: #6c373f;
+  display: flex;
+  justify-content: center;
+  }
+
+#alice-container {
+  width: 90vh;
+  display: grid;
+  place-items: center;
+  grid-template-areas:
+    "a1 . ."
+    ". a2 ."
+    ". . a3";
 }
 
-h1 {
-  font-size: 2rem;
-  letter-spacing: -1px;
-  position: absolute;
-  margin: 0;
-  top: -4px;
-  right: 5px;
-
-  color: transparent;
-  text-shadow: 0 0 4px white;
+#alice1 {
+  grid-area: a1;
 }
-.huabu{
-  width: 100%;
-  height: 100%;
+
+#alice2 {
+  grid-area: a2;
+}
+
+#alice3 {
+  grid-area: a3;
 }
