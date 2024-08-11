@@ -1,27 +1,35 @@
+html {
+  font-family: sans-serif;
+}
+
 body {
-  background: #6c373f;
-  display: flex;
-  justify-content: center;
-  }
-
-#alice-container {
-  width: 90vh;
-  display: grid;
-  place-items: center;
-  grid-template-areas:
-    "a1 . ."
-    ". a2 ."
-    ". . a3";
+  margin: 0 auto;
+  max-width: 800px;
 }
 
-#alice1 {
-  grid-area: a1;
+header, footer {
+  background-color: green;
+  color: white;
+  line-height: 100px;
+  padding: 0 20px;
 }
 
-#alice2 {
-  grid-area: a2;
+.new-note, .note-display {
+  padding: 20px;
 }
 
-#alice3 {
-  grid-area: a3;
+.new-note {
+  background: #ddd;
+}
+
+h1 {
+  margin: 0;
+}
+
+ul {
+  list-style-type: none;
+}
+
+div {
+  margin-bottom: 10px;
 }
