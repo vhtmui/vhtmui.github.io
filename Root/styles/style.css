@@ -1,35 +1,27 @@
-html {
-  font-family: sans-serif;
-}
-
 body {
-  margin: 0 auto;
+  background-image: url("../images/1.jpg");
   max-width: 800px;
+  margin: 0 auto;
+  font-family: 'times new roman', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-header, footer {
-  background-color: green;
-  color: white;
-  line-height: 100px;
-  padding: 0 20px;
-}
-
-.new-note, .note-display {
-  padding: 20px;
-}
-
-.new-note {
-  background: #ddd;
+.sender-column {
+  text-align: right;
 }
 
 h1 {
-  margin: 0;
+  font-size: 1.5em;
 }
 
-ul {
-  list-style-type: none;
+h2 {
+  font-size: 1.3em;
 }
 
-div {
-  margin-bottom: 10px;
+p,ul,ol,dl,address {
+  
+  font-size: 1.1em;
+}
+
+p, li, dd, dt, address {
+  line-height: 1.5;
 }
