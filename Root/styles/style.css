@@ -1,3 +1,52 @@
-.wrapper {
-  writing-mode: vertical-rl;
+/* html{
+  color: white !important;
+  background-color: rgba(0, 0, 0, 0.875) !important;
+  * {
+    border-color: white !important;
+  }
+} */
+table {
+  border-collapse: collapse;
+  tfoot {
+    border-top: 1px solid rgba(0, 0, 0, 0.5);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+  }
+  thead {
+    border-top: 1px solid rgba(0, 0, 0, 0.5);
+  }
+}
+caption {
+  border: 0;
+}
+
+tr :nth-child(2),
+tr :nth-child(3) {
+  text-align: right;
+}
+
+tr :nth-child(1),
+tr :nth-child(4) {
+  text-align: left;
+}
+
+tfoot td {
+  text-align: left !important;
+}
+
+tfoot th {
+  text-align: right !important;
+}
+
+/* thead th,thead td{
+  text-align: center !important;
+} */
+
+td,
+th {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+tbody tr:nth-child(odd) {
+  background-color: rgba(128, 128, 128, 0.301);
 }
