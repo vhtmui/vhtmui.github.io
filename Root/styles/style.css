@@ -1,61 +1,12 @@
-* {
-  box-sizing: border-box;
+p {
+  color: red;
+  font-family:Georgia, 'Times New Roman', Times, serif;
+  font-style: italic;
+  font-weight:lighter;
+  line-height: 1.5;
+  height: 20px;
 }
 
-html {
-  font-family: sans-serif;
-}
-
-body {
-  margin: 0;
-  background: #ccc;
-}
-
-article {
-  width: 210mm;
-  height: 297mm;
-  margin: 20px auto;
-  position: relative;
-  border-top: 1mm rgba(100, 198, 14, 0.584) solid;
-  border-bottom: 1mm red solid;
-  background-color: white;
-  background-image: linear-gradient(0deg, #c6c6c6 0%, #ffffff00 15%,#ffffff00 85%, #d0d0d0 100%);
-}
-
-address {
-  position: absolute;
-  bottom: 8mm;
-  right: 20mm;
-}
-
-h1 {
-  position: absolute;
-  top: 12mm;
-  left: 20mm;
-  width: 128px;
-  height: 128px;
-  font-size: 20px;
-  letter-spacing: 1px;
-  text-align: center;
-  padding: 44px 0;
-  color: white;
-  text-shadow: 1px 1px 1px black;
-  background-image: url(../images/logo.png);
-  filter: drop-shadow(5px 5px 1px black);
-}
-
-#top-image{
-object-fit: cover;
-}
-
-#bottom-image {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-}
-
-#top-image,
-#bottom-image {
-  max-width: 100%;
-  height: auto;
+h1{
+  text-align: justify;
 }
