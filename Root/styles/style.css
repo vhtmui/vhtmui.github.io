@@ -1,12 +1,8 @@
-p {
-  color: red;
-  font-family:Georgia, 'Times New Roman', Times, serif;
-  font-style: italic;
-  font-weight:lighter;
-  line-height: 1.5;
-  height: 20px;
+@font-face {
+  font-family: 'Intel';
+  src: url("../fonts/IntelOneMono-Medium.ttf");
 }
 
-h1{
-  text-align: justify;
+html{
+  font-family: 'cascadia mono', 'Intel', 'Courier New', Courier, monospace;
 }
