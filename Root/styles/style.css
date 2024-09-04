@@ -1,64 +1,115 @@
-form {
-  /* 居中表单 */
-  margin: 0 auto;
-  width: 400px;
-  /* 显示表单的轮廓 */
-  padding: 1em;
-  border: 1px solid #ccc;
-  border-radius: 1em;
+@font-face {
+  font-family: "handwriting";
+  src:
+    url("journal-webfont.ttf") format("ttf");
+  font-weight: normal;
+  font-style: normal;
 }
 
-ul {
-  list-style: none;
-  padding: 0;
+@font-face {
+  font-family: "typewriter";
+  src:
+    url("../fonts/momot___-webfont.ttf") format("application/x-font-ttf");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "casca";
+  src:
+    url("../fonts/CascadiaCode.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  font: 1.3rem sans-serif;
+  padding: 0.5em;
   margin: 0;
+  background: #222;
 }
 
-form li + li {
-  margin-top: 1em;
+form {
+  position: relative;
+  width: 740px;
+  height: 498px;
+  margin: 0 auto;
+  padding: 1em;
+  box-sizing: border-box;
+  background: #fff url(../images/background.jpg);
+
+  /* we create our grid */
+  display: grid;
+  grid-gap: 20px;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: 10em 1em 1em 1em;
+}
+h1 {
+  font:
+    1em "typewriter",
+    monospace;
+  align-self: end;
 }
 
+#message {
+  grid-row: 1 / 5;
+}
+
+#from,
+#reply {
+  display: flex;
+}
 label {
-  /* 确保所有 label 大小相同并正确对齐 */
-  display: inline-block;
-  width: 90px;
-  text-align: right;
+  font:
+    0.8em "typewriter",
+    sans-serif;
 }
-
 input,
 textarea {
-  /* 确保所有文本输入框字体相同
-     textarea 默认是等宽字体 */
-  font: 1em sans-serif;
-
-  /* 使所有文本输入框大小相同 */
-  width: 300px;
-  box-sizing: border-box;
-
-  /* 调整文本输入框的边框样式 */
-  border: 1px solid #999;
+  font:
+    1.4em/1.5em "handwriting",
+    cursive,
+    sans-serif;
+  border: none;
+  padding: 0 10px;
+  margin: 0;
+  width: 80%;
+  background: none;
 }
-
 input:focus,
 textarea:focus {
-  /* 给激活的元素一点高亮效果 */
-  border-color: #000;
+  background: rgb(0 0 0 / 10%);
+  border-radius: 5px;
 }
-
 textarea {
-  /* 使多行文本输入框和它们的 label 正确对齐 */
-  vertical-align: top;
+  display: block;
 
-  /* 给文本留下足够的空间 */
-  height: 5em;
+  padding: 10px;
+  margin: 10px 0 0 -10px;
+  width: 100%;
+  height: 90%;
+
+  border-right: 1px solid;
+
+  resize  : none;
+  overflow: auto;
 }
-
-.button {
-  /* 把按钮放到和文本输入框一样的位置 */
-  padding-left: 90px; /* 和 label 的大小一样 */
-}
-
 button {
-  /* 这个外边距的大小与 label 和文本输入框之间的间距差不多 */
-  margin-left: 0.5em;
+  padding: 5px;
+  font: bold 0.6em sans-serif;
+  border: 2px solid #333;
+  border-radius: 5px;
+  background: none;
+  cursor: pointer;
+  transform: rotate(-1.5deg);
+}
+
+button:after {
+  content: " >>>";
+}
+
+button:hover,
+button:focus {
+  background: #000;
+  color: #fff;
 }
