@@ -1,6 +1,13 @@
+<script>
+	export let data;
+</script>
+
 <nav>
-	<a href="/">home</a>
-	<a href="/blog">about</a>
+	<ul>
+		{#each data.summaries as {slug, title} }
+			<li><a href="/posts/{slug}">{title}</a></li>
+		{/each}
+	</ul>
 </nav>
 
 <slot></slot>
