@@ -1,15 +1,16 @@
 <script>
 	// @ts-nocheck
 
-	import { paths } from '$lib/icon';
+	import { paths, viewBoxs } from '$lib/icon';
 
 	export let option = 'sun';
 
-	export let viewBox;
-	export let height = '1.5em';
-	export let width = '1.5em';
+	export let height = '1.3rem';
+	export let width = '1.3rem';
 
-	let path = paths[option];
+	let viewBox = viewBoxs[option];
+	$: path = paths[option];
+	
 </script>
 
 <svg {viewBox} {height} {width}>{@html path}</svg>
