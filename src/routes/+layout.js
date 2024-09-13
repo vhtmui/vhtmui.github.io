@@ -1,12 +1,10 @@
-export const prerender = true;
-
-import { title } from "process";
 import { posts } from "./nav";
+export const prerender = true;
 
 export function load() {
     return{
         summaries:posts.map((post) => ({
-            slug: post.slug,
+            link: post.link,
             title: post.title
         }))
     }
