@@ -1,7 +1,7 @@
 export const posts = [
 	{
 		link: 'tools',
-		title: 'Tools',
+		title: 'Tools工具',
 		child: [
 			{
 				link: 'dis-arp',
