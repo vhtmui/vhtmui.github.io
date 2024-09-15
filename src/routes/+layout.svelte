@@ -71,12 +71,18 @@
 	}
 	:global(:root) {
 		--header-block-height: 3rem;
+		& pre {
+			overflow: auto;
+			text-wrap: nowrap;
+			& *{
+				text-wrap: unset;
+			}
+		}
 	}
-	* {
+	:global(*){
 		scrollbar-color: var(--scrollbar-color) #00000000;
-	}
-	pre {
-		overflow: auto;
+			text-wrap: wrap;
+			word-break: break-all;
 	}
 	:root {
 		font-family: 'CascadiaCode', 'Microsoft YaHei', Arial, sans-serif;
@@ -86,6 +92,7 @@
 		scroll-behavior: smooth;
 		background-color: var(--main-bg-color);
 		height: 100%;
+		
 		& *,
 		:after,
 		:before {
@@ -103,15 +110,15 @@
 		background-color: var(--header-nav-bg-color);
 		border-bottom: 0px solid var(--header-border-color);
 		box-shadow: 0px 2px 5px 0px var(--header-border-color);
+		position: sticky;
+		top: 0;
 		& header.top {
 			max-width: 1440px;
 			box-sizing: border-box;
 			font-weight: normal;
-			position: sticky;
-			top: 0;
 			margin-left: auto;
 			margin-right: auto;
-			padding: 0 0.7rem 0 0.5rem;
+			padding: 0 1rem 0 1rem;
 			height: var(--header-block-height);
 			width: 100%;
 			display: flex;
