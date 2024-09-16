@@ -165,13 +165,11 @@
 				<li>
 					“技能测试”任务，例如，在<a
 						href="/zh-CN/docs/Learn/JavaScript/Building_blocks/conditionals#%E6%8A%80%E8%83%BD%E6%B5%8B%E8%AF%95%EF%BC%81"
-						>代码中做决定——条件语句</a
-					>。
+						>代码中做决定——条件语句</a>。
 				</li>
 				<li>
 					在某些模块的结尾处，包含更深入的<strong>评估</strong>，例如，<a
-						href="/zh-CN/docs/Learn/JavaScript/Building_blocks/Image_gallery">图片库</a
-					>。
+					href="/zh-CN/docs/Learn/JavaScript/Building_blocks/Image_gallery">图片库</a>。
 				</li>
 			</ul>
 			<p>
@@ -184,8 +182,7 @@
 						href="https://github.com/mdn/learning-area/tree/main/javascript/building-blocks/tasks/conditionals"
 						class="external"
 						target="_blank"
-						>https://github.com/mdn/learning-area/tree/main/javascript/building-blocks/tasks/conditionals</a
-					>。
+						>https://github.com/mdn/learning-area/tree/main/javascript/building-blocks/tasks/conditionals</a>。
 				</li>
 				<li>
 					上面的<strong>评估</strong>示例的评分指南和资源位于
