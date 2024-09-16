@@ -10,7 +10,11 @@ export default {
 			fallback: undefined,
 			precompress: false,
 			strict: true
-		})
-
+		}),
+		prerender: {
+			//忽略检查
+			handleHttpError: 'ignore',
+			handleMissingId: 'ignore'
+		}
 	}
 };
