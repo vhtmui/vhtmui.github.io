@@ -1,16 +1,46 @@
-<article class="main-page-content" lang="zh-CN">
-	<h1>学习 Web 开发</h1>
-	<div class="section-content">
-		<p>
-			欢迎来到 MDN 学习区。本系列文章意在为 Web
-			开发的纯新手提供编写网站的基本技巧，而非意在让你从“新手”变成“专家”，但能让你从“新手”变得“熟练”。从那之后，你就能开始以你自己的方式学习
-			<a href="/zh-CN/">MDN 的其余部分</a>，和其他需要大量前置知识的中高级资源。
-		</p>
-		<p>
-			从零开始学习 Web
-			开发极具挑战性，该教程将为你提供详细的资料，手把手帮助你轻松愉快地学习。无论你是正在学习 Web
-			开发的学生（自学或参与课程）、寻找材料的老师、编程爱好者，抑或是仅想进一步了解 Web
-			技术的工作原理，我们都希望你能感到宾至如归。
-		</p>
-	</div>
-</article>
+<nav>
+	<a href="#一">一</a>
+	<a href="#2">2</a>
+	<a href="#three">three</a>
+	<a href="#4">四</a>
+	<a href="#五five">五</a>
+</nav>
+<div class="scroll-container">
+	<div class="scroll-page" id="一"><a href="#一">一</a></div>
+	<div class="scroll-page" id="2">2</div>
+	<div class="scroll-page" id="three">three</div>
+	<div class="scroll-page" id="4"><a href="#4">四</a></div>
+	<div class="scroll-page" id="五five"><a href="#五">五</a></div>
+</div>
+
+<style>
+	a {
+		display: inline-block;
+		width: 50px;
+		text-decoration: none;
+	}
+	nav,
+	.scroll-container {
+		display: block;
+		margin: 0 auto;
+		text-align: center;
+	}
+	nav {
+		width: 339px;
+		padding: 5px;
+		border: 1px solid black;
+	}
+	.scroll-container {
+		width: 350px;
+		height: 200px;
+		overflow-y: scroll;
+		scroll-behavior: smooth;
+	}
+	.scroll-page {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100px;
+		font-size: 2em;
+	}
+</style>

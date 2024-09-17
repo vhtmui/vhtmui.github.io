@@ -8,8 +8,8 @@
 
 	let theme;
 	let theme_icon;
-	let tree;
-
+	let tree = get_child_array(root.docs);
+	
 	/**
 	 * Set the theme by set the attribute of <html> element
 	 * @param {string} string  - 'Light|Dark'
@@ -38,23 +38,25 @@
 </script>
 
 <div class="top container">
-	<button class="svg home">
-		<a href="/">
-			<Icon option={'home'} />
-		</a>
-	</button>
-	<header class="top">
-		<nav class="top">
-			<ul>
-				{#each links as link}
-					<li><a href="/{link.$link}">{link.$title}</a></li>
-				{/each}
-			</ul>
-		</nav>
-		<button class="svg theme" on:click={toggle_main_theme}>
-			<Icon option={theme_icon} />
+	<div class="top inner-container">
+		<button class="svg home">
+			<a href="/">
+				<Icon option={'home'} />
+			</a>
 		</button>
-	</header>
+		<header class="top">
+			<nav class="top">
+				<ul>
+					{#each links as link}
+						<li><a href="/{link.$link}">{link.$title}</a></li>
+					{/each}
+				</ul>
+			</nav>
+			<button class="svg theme" on:click={toggle_main_theme}>
+				<Icon option={theme_icon} />
+			</button>
+		</header>
+	</div>
 </div>
 <main>
 	<div class="sidebar right">
@@ -131,70 +133,71 @@
 		background-color: var(--header-nav-bg-color);
 		border-bottom: 0px solid var(--header-border-color);
 		box-shadow: 0px 2px 5px 0px var(--header-border-color);
-		padding-left: 1rem;
-		display: flex;
-		position: sticky;
-		top: 0;
-		height: var(--header-block-height);
-		& header.top {
+		& div.top.inner-container {
 			max-width: 1440px;
-			box-sizing: border-box;
-			font-weight: normal;
-			margin-left: 0;
+			margin-left: auto;
 			margin-right: auto;
-			padding: 0 1rem 0 1rem;
-			width: 100%;
 			display: flex;
-			flex: 1 1;
-			gap: 0.5rem;
-			align-items: center;
-			justify-content: flex-start;
-			& nav.top {
-				margin-right: auto;
+			position: sticky;
+			top: 0;
+			height: var(--header-block-height);
+			& header.top {
+				box-sizing: border-box;
+				font-weight: normal;
+				padding: 0 1rem 0 1rem;
+				width: 100%;
 				display: flex;
-				overflow: auto;
-				& ul {
-					margin: 0;
-					padding: 0;
+				flex: 1 1;
+				gap: 0.5rem;
+				align-items: center;
+				justify-content: flex-start;
+				& nav.top {
+					margin-right: auto;
 					display: flex;
-					list-style: none;
-				}
-				& a {
-					border-radius: 0.25em;
-					display: inline-block;
-					box-sizing: border-box;
-					padding: 0.3em 0.5em;
-					text-decoration: none;
-					color: inherit;
-					&:hover {
-						background-color: var(--header-block-hover-bg-color);
-						color: var(--header-text-hover-color);
+					overflow: auto;
+					& ul {
+						margin: 0;
+						padding: 0;
+						display: flex;
+						list-style: none;
+					}
+					& a {
+						border-radius: 0.25em;
+						display: inline-block;
+						box-sizing: border-box;
+						padding: 0.3em 0.5em;
+						text-decoration: none;
+						color: inherit;
+						&:hover {
+							background-color: var(--header-block-hover-bg-color);
+							color: var(--header-text-hover-color);
+						}
 					}
 				}
 			}
-		}
-		& button.svg {
-			box-sizing: border-box;
-			margin: 0;
-			padding: 0.4rem 0.6rem 0.4rem 0.6rem;
-			border: none;
-			outline: none;
-			background-color: transparent;
-			transition: transform 0.5s ease;
-			transform: rotateY(0deg);
-			&:hover {
-				cursor: pointer;
-				transform: rotateY(180deg);
+			& button.svg {
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0.4rem 0.6rem 0.4rem 0.6rem;
+				border: none;
+				outline: none;
+				background-color: transparent;
+				transition: transform 0.5s ease;
+				transform: rotateY(0deg);
+				&:hover {
+					cursor: pointer;
+					transform: rotateY(180deg);
+				}
+				&:active {
+					transition: none;
+					transform: rotateY(180deg) scale(1.5);
+				}
 			}
-			&:active {
-				transition: none;
-				transform: rotateY(180deg) scale(1.5);
-			}
-		}
-		& svg {
-			vertical-align: middle;
-			& path {
-				fill: var(--all-svg-color);
+			& svg {
+				vertical-align: middle;
+				& path {
+					fill: var(--all-svg-color);
+				}
 			}
 		}
 	}

@@ -8,9 +8,21 @@ export const root = {
 			$title: 'OPS',
 			dis_arp: {
 				$link: 'dis-arp',
-				$title: 'Dis-Arp'
+				$title: 'Dis-Arp',
+			},
+			showMaterials: {
+				$link: 'showMaterials',
+				$title: 'ShowMaterials',
+			},
+		},
+		office: {
+			$link: 'office',
+			$title: 'Office',
+			dis_arp: {
+				$link: 'dis-arp',
+				$title: 'Dis-Arp',
 			}
-		}
+		},
 	},
 	docs: {
 		$link: 'docs',
@@ -28,5 +40,9 @@ export const root = {
  */
 export function get_child_array(obj) {
 	let keys = Object.keys(obj).filter((t) => t && !t.startsWith('$'));
-	return keys.map(key => obj[key]);
+	if (keys.length === 0) {
+		return null;
+	} else {
+		return keys.map(key => obj[key]);
+	}
 }
