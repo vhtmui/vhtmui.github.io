@@ -1,7 +1,7 @@
 <script>
 	// @ts-nocheck
 
-	import { paths, viewBoxs } from '$lib/icon';
+	import { paths, viewBoxs } from './icon';
 
 	export let option = 'sun';
 

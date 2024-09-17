@@ -3,13 +3,12 @@
 
 	import Icon from '$lib/Icon.svelte';
 	import Sidebar from '$lib/Sidebar.svelte';
-	import Links from '$lib/Links.svelte';
 	import { onMount, tick } from 'svelte';
-
-	export let data;
+	import { root, get_child_array } from './nav';
 
 	let theme;
 	let theme_icon;
+	let tree;
 
 	/**
 	 * Set the theme by set the attribute of <html> element
@@ -30,35 +29,36 @@
 		}
 	}
 
+	$: links = get_child_array(root);
+
 	onMount(() => {
 		theme = document.documentElement.getAttribute('data-theme');
-		theme === 'Dark' ? theme_icon = 'moon' : theme_icon = 'sun';
+		theme === 'Dark' ? (theme_icon = 'moon') : (theme_icon = 'sun');
 	});
-
 </script>
 
 <div class="top container">
 	<button class="svg home">
 		<a href="/">
-			<Icon option={'home'}></Icon>
+			<Icon option={'home'} />
 		</a>
 	</button>
 	<header class="top">
 		<nav class="top">
 			<ul>
-				{#each data.summaries as { link, title }}
-					<li><a href="/{link}">{title}</a></li>
+				{#each links as link}
+					<li><a href="/{link.$link}">{link.$title}</a></li>
 				{/each}
 			</ul>
 		</nav>
 		<button class="svg theme" on:click={toggle_main_theme}>
-			<Icon option={theme_icon}></Icon>
+			<Icon option={theme_icon} />
 		</button>
 	</header>
 </div>
 <main>
 	<div class="sidebar right">
-		<Sidebar />
+		<Sidebar {tree} />
 	</div>
 	<div class="content">
 		<slot></slot>
@@ -176,7 +176,7 @@
 		& button.svg {
 			box-sizing: border-box;
 			margin: 0;
-			padding: 0.6rem 0.4rem 0.6rem 0.4rem;
+			padding: 0.4rem 0.6rem 0.4rem 0.6rem;
 			border: none;
 			outline: none;
 			background-color: transparent;
