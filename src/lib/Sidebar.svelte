@@ -20,7 +20,7 @@
 
 {#if tree}
 	<div class="tree-head">
-		<a class="sidebar-right" href={nowLink}>{tree.$title}</a>
+		<a class="sidebar" href={nowLink}>{tree.$title}</a>
 		{#if child_tree}
 			<button class:up on:click={toggle_display}><Icon {option} /></button>
 		{/if}
@@ -41,8 +41,9 @@
 		margin: 0;
 		padding-left: 1rem;
 		border-left: 1px solid;
+		border-top: 1px solid;
 	}
-	a.sidebar-right {
+	a.sidebar {
 		text-decoration: none;
 		color: var(----main-text-color);
 		&:hover {
@@ -63,7 +64,7 @@
 		transition: cubic-bezier(0.01, 0.79, 0.45, 0.94) 0.25s;
 		transform: rotate(-90deg);
 		& path {
-			fill: var(--all-svg-color);
+			fill: var(--sidebar-svg-color);
 		}
 		& :hover {
 			cursor: pointer;

@@ -81,6 +81,7 @@
 		--main-text-color: #1b1b1b;
 		--main-a-color: #0069c2;
 		--all-svg-color: var(--main-text-color);
+		--sidebar-svg-color: #454545ba;
 		--scrollbar-color: #989898;
 	}
 	:global(:root[data-theme='Dark']) {
@@ -93,6 +94,7 @@
 		--main-text-color: #ffffff;
 		--main-a-color: #8cb4ff;
 		--all-svg-color: var(--main-text-color);
+		--sidebar-svg-color: #ffffff80;
 		--scrollbar-color: #525049;
 	}
 	:global(:root) {
@@ -214,10 +216,10 @@
 		}
 		& .sidebar-container {
 		}
-		& .sidebar.right {
+		& div.sidebar.right {
 			margin-right: auto;
 			margin-left: auto;
-			width: 15rem;
+			width: 100%;
 			padding-top: 1rem;
 			position: sticky;
 			top: var(--header-block-height);
