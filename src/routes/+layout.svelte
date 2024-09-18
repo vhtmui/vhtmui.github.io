@@ -212,7 +212,12 @@
 		& div.content {
 			padding: 0 1rem;
 		}
+		& .sidebar-container {
+		}
 		& .sidebar.right {
+			margin-right: auto;
+			margin-left: auto;
+			width: 15rem;
 			padding-top: 1rem;
 			position: sticky;
 			top: var(--header-block-height);
@@ -254,7 +259,7 @@
 			display: grid;
 			grid-template-areas: 'Lsidebar content Rsidebar';
 			gap: 2rem;
-			grid-template-columns: minmax(15rem, 1fr) minmax(0, 2.5fr) minmax(0, 10rem);
+			grid-template-columns: minmax(0, 0.8fr) minmax(0, 2.5fr) minmax(10rem, 15rem);
 			padding: 0.5rem 2rem 0 2rem;
 		}
 	}

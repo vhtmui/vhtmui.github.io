@@ -19,10 +19,12 @@
 </script>
 
 {#if tree}
-	<a href={nowLink}>{tree.$title}</a>
-	{#if child_tree}
-		<button class:up on:click={toggle_display}><Icon {option} /></button>
-	{/if}
+	<div class="tree-head">
+		<a class="sidebar-right" href={nowLink}>{tree.$title}</a>
+		{#if child_tree}
+			<button class:up on:click={toggle_display}><Icon {option} /></button>
+		{/if}
+	</div>
 
 	{#if display && child_tree}
 		<ul>
@@ -39,6 +41,17 @@
 		margin: 0;
 		padding-left: 1rem;
 		border-left: 1px solid;
+	}
+	a.sidebar-right {
+		text-decoration: none;
+		color: var(----main-text-color);
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+	div.tree-head{
+		display: flex;
+		justify-content: space-between;
 	}
 	button {
 		box-sizing: border-box;
