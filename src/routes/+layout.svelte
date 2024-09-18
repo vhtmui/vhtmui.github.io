@@ -8,8 +8,8 @@
 
 	let theme;
 	let theme_icon;
-	let tree = get_child_array(root.docs);
-	
+	let tree = root.tools;
+
 	/**
 	 * Set the theme by set the attribute of <html> element
 	 * @param {string} string  - 'Light|Dark'
@@ -59,8 +59,10 @@
 	</div>
 </div>
 <main>
-	<div class="sidebar right">
-		<Sidebar {tree} />
+	<div class="sidebar-container">
+		<div class="sidebar right">
+			<Sidebar {tree} />
+		</div>
 	</div>
 	<div class="content">
 		<slot></slot>
@@ -110,7 +112,7 @@
 		scroll-behavior: smooth;
 	}
 	:root {
-		font-family: 'CascadiaCode', 'Microsoft YaHei', Arial, sans-serif;
+		font-family: 'Intel', 'Microsoft YaHei', Arial, sans-serif;
 		line-height: 1.75;
 		font-weight: normal;
 		font-size: 16px;
@@ -133,13 +135,14 @@
 		background-color: var(--header-nav-bg-color);
 		border-bottom: 0px solid var(--header-border-color);
 		box-shadow: 0px 2px 5px 0px var(--header-border-color);
+		position: sticky;
+		top: 0;
 		& div.top.inner-container {
 			max-width: 1440px;
 			margin-left: auto;
 			margin-right: auto;
 			display: flex;
-			position: sticky;
-			top: 0;
+			align-items: center;
 			height: var(--header-block-height);
 			& header.top {
 				box-sizing: border-box;
@@ -178,7 +181,8 @@
 			& button.svg {
 				box-sizing: border-box;
 				margin: 0;
-				padding: 0.4rem 0.6rem 0.4rem 0.6rem;
+				padding: 0 1rem 0 1rem;
+				height: var(--header-block-height);
 				border: none;
 				outline: none;
 				background-color: transparent;
@@ -203,17 +207,15 @@
 	}
 
 	main {
-		display: grid;
-		grid-template-areas: 'Lsidebar content Rsidebar';
-		gap: 3rem;
-		grid-template-columns: minmax(0, 1fr) minmax(0, 2.5fr) minmax(0, 15rem);
 		margin-top: 0;
-		padding: 0.5rem 1rem 0 1rem;
 		color: var(--main-text-color);
+		& div.content {
+			padding: 0 1rem;
+		}
 		& .sidebar.right {
+			padding-top: 1rem;
 			position: sticky;
 			top: var(--header-block-height);
-			min-width: 7rem;
 		}
 		& h1,
 		h2,
@@ -235,6 +237,25 @@
 		}
 		& a {
 			color: var(--main-a-color);
+		}
+	}
+
+	@media (min-width: 720px) {
+		main {
+			display: grid;
+			grid-template-areas: 'Lsidebar content';
+			gap: 2rem;
+			grid-template-columns: minmax(12rem, 0.8fr) minmax(0, 2.5fr);
+			padding: 0.5rem 2rem 0 2rem;
+		}
+	}
+	@media (min-width: 1100px) {
+		main {
+			display: grid;
+			grid-template-areas: 'Lsidebar content Rsidebar';
+			gap: 2rem;
+			grid-template-columns: minmax(15rem, 1fr) minmax(0, 2.5fr) minmax(0, 10rem);
+			padding: 0.5rem 2rem 0 2rem;
 		}
 	}
 </style>

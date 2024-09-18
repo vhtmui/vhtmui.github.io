@@ -13,14 +13,18 @@ export const root = {
 			showMaterials: {
 				$link: 'showMaterials',
 				$title: 'ShowMaterials',
+				processNeed: {
+					$link: 'processNeed',
+					$title: 'ProcessNeed',
+				},
 			},
 		},
 		office: {
 			$link: 'office',
 			$title: 'Office',
-			dis_arp: {
-				$link: 'dis-arp',
-				$title: 'Dis-Arp',
+			processNeed: {
+				$link: 'processNeed',
+				$title: 'ProcessNeed',
 			}
 		},
 	},

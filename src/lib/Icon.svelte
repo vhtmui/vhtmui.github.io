@@ -14,3 +14,7 @@
 </script>
 
 <svg {viewBox} {height} {width}>{@html path}</svg>
+
+<style>
+	
+</style>
