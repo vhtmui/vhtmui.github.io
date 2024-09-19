@@ -20,16 +20,20 @@
 
 {#if tree}
 	<div class="tree-head">
-		<a class="sidebar" href={nowLink}>{tree.$title}</a>
+		
 		{#if child_tree}
 			<button class:up on:click={toggle_display}><Icon {option} /></button>
+			<a class="sidebar" href={nowLink}>{tree.$title}</a>
+		{:else}
+			<div class = 'sidebar-paddingblock'></div><a class="sidebar" href={nowLink}>{tree.$title}</a>
 		{/if}
+		
 	</div>
 
 	{#if display && child_tree}
 		<ul>
 			{#each child_tree as t}
-				<li><svelte:self tree={t} preLink={nowLink} /></li>
+				<div class = 'sidebar-paddingblock'> </div><li><svelte:self tree={t} preLink={nowLink} /></li>
 			{/each}
 		</ul>
 	{/if}
@@ -39,9 +43,14 @@
 	ul {
 		list-style: none;
 		margin: 0;
-		padding-left: 1rem;
-		border-left: 1px solid;
-		border-top: 1px solid;
+		padding-left: 0.5rem;
+		border-collapse: collapse;
+		border-left: 1px solid var(--sidebar-border-left-color);
+		/* border-top: 1px solid var(--sidebar-border-top-color); */
+		/* border-bottom: 1px solid; */
+		& li {
+			
+		}
 	}
 	a.sidebar {
 		text-decoration: none;
@@ -52,21 +61,29 @@
 	}
 	div.tree-head{
 		display: flex;
-		justify-content: space-between;
+		line-height: 3rem;
+	}
+	div.sidebar-paddingblock{
+		display: inline;
+		width: 1.75rem;
 	}
 	button {
 		box-sizing: border-box;
 		margin: 0;
-		padding: 0 1rem 0 1rem;
+		padding: 0 0.5rem 0 0.5rem;	
+		height: var(--header-block-height);	
 		border: none;
 		outline: none;
 		background-color: transparent;
 		transition: cubic-bezier(0.01, 0.79, 0.45, 0.94) 0.25s;
 		transform: rotate(-90deg);
+		& svg{
+			vertical-align: middle;
+		}
 		& path {
 			fill: var(--sidebar-svg-color);
 		}
-		& :hover {
+		&:hover {
 			cursor: pointer;
 		}
 	}

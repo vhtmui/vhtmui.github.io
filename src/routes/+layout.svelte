@@ -82,7 +82,10 @@
 		--main-a-color: #0069c2;
 		--all-svg-color: var(--main-text-color);
 		--sidebar-svg-color: #454545ba;
+		--sidebar-border-top-color:#00000000;
+		--sidebar-border-left-color:#00000066;
 		--scrollbar-color: #989898;
+		
 	}
 	:global(:root[data-theme='Dark']) {
 		--header-nav-bg-color: #181818;
@@ -95,10 +98,13 @@
 		--main-a-color: #8cb4ff;
 		--all-svg-color: var(--main-text-color);
 		--sidebar-svg-color: #ffffff80;
+		--sidebar-border-top-color:#e6e6e6d2;
+		--sidebar-border-left-color:#d0d0d070;
 		--scrollbar-color: #525049;
 	}
 	:global(:root) {
 		--header-block-height: 3rem;
+		--all-svg-width: 1.25rem;
 		& pre {
 			overflow: auto;
 			text-wrap: nowrap;
