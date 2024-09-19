@@ -1,4 +1,5 @@
 <script>
+	import { afterUpdate, beforeUpdate } from 'svelte';
 	import { get_child_array } from '../routes/nav';
 	import Icon from './Icon.svelte';
 
@@ -9,6 +10,7 @@
 	let child_tree = get_child_array(tree);
 	let option = 'chevron_down';
 	let up = false;
+	let url;
 
 	let nowLink = preLink + '/' + tree.$link;
 
@@ -16,8 +18,11 @@
 		display = !display;
 		up = !up;
 	}
+	afterUpdate(()=>{
+		url = window.location.href
+	})
 </script>
-
+{url}
 {#if tree}
 	<div class="tree-head">
 		
