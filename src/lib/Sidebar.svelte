@@ -42,8 +42,8 @@
 <style>
 	ul {
 		list-style: none;
-		margin: 0;
-		padding-left: 0.5rem;
+		margin: 0 0 0 1.125rem; /* 侧边栏关联样式，保证svg图像对齐边框*/
+		padding-left: 0.0;
 		border-collapse: collapse;
 		border-left: 1px solid var(--sidebar-border-left-color);
 		/* border-top: 1px solid var(--sidebar-border-top-color); */
@@ -65,7 +65,8 @@
 	}
 	div.sidebar-paddingblock{
 		display: inline;
-		width: 1.75rem;
+		width: 2.25rem;
+		/* 侧边栏关联样式，保证列表每项文字对齐 */
 	}
 	button {
 		box-sizing: border-box;

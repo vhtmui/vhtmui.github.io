@@ -83,7 +83,7 @@
 		--all-svg-color: var(--main-text-color);
 		--sidebar-svg-color: #454545ba;
 		--sidebar-border-top-color:#00000000;
-		--sidebar-border-left-color:#00000066;
+		--sidebar-border-left-color:#00000054;
 		--scrollbar-color: #989898;
 		
 	}
@@ -99,7 +99,7 @@
 		--all-svg-color: var(--main-text-color);
 		--sidebar-svg-color: #ffffff80;
 		--sidebar-border-top-color:#e6e6e6d2;
-		--sidebar-border-left-color:#d0d0d070;
+		--sidebar-border-left-color:#ffffff54;
 		--scrollbar-color: #525049;
 	}
 	:global(:root) {
