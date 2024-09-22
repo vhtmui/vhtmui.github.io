@@ -1,49 +1,84 @@
 <script>
-	import { afterUpdate, beforeUpdate, onMount } from 'svelte';
 	import { get_child_array } from '../routes/nav';
-	import { url } from './stores';
+	import { url } from '$lib/stores';
 	import Icon from './Icon.svelte';
+	import { afterUpdate, beforeUpdate, onDestroy, onMount } from 'svelte';
+	import { slide } from 'svelte/transition';
+	import { flip } from 'svelte/animate';
 
 	export let tree;
 	export let display = false;
 	export let preLink = '';
+	export let selected_item = false;
+	export let signal = 'default';
 
 	let child_tree = get_child_array(tree);
 	let option = 'chevron_down';
 	let up = false;
+	let equal = false;
+	let include = false;
 
-	let nowLink = preLink + '/' + tree.$link;
+	let nowLink = preLink + '/' + tree._link;
 
 	function toggle_display() {
 		display = !display;
 		up = !up;
 	}
+	function select() {
+		if (nowLink === $url) {
+			selected_item = true;
+		} else if (include && display === false) {
+			selected_item = true;
+		} else {
+			selected_item = false;
+		}
+	}
 
-	function update_url() {
-		beforeUpdate(() => {
-			console.log(window.location.href);
-			url.set(window.location.href);
-		});
+	// A global signal to control display.
+	$: if (signal === 'default') {
+		equal = nowLink === $url;
+		include = $url.match(new RegExp(`^${nowLink}.+`));
+	} else if (signal === 'expandAll'){
+		equal = false;
+		include = true;
+	}
+	// decide whether to expand
+	$: if (equal) {
+		// display = false;
+		// up = false;
+	} else if (include) {
+		display = true;
+		up = true;
+	} else {
+		display = false;
+		up = false;
+	}
+
+	$: if (nowLink === $url) {
+		selected_item = true;
+	} else if (include && display === false) {
+		selected_item = true;
+	} else {
+		selected_item = false;
 	}
 </script>
 
-{$url}
 {#if tree}
 	<div class="tree-head">
 		{#if child_tree}
 			<button class:up on:click={toggle_display}><Icon {option} /></button>
-			<a class="sidebar" href={nowLink} on:click={update_url}>{tree.$title}</a>
+			<a class="sidebar" class:selected_item href={nowLink}>{tree._title}</a>
 		{:else}
 			<div class="sidebar-paddingblock"></div>
-			<a class="sidebar" href={nowLink} on:click={update_url}>{tree.$title}</a>
+			<a class="sidebar" class:selected_item href={nowLink}>{tree._title}</a>
 		{/if}
 	</div>
 
 	{#if display && child_tree}
-		<ul>
+		<ul transition:slide>
 			{#each child_tree as t}
 				<div class="sidebar-paddingblock"></div>
-				<li><svelte:self tree={t} preLink={nowLink} /></li>
+				<li><svelte:self tree={t} preLink={nowLink} {signal} /></li>
 			{/each}
 		</ul>
 	{/if}
@@ -54,16 +89,14 @@
 		list-style: none;
 		margin: 0 0 0 1.125rem; /* 侧边栏关联样式，保证svg图像对齐边框*/
 		padding-left: 0;
-		border-collapse: collapse;
 		border-left: 1px solid var(--sidebar-border-left-color);
 		/* border-top: 1px solid var(--sidebar-border-top-color); */
 		/* border-bottom: 1px solid; */
-		& li {
-		}
 	}
 	a.sidebar {
 		text-decoration: none;
 		color: var(----main-text-color);
+		transition: all ease-in 0.2s;
 		&:hover {
 			text-decoration: underline;
 		}
@@ -76,6 +109,14 @@
 		display: inline;
 		width: 2.25rem;
 		/* 侧边栏关联样式，保证列表每项文字对齐 */
+	}
+	a.selected_item {
+		font-weight: bolder;
+		padding: 0 1.2rem 0 1.2rem;
+		border-left: 4px solid #7e7e76;
+		border-radius: 2px;
+		background-color: #7e7e7657;
+		transition: all ease-out 0.2s;
 	}
 	button {
 		box-sizing: border-box;

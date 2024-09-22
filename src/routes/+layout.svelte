@@ -2,9 +2,10 @@
 	// @ts-nocheck
 
 	import Icon from '$lib/Icon.svelte';
-	import Sidebar from '$lib/Sidebar.svelte';
-	import { onMount, tick } from 'svelte';
+	import SbarContainer from '$lib/SbarContainer.svelte';
+	import { onMount, afterUpdate } from 'svelte';
 	import { root, get_child_array } from './nav';
+	import { url } from '$lib/stores';
 
 	let theme;
 	let theme_icon;
@@ -35,6 +36,10 @@
 		theme = document.documentElement.getAttribute('data-theme');
 		theme === 'Dark' ? (theme_icon = 'moon') : (theme_icon = 'sun');
 	});
+	afterUpdate(() => {
+		url.set(window.location.pathname);
+		// console.log({$url});
+	});	
 </script>
 
 <div class="top container">
@@ -48,7 +53,7 @@
 			<nav class="top">
 				<ul>
 					{#each links as link}
-						<li><a href="/{link.$link}">{link.$title}</a></li>
+						<li><a href="/{link._link}">{link._title}</a></li>
 					{/each}
 				</ul>
 			</nav>
@@ -61,7 +66,7 @@
 <main>
 	<div class="sidebar-container">
 		<div class="sidebar right">
-			<Sidebar {tree} />
+			<SbarContainer {tree} />
 		</div>
 	</div>
 	<div class="content">
@@ -82,10 +87,10 @@
 		--main-a-color: #0069c2;
 		--all-svg-color: var(--main-text-color);
 		--sidebar-svg-color: #454545ba;
-		--sidebar-border-top-color:#00000000;
-		--sidebar-border-left-color:#00000054;
+		--sidebar-border-top-color: #00000000;
+		--sidebar-border-left-color: #00000054;
+		/* --sidebar-selected-color:; */
 		--scrollbar-color: #989898;
-		
 	}
 	:global(:root[data-theme='Dark']) {
 		--header-nav-bg-color: #181818;
@@ -98,8 +103,8 @@
 		--main-a-color: #8cb4ff;
 		--all-svg-color: var(--main-text-color);
 		--sidebar-svg-color: #ffffff80;
-		--sidebar-border-top-color:#e6e6e6d2;
-		--sidebar-border-left-color:#ffffff54;
+		--sidebar-border-top-color: #e6e6e6d2;
+		--sidebar-border-left-color: #ffffff54;
 		--scrollbar-color: #525049;
 	}
 	:global(:root) {
@@ -219,8 +224,6 @@
 		color: var(--main-text-color);
 		& div.content {
 			padding: 0 1rem;
-		}
-		& .sidebar-container {
 		}
 		& div.sidebar.right {
 			margin-right: auto;
