@@ -7,7 +7,7 @@
 	import { flip } from 'svelte/animate';
 
 	export let tree;
-	export let display = false;
+	export let expand = false;
 	export let preLink = '';
 	export let selected_item = false;
 	export let signal = 'default';
@@ -15,48 +15,45 @@
 	let child_tree = get_child_array(tree);
 	let option = 'chevron_down';
 	let up = false;
+	/**
+	 * for signal to control
+	 */
 	let equal = false;
 	let include = false;
 
 	let nowLink = preLink + '/' + tree._link;
 
 	function toggle_display() {
-		display = !display;
+		expand = !expand;
 		up = !up;
 	}
-	function select() {
-		if (nowLink === $url) {
-			selected_item = true;
-		} else if (include && display === false) {
-			selected_item = true;
-		} else {
-			selected_item = false;
-		}
-	}
 
-	// A global signal to control display.
+	// A global signal to control the sidebar display.
 	$: if (signal === 'default') {
 		equal = nowLink === $url;
 		include = $url.match(new RegExp(`^${nowLink}.+`));
-	} else if (signal === 'expandAll'){
+	} else if (signal === 'expandAll') {
 		equal = false;
 		include = true;
 	}
-	// decide whether to expand
+	// decide whether to expand by default,
+	// if the url is equal, then select this element,
+	// if the element's url is included by page's, then expand it, and if it's expanded, then no select it,
+	//
 	$: if (equal) {
-		// display = false;
+		// expand = false;
 		// up = false;
 	} else if (include) {
-		display = true;
+		expand = true;
 		up = true;
 	} else {
-		display = false;
+		expand = false;
 		up = false;
 	}
 
 	$: if (nowLink === $url) {
 		selected_item = true;
-	} else if (include && display === false) {
+	} else if ($url.match(new RegExp(`^${nowLink}.+`)) && expand === false) {
 		selected_item = true;
 	} else {
 		selected_item = false;
@@ -74,7 +71,7 @@
 		{/if}
 	</div>
 
-	{#if display && child_tree}
+	{#if expand && child_tree}
 		<ul transition:slide>
 			{#each child_tree as t}
 				<div class="sidebar-paddingblock"></div>
@@ -87,7 +84,7 @@
 <style>
 	ul {
 		list-style: none;
-		margin: 0 0 0 1.125rem; /* 侧边栏关联样式，保证svg图像对齐边框*/
+		margin: 0 0 0 1.125rem; /* Half width of the button */
 		padding-left: 0;
 		border-left: 1px solid var(--sidebar-border-left-color);
 		/* border-top: 1px solid var(--sidebar-border-top-color); */
@@ -108,7 +105,7 @@
 	div.sidebar-paddingblock {
 		display: inline;
 		width: 2.25rem;
-		/* 侧边栏关联样式，保证列表每项文字对齐 */
+		/* Equal to the width of the button  */
 	}
 	a.selected_item {
 		font-weight: bolder;
