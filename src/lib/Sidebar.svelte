@@ -32,8 +32,15 @@
 		up = !up;
 	}
 
-	$: if (filter.length !== 0 && allChildNode.match(RegExp(filter))) {
-		visable = false;
+	// Filte the sidebar
+	$: if (filter.length !== 0) {
+		if (allChildNode.match(RegExp(filter, 'i')) || tree._title.match(RegExp(filter, 'i'))) {
+			visable = true;
+		} else {
+			visable = false;
+		}
+	} else if (filter.length === 0) {
+		visable = true;
 	}
 
 	// A global signal to control the sidebar display.
@@ -44,6 +51,7 @@
 		equal = false;
 		include = true;
 	}
+
 	// decide whether to expand by default,
 	// if the url is equal, then select this element,
 	// if the element's url is included by page's, then expand it, and if it's expanded, then no select it
@@ -60,7 +68,7 @@
 
 	$: if (nowLink === $url) {
 		selected_item = true;
-	} else if ($url.match(new RegExp(`^${nowLink}.+`)) && expand === false) {
+	} else if ($url.match(new RegExp(`^${nowLink}.+`, 'i')) && expand === false) {
 		selected_item = true;
 	} else {
 		selected_item = false;
@@ -68,7 +76,7 @@
 </script>
 
 {#if tree && visable}
-	<div class="tree-head">
+	<div transition:slide|global class="tree-head">
 		{#if child_tree}
 			<button class:up on:click={toggle_display}><Icon {option} /></button>
 			<a class="sidebar" class:selected_item href={nowLink}>{tree._title}</a>
@@ -79,10 +87,10 @@
 	</div>
 
 	{#if expand && child_tree}
-		<ul transition:slide>
+		<ul>
 			{#each child_tree as t}
 				<div class="sidebar-paddingblock"></div>
-				<li><svelte:self tree={t} preLink={nowLink} {signal} /></li>
+				<li><svelte:self tree={t} preLink={nowLink} {signal} {filter} /></li>
 			{/each}
 		</ul>
 	{/if}
