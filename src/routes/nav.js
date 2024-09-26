@@ -12,7 +12,7 @@
  * @type {Tree}
  */
 export const root = {
-	_link:'/',
+	_link: '/',
 	_title: 'root',
 	tools: {
 		_link: 'tools',
@@ -56,11 +56,27 @@ export const root = {
  * return child objects from a parent object.
  * @param {Tree} obj
  */
-export function get_child_array(obj) {
+export function get_childArray(obj) {
 	let keys = Object.keys(obj).filter((t) => t && !t.startsWith('_'));
 	if (keys.length === 0) {
 		return null;
 	} else {
 		return keys.map((key) => obj[key]);
 	}
+}
+
+/**
+ * return child objects from a parent object.
+ * @param {Tree} obj
+ */
+export function getAll_propertyNames(obj) {
+	let alltitles = '';
+	Object.keys(obj).forEach((p) => {
+		if (typeof obj[p] === 'object' && obj[p] !== null && !p.startsWith('_')) {
+			let titles = getAll_propertyNames(obj[p]);
+
+			alltitles = [alltitles, obj[p]._title, titles].filter((f) => f).join('`');
+		}
+	});
+	return alltitles;
 }

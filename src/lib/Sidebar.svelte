@@ -1,5 +1,5 @@
 <script>
-	import { get_child_array } from '../routes/nav';
+	import { get_childArray, getAll_propertyNames } from '../routes/nav';
 	import { url } from '$lib/stores';
 	import Icon from './Icon.svelte';
 	import { afterUpdate, beforeUpdate, onDestroy, onMount } from 'svelte';
@@ -11,10 +11,14 @@
 	export let preLink = '';
 	export let selected_item = false;
 	export let signal = 'default';
+	export let filter = '';
 
-	let child_tree = get_child_array(tree);
+	let child_tree = get_childArray(tree);
 	let option = 'chevron_down';
 	let up = false;
+	let allChildNode = getAll_propertyNames(tree);
+	let visable = true;
+
 	/**
 	 * for signal to control
 	 */
@@ -28,6 +32,10 @@
 		up = !up;
 	}
 
+	$: if (filter.length !== 0 && allChildNode.match(RegExp(filter))) {
+		visable = false;
+	}
+
 	// A global signal to control the sidebar display.
 	$: if (signal === 'default') {
 		equal = nowLink === $url;
@@ -38,8 +46,7 @@
 	}
 	// decide whether to expand by default,
 	// if the url is equal, then select this element,
-	// if the element's url is included by page's, then expand it, and if it's expanded, then no select it,
-	//
+	// if the element's url is included by page's, then expand it, and if it's expanded, then no select it
 	$: if (equal) {
 		// expand = false;
 		// up = false;
@@ -60,7 +67,7 @@
 	}
 </script>
 
-{#if tree}
+{#if tree && visable}
 	<div class="tree-head">
 		{#if child_tree}
 			<button class:up on:click={toggle_display}><Icon {option} /></button>

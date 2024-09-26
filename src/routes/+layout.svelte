@@ -4,7 +4,7 @@
 	import Icon from '$lib/Icon.svelte';
 	import SbarContainer from '$lib/SbarContainer.svelte';
 	import { onMount, afterUpdate } from 'svelte';
-	import { root, get_child_array } from './nav';
+	import { root, get_childArray } from './nav';
 	import { url } from '$lib/stores';
 
 	let theme;
@@ -30,7 +30,7 @@
 		}
 	}
 
-	$: links = get_child_array(root);
+	$: links = get_childArray(root);
 
 	onMount(() => {
 		theme = document.documentElement.getAttribute('data-theme');
