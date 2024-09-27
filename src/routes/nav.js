@@ -13,7 +13,7 @@
  */
 export const root = {
 	_link: '/',
-	_title: 'root',
+	_title: 'Home',
 	tools: {
 		_link: 'tools',
 		_title: 'Tools',

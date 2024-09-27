@@ -9,7 +9,7 @@
 
 	let theme;
 	let theme_icon;
-	let tree = root.tools;
+	let tree = root;
 
 	/**
 	 * Set the theme by set the attribute of <html> element

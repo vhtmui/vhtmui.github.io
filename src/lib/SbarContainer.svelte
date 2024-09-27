@@ -33,7 +33,7 @@
 <div class="sidebar-heard">
 	<input bind:value={input} placeholder="filter" class:widther on:click={() => (widther = true)} />
 	<button class="clear-input" class:widther on:click={cleanInput}><Icon option="x" /></button>
-	<button on:click={expand}><Icon option={icon} /></button>
+	<button class="expand" on:click={expand}><Icon option={icon} /></button>
 </div>
 <Sidebar {tree} {signal} filter={input} />
 
@@ -41,7 +41,7 @@
 	div.sidebar-heard {
 		padding-bottom: 1rem;
 		display: flex;
-		justify-content: space-between;
+		justify-content:flex-end;
 		& input {
 			background-color: transparent;
 			color: var(--main-text-color);
@@ -66,6 +66,13 @@
 			visibility: hidden;
 			position: absolute;
 			right: 3rem;
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0 0.5rem 0 0.5 rem;
+			height: 2rem;
+			border: none;
+			outline: none;
+			background-color: transparent;
 			&.widther {
 				visibility: visible;
 			}
@@ -73,6 +80,7 @@
 				cursor: pointer;
 				transform: none;
 				background-color: #80808075;
+				border-radius: 0.5rem;
 			}
 			&:active {
 				transition: none;
@@ -81,7 +89,7 @@
 				fill: var(--sidebar-svg-color);
 			}
 		}
-		& button {
+		& button.expand {
 			box-sizing: border-box;
 			margin: 0;
 			padding: 0 0.5rem 0 0.5 rem;
