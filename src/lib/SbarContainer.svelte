@@ -8,7 +8,7 @@
 	let signal = 'default';
 	let icon = 'plus';
 	let widther = false;
-	let input;
+	let input = '';
 
 	function expand() {
 		if (signal === 'default') {
@@ -19,13 +19,23 @@
 			icon = 'plus';
 		}
 	}
+	function cleanInput() {
+		input = '';
+		widther = false;
+	}
+
+	$: if (input.length !== 0) {
+		signal = 'expandAll';
+		icon = 'minus';
+	}
 </script>
 
 <div class="sidebar-heard">
-	<input bind:value={input} placeholder="filter" class:widther on:click|once={() => (widther = !widther)} />
+	<input bind:value={input} placeholder="filter" class:widther on:click={() => (widther = true)} />
+	<button class="clear-input" class:widther on:click={cleanInput}><Icon option="x" /></button>
 	<button on:click={expand}><Icon option={icon} /></button>
 </div>
-<Sidebar {tree} {signal} filter = {input}/>
+<Sidebar {tree} {signal} filter={input} />
 
 <style>
 	div.sidebar-heard {
@@ -35,25 +45,46 @@
 		& input {
 			background-color: transparent;
 			color: var(--main-text-color);
-			border-radius: 1rem;
+			border-radius: 0.5rem;
 			border: 1px solid var(--main-text-color);
-			font-size: large;
+			font-size: small;
 			font-family: 'Intel', 'Microsoft YaHei', Arial, sans-serif;
 			height: 2rem;
-			width: 4rem;
-			padding-left: 1rem;
-			padding-right: 1rem;
+			width: 5.5rem;
+			margin-right: 1rem;
+			padding-left: 0.4rem;
+			padding-right: 2rem;
 			box-shadow: none;
-			transition: all linear 0.2s;
 			&.widther {
-				transition: all linear 0.2s;
 				width: 100%;
+			}
+			&:target{
+				border-color: aqua;
+			}
+		}
+		& button.clear-input {
+			visibility: hidden;
+			position: absolute;
+			right: 3rem;
+			&.widther {
+				visibility: visible;
+			}
+			&:hover {
+				cursor: pointer;
+				transform: none;
+				background-color: #80808075;
+			}
+			&:active {
+				transition: none;
+			}
+			& path{
+				fill: var(--sidebar-svg-color);
 			}
 		}
 		& button {
 			box-sizing: border-box;
 			margin: 0;
-			padding: 0 1rem 0 1rem;
+			padding: 0 0.5rem 0 0.5 rem;
 			height: 2rem;
 			border: none;
 			outline: none;
@@ -63,6 +94,8 @@
 			&:hover {
 				cursor: pointer;
 				transform: rotate(180deg);
+				background-color: #80808075;
+				border-radius: 0.5rem;
 			}
 			&:active {
 				transition: none;
