@@ -53,11 +53,16 @@ export const root = {
 };
 
 /**
- * return child objects from a parent object.
+ * Return child objects from a parent object, excluding objects whose names start with string '_'
  * @param {Tree} obj
  */
 export function get_childArray(obj) {
-	let keys = Object.keys(obj).filter((t) => t && !t.startsWith('_'));
+	let keys;
+	if (obj) {
+		keys = Object.keys(obj).filter((t) => t && !t.startsWith('_'));
+	} else {
+		return null;
+	}
 	if (keys.length === 0) {
 		return null;
 	} else {
@@ -71,12 +76,16 @@ export function get_childArray(obj) {
  */
 export function getAll_propertyNames(obj) {
 	let alltitles = '';
-	Object.keys(obj).forEach((p) => {
-		if (typeof obj[p] === 'object' && obj[p] !== null && !p.startsWith('_')) {
-			let titles = getAll_propertyNames(obj[p]);
+	if (obj) {
+		Object.keys(obj).forEach((p) => {
+			if (typeof obj[p] === 'object' && obj[p] !== null && !p.startsWith('_')) {
+				let titles = getAll_propertyNames(obj[p]);
 
-			alltitles = [alltitles, obj[p]._title, titles].filter((f) => f).join('`');
-		}
-	});
-	return alltitles;
+				alltitles = [alltitles, obj[p]._title, titles].filter((f) => f).join('`');
+			}
+		});
+		return alltitles;
+	} else {
+		return null;
+	}
 }

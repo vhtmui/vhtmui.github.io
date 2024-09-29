@@ -9,7 +9,7 @@
 
 	let theme;
 	let theme_icon;
-	let tree = root;
+	// let tree = root;
 
 	/**
 	 * Set the theme by set the attribute of <html> element
@@ -30,6 +30,10 @@
 		}
 	}
 
+	$: urll = ($url + '/').toString();
+
+	$: tree = urll.substring(1, urll.indexOf('/', 1)) ? root[urll.substring(1, urll.indexOf('/', 1))] : root;
+
 	$: links = get_childArray(root);
 
 	onMount(() => {
@@ -39,9 +43,8 @@
 	afterUpdate(() => {
 		url.set(window.location.pathname);
 		// console.log({$url});
-	});	
+	});
 </script>
-
 <div class="top container">
 	<div class="top inner-container">
 		<button class="svg home">
@@ -66,7 +69,7 @@
 <main>
 	<div class="sidebar-container">
 		<div class="sidebar right">
-			<SbarContainer {tree} />
+			<SbarContainer />
 		</div>
 	</div>
 	<div class="content">
@@ -89,7 +92,7 @@
 		--sidebar-svg-color: #454545ba;
 		--sidebar-border-top-color: #00000000;
 		--sidebar-border-left-color: #00000054;
-		/* --sidebar-selected-color:; */
+		--input-focus-color: #659aff;
 		--scrollbar-color: #989898;
 	}
 	:global(:root[data-theme='Dark']) {
@@ -105,6 +108,7 @@
 		--sidebar-svg-color: #ffffff80;
 		--sidebar-border-top-color: #e6e6e6d2;
 		--sidebar-border-left-color: #ffffff54;
+		--input-focus-color: #8cb4ff;
 		--scrollbar-color: #525049;
 	}
 	:global(:root) {

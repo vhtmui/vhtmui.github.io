@@ -2,6 +2,7 @@
 	import { root, get_childArray, getAll_propertyNames } from '../routes/nav';
 	import Sidebar from './Sidebar.svelte';
 	import Icon from './Icon.svelte';
+	import { url } from './stores';
 
 	export let tree;
 
@@ -9,6 +10,9 @@
 	let icon = 'plus';
 	let widther = false;
 	let input = '';
+
+	$: urll = ($url + '/').toString();
+	$: tree = urll.substring(1, urll.indexOf('/', 1)) ? root[urll.substring(1, urll.indexOf('/', 1))] : root;
 
 	function expand() {
 		if (signal === 'default') {
@@ -58,8 +62,9 @@
 			&.widther {
 				width: 100%;
 			}
-			&:target{
-				border-color: aqua;
+			&:focus{
+				border-color: var(--input-focus-color);
+				outline: none;
 			}
 		}
 		& button.clear-input {

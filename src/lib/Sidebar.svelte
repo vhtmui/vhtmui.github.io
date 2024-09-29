@@ -13,19 +13,41 @@
 	export let signal = 'default';
 	export let filter = '';
 
-	let child_tree = get_childArray(tree);
+
 	let option = 'chevron_down';
+
+
 	let up = false;
+
+	/**
+	 * An string includes all child object's links of this object 'tree', divide with character '`'.
+	 * @param {string} allChildNode
+	 */
 	let allChildNode = getAll_propertyNames(tree);
 	let visable = true;
 
-	/**
-	 * for signal to control
+	/** 
+	 * For signal to determine if the href equal to page url.
+	 * @param {boolean} equal
 	 */
 	let equal = false;
+
+	/** 
+	 * For signal to determine if the page url include the href.
+	 * @param {boolean} include
+	 */
 	let include = false;
 
-	let nowLink = preLink + '/' + tree._link;
+	/** 
+	 * Relative links to the current component, also the href of <a>.
+	 * @param {string} nowLink
+	 */
+	$: nowLink = (preLink + '/' + tree._link).replace(RegExp('/+'),'/');
+
+	/**
+	 * @param {Tree} child_tree
+	 */
+	$: child_tree = get_childArray(tree);
 
 	function toggle_display() {
 		expand = !expand;
@@ -74,7 +96,6 @@
 		selected_item = false;
 	}
 </script>
-
 {#if tree && visable}
 	<div transition:slide|global class="tree-head">
 		{#if child_tree}
