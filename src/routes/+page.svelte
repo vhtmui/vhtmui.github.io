@@ -4,7 +4,7 @@
 		<p>
 			欢迎来到 MDN 学习区。本系列文章意在为 Web
 			开发的纯新手提供编写网站的基本技巧，而非意在让你从“新手”变成“专家”，但能让你从“新手”变得“熟练”。从那之后，你就能开始以你自己的方式学习
-			<a href="/zh-CN/">MDN 的其余部分</a>，和其他需要大量前置知识的中高级资源。
+			<a href="https://www.baidu.com">MDN 的其余部分</a>，和其他需要大量前置知识的中高级资源。
 		</p>
 		<p>
 			从零开始学习 Web
@@ -34,7 +34,7 @@
 				<dt id="javascript"><a href="#javascript">JavaScript</a></dt>
 				<dd>
 					<p>
-						JavaScript 为网站提供交互功能。从 <a href="/zh-CN/docs/Learn/JavaScript/First_steps"
+						JavaScript 为网站提供交互功能。从 <a href="www.baidu.com"
 							>JavaScript 第一步</a
 						>开始学习。
 					</p>

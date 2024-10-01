@@ -3,8 +3,10 @@
 
 	import Icon from '$lib/Icon.svelte';
 	import SbarContainer from '$lib/SbarContainer.svelte';
+	import TocList from '$lib/TocList.svelte';
 	import { onMount, afterUpdate } from 'svelte';
-	import { root, get_childArray } from './nav';
+	import { root } from './tree';
+	import { get_childArray } from '$lib/nav';
 	import { url } from '$lib/stores';
 
 	let theme;
@@ -32,7 +34,9 @@
 
 	$: urll = ($url + '/').toString();
 
-	$: tree = urll.substring(1, urll.indexOf('/', 1)) ? root[urll.substring(1, urll.indexOf('/', 1))] : root;
+	$: tree = urll.substring(1, urll.indexOf('/', 1))
+		? root[urll.substring(1, urll.indexOf('/', 1))]
+		: root;
 
 	$: links = get_childArray(root);
 
@@ -45,6 +49,7 @@
 		// console.log({$url});
 	});
 </script>
+
 <div class="top container">
 	<div class="top inner-container">
 		<button class="svg home">
@@ -75,6 +80,9 @@
 	<div class="content">
 		<slot></slot>
 	</div>
+	<div class="toc">
+		<TocList />
+	</div>
 </main>
 
 <style>
@@ -88,10 +96,15 @@
 		--main-bg-color: #fdfdfd;
 		--main-text-color: #1b1b1b;
 		--main-a-color: #0069c2;
+		--main-visited-a-color:#8000c2;
 		--all-svg-color: var(--main-text-color);
 		--sidebar-svg-color: #454545ba;
 		--sidebar-border-top-color: #00000000;
 		--sidebar-border-left-color: #00000054;
+		--sidebar-border-color: #999999;
+		--sidebar-selected-text-color: #3c95e9;
+		--sidebar-selected-border-color: #3c95e9b5;
+		--sidebar-selected-border-style: groove;
 		--input-focus-color: #659aff;
 		--scrollbar-color: #989898;
 	}
@@ -99,16 +112,21 @@
 		--header-nav-bg-color: #181818;
 		--header-border-color: #8b8e91fc;
 		--header-text-color: #fdfefe;
-		--header-text-hover-color: #8cb4ff;
-		--header-block-hover-bg-color: #8cb4ff70;
+		--header-text-hover-color: #ff3d3dd6;
+		--header-block-hover-bg-color: #ff73732e;
 		--main-bg-color: #1b1b1b;
 		--main-text-color: #ffffff;
-		--main-a-color: #8cb4ff;
+		--main-a-color: #ff8c8c;
+		--main-visited-a-color: #c452ff;
 		--all-svg-color: var(--main-text-color);
 		--sidebar-svg-color: #ffffff80;
 		--sidebar-border-top-color: #e6e6e6d2;
 		--sidebar-border-left-color: #ffffff54;
-		--input-focus-color: #8cb4ff;
+		--sidebar-border-color: #999999;
+		--sidebar-selected-text-color: #ff5a5a;
+		--sidebar-selected-border-color: brown;
+		--sidebar-selected-border-style: ridge;
+		--input-focus-color: #b42100;
 		--scrollbar-color: #525049;
 	}
 	:global(:root) {
@@ -213,6 +231,19 @@
 					transition: none;
 					transform: rotateY(180deg) scale(1.5);
 				}
+				&.home {
+					transition: none;
+					&:hover {
+						cursor: pointer;
+						& path{
+							fill: var(--header-text-hover-color)
+						}
+					}
+					&:active {
+						transition: none;
+
+					}
+				}
 			}
 			& svg {
 				vertical-align: middle;
@@ -225,9 +256,14 @@
 
 	main {
 		margin-top: 0;
+		min-height: 100vh;
 		color: var(--main-text-color);
 		& div.content {
 			padding: 0 1rem;
+		}
+		& div.sidebar-container {
+			border-right: 1px solid #9999996b;
+			padding-right: 1rem;
 		}
 		& div.sidebar.right {
 			margin-right: auto;
@@ -255,8 +291,11 @@
 				}
 			}
 		}
-		& a {
+		& div.content a {
 			color: var(--main-a-color);
+			&:visited{
+				color: var(--main-visited-a-color);
+			}
 		}
 	}
 

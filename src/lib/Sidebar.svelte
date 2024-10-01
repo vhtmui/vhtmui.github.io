@@ -1,5 +1,5 @@
 <script>
-	import { get_childArray, getAll_propertyNames } from '../routes/nav';
+	import { getAll_propertyNames, get_childArray } from './nav';
 	import { url } from '$lib/stores';
 	import Icon from './Icon.svelte';
 	import { afterUpdate, beforeUpdate, onDestroy, onMount } from 'svelte';
@@ -13,9 +13,7 @@
 	export let signal = 'default';
 	export let filter = '';
 
-
 	let option = 'chevron_down';
-
 
 	let up = false;
 
@@ -26,23 +24,23 @@
 	let allChildNode = getAll_propertyNames(tree);
 	let visable = true;
 
-	/** 
+	/**
 	 * For signal to determine if the href equal to page url.
 	 * @param {boolean} equal
 	 */
 	let equal = false;
 
-	/** 
+	/**
 	 * For signal to determine if the page url include the href.
 	 * @param {boolean} include
 	 */
 	let include = false;
 
-	/** 
+	/**
 	 * Relative links to the current component, also the href of <a>.
 	 * @param {string} nowLink
 	 */
-	$: nowLink = (preLink + '/' + tree._link).replace(RegExp('/+'),'/');
+	$: nowLink = (preLink + '/' + tree._link).replace(RegExp('/+'), '/');
 
 	/**
 	 * @param {Tree} child_tree
@@ -96,6 +94,7 @@
 		selected_item = false;
 	}
 </script>
+
 {#if tree && visable}
 	<div transition:slide|global class="tree-head">
 		{#if child_tree}
@@ -146,9 +145,11 @@
 	a.selected_item {
 		font-weight: bolder;
 		padding: 0 1.2rem 0 1.2rem;
-		border-left: 4px solid #7e7e76;
-		border-radius: 2px;
-		background-color: #7e7e7657;
+		color: var(--sidebar-selected-text-color);
+		border-left: 10px;
+		border-left-style: var(--sidebar-selected-border-style);
+		border-color: var(--sidebar-selected-border-color);
+		/* background-color: #7e7e7657; */
 		transition: all ease-out 0.2s;
 	}
 	button {

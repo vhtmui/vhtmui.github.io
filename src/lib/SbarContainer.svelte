@@ -1,5 +1,6 @@
 <script>
-	import { root, get_childArray, getAll_propertyNames } from '../routes/nav';
+	import { root} from '../routes/tree';
+	import { get_childArray ,getAll_propertyNames} from './nav';
 	import Sidebar from './Sidebar.svelte';
 	import Icon from './Icon.svelte';
 	import { url } from './stores';
@@ -107,8 +108,6 @@
 			&:hover {
 				cursor: pointer;
 				transform: rotate(180deg);
-				background-color: #80808075;
-				border-radius: 0.5rem;
 			}
 			&:active {
 				transition: none;
