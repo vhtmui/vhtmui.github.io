@@ -11,6 +11,8 @@
 
 	let theme;
 	let theme_icon;
+	let headings;
+	let titles = 'h2';
 	// let tree = root;
 
 	/**
@@ -46,7 +48,8 @@
 	});
 	afterUpdate(() => {
 		url.set(window.location.pathname);
-		// console.log({$url});
+		headings = document.querySelectorAll('h2').length ? document.querySelectorAll('h2') : '$undefined';
+			
 	});
 </script>
 
@@ -81,7 +84,7 @@
 		<slot></slot>
 	</div>
 	<div class="toc">
-		<TocList />
+		<TocList {headings} />
 	</div>
 </main>
 
@@ -96,7 +99,7 @@
 		--main-bg-color: #fdfdfd;
 		--main-text-color: #1b1b1b;
 		--main-a-color: #0069c2;
-		--main-visited-a-color:#8000c2;
+		--main-visited-a-color: #8000c2;
 		--all-svg-color: var(--main-text-color);
 		--sidebar-svg-color: #454545ba;
 		--sidebar-border-top-color: #00000000;
@@ -235,13 +238,12 @@
 					transition: none;
 					&:hover {
 						cursor: pointer;
-						& path{
-							fill: var(--header-text-hover-color)
+						& path {
+							fill: var(--header-text-hover-color);
 						}
 					}
 					&:active {
 						transition: none;
-
 					}
 				}
 			}
@@ -293,7 +295,7 @@
 		}
 		& div.content a {
 			color: var(--main-a-color);
-			&:visited{
+			&:visited {
 				color: var(--main-visited-a-color);
 			}
 		}
@@ -313,8 +315,10 @@
 			display: grid;
 			grid-template-areas: 'Lsidebar content Rsidebar';
 			gap: 2rem;
-			grid-template-columns: minmax(0, 0.8fr) minmax(0, 2.5fr) minmax(10rem, 15rem);
+			grid-template-columns: minmax(16rem, 1fr) minmax(0, 2.5fr) minmax(8rem, 0.8fr);
 			padding: 0.5rem 2rem 0 2rem;
+			margin: auto;
+			max-width: 1660px;
 		}
 	}
 </style>

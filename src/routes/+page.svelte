@@ -13,9 +13,8 @@
 			技术的工作原理，我们都希望你能感到宾至如归。
 		</p>
 	</div>
-	<a href="#学习起点">学习起点</a>
 	<section aria-labelledby="学习起点">
-		<h2 id="学习起点"><a href="#学习起点">学习起点</a></h2>
+		<h2 id="222"><a href="#学习起点">学习起点</a></h2>
 		<div class="section-content">
 			<p>
 				你要是还不确定是否要深入地学习 Web 开发，仅想从体验环节开始，我们会建议你从 <a

@@ -1,13 +1,16 @@
 <script>
-	import { onMount } from 'svelte';
+	import { afterUpdate, onMount } from 'svelte';
 
-	let headings;
+	export const indent = 1;
+	export let headings;
+
 	let prior;
 
-	onMount(() => {
-		headings = document.querySelectorAll('h2, h3, h4, h5, h6');
+	$: if (headings !== '$undefined' && headings) {
 		prior = headings[0].nodeName;
-	});
+	} else {
+		headings = null;
+	}
 
 	function updatePrior(ele) {
 		const result = ele.nodeName > prior;
@@ -26,16 +29,28 @@
 <div class="toc-container">
 	{#if headings}
 		{#each headings as head}
-
-			<span class="tocItem" style="padding-left: {getHeadNum(head)}rem;">{head.textContent}</span><br />
+			<a class="tocItem" href="#{head.id}" style="padding-left: {getHeadNum(head) * indent}rem;"
+				>{head.textContent}</a
+			><br />
 		{/each}
 	{/if}
 </div>
 
 <style>
 	div.toc-container {
-		& span.tocItem {
+		margin-top: 5rem;
+		position: sticky;
+		top: calc(var(--header-block-height) + 5rem);
+		border-left: 1px solid #828282;
+		& a.tocItem {
 			display: inline-block;
+			margin-bottom: 1rem;
+			color: var(--main-text-color);
+			text-decoration: none;
+			&:hover {
+				text-decoration: underline;
+				color: var(--sidebar-selected-text-color);
+			}
 		}
 	}
 </style>

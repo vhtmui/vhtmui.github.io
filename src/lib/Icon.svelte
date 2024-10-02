@@ -8,7 +8,7 @@
 	export let height = '1.25rem';
 	export let width = '1.25rem';
 
-	let viewBox = viewBoxs[option];
+	$: viewBox = viewBoxs[option];
 	$: path = paths[option];
 </script>
 
