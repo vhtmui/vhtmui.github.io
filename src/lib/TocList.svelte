@@ -38,13 +38,16 @@
 
 <style>
 	div.toc-container {
+		font-size: small;
 		margin-top: 5rem;
 		position: sticky;
 		top: calc(var(--header-block-height) + 5rem);
 		border-left: 1px solid #828282;
 		& a.tocItem {
 			display: inline-block;
-			margin-bottom: 1rem;
+			padding-top: 0.5rem;
+			padding-bottom: 0.5rem;
+			padding-right: 1rem;
 			color: var(--main-text-color);
 			text-decoration: none;
 			&:hover {

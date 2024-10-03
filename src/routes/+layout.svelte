@@ -281,9 +281,11 @@
 		h4,
 		h5,
 		h6 {
+			margin: 2rem 0 1rem 0;
 			&:target {
-				padding-top: var(--header-block-height);
-				margin-top: calc(-1 * var(--header-block-height));
+				/* padding-top: var(--header-block-height);
+				margin-top: calc(-1 * var(--header-block-height)); */
+				scroll-margin-top: var(--header-block-height);
 			}
 			& a {
 				text-decoration: none;
