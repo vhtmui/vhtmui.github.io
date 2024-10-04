@@ -11,8 +11,8 @@
 
 	let theme;
 	let theme_icon;
-	let headings;
 	let titles = 'h2';
+	let headings;
 	// let tree = root;
 
 	/**
@@ -48,8 +48,7 @@
 	});
 	afterUpdate(() => {
 		url.set(window.location.pathname);
-		headings = document.querySelectorAll('h2').length ? document.querySelectorAll('h2') : '$undefined';
-			
+		headings = document.querySelectorAll('h2');
 	});
 </script>
 
@@ -84,7 +83,10 @@
 		<slot></slot>
 	</div>
 	<div class="toc">
-		<TocList {headings} />
+		<!-- Ensure invalid argument are not passed to component -->
+		{#if headings && headings.length}
+			<TocList {headings} />
+		{/if}
 	</div>
 </main>
 
@@ -108,6 +110,7 @@
 		--sidebar-selected-text-color: #3c95e9;
 		--sidebar-selected-border-color: #3c95e9b5;
 		--sidebar-selected-border-style: groove;
+		--tocItem-text-color: #515151bf;
 		--input-focus-color: #659aff;
 		--scrollbar-color: #989898;
 	}
@@ -129,6 +132,7 @@
 		--sidebar-selected-text-color: #ff5a5a;
 		--sidebar-selected-border-color: brown;
 		--sidebar-selected-border-style: ridge;
+		--tocItem-text-color: #ffffffba;
 		--input-focus-color: #b42100;
 		--scrollbar-color: #525049;
 	}
