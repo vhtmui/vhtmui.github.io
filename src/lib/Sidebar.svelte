@@ -2,9 +2,7 @@
 	import { getAll_propertyNames, get_childArray } from './nav';
 	import { url } from '$lib/stores';
 	import Icon from './Icon.svelte';
-	import { afterUpdate, beforeUpdate, onDestroy, onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
-	import { flip } from 'svelte/animate';
 
 	export let tree;
 	export let expand = false;
@@ -109,8 +107,10 @@
 	{#if expand && child_tree}
 		<ul>
 			{#each child_tree as t}
-				<div class="sidebar-paddingblock"></div>
-				<li><svelte:self tree={t} preLink={nowLink} {signal} {filter} /></li>
+				<div>
+					<div class="sidebar-paddingblock"></div>
+					<li><svelte:self tree={t} preLink={nowLink} {signal} {filter} /></li>
+				</div>
 			{/each}
 		</ul>
 	{/if}

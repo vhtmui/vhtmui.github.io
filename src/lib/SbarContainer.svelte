@@ -6,16 +6,23 @@
 	import { url } from './stores';
 
 	export let tree;
+	export let signal = 'default';
+	export let icon = 'plus';
 
-	let signal = 'default';
-	let icon = 'plus';
+
 	let widther = false;
 	let input = '';
 
 	$: urll = ($url + '/').toString();
 	$: tree = urll.substring(1, urll.indexOf('/', 1)) ? root[urll.substring(1, urll.indexOf('/', 1))] : root;
 
-	function expand() {
+	if (signal === 'default') {
+		icon = 'plus';
+	} else if (signal === 'expandAll') {
+		icon = 'minus';
+	}
+
+	function toggle_expand() {
 		if (signal === 'default') {
 			signal = 'expandAll';
 			icon = 'minus';
@@ -38,7 +45,7 @@
 <div class="sidebar-heard">
 	<input bind:value={input} placeholder="filter" class:widther on:click={() => (widther = true)} />
 	<button class="clear-input" class:widther on:click={cleanInput}><Icon option="x" /></button>
-	<button class="expand" on:click={expand}><Icon option={icon} /></button>
+	<button class="expand" on:click={toggle_expand}><Icon option={icon} /></button>
 </div>
 <Sidebar {tree} {signal} filter={input} />
 

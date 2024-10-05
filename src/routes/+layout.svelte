@@ -76,14 +76,14 @@
 <main>
 	<div class="sidebar-container">
 		<div class="sidebar right">
-			<SbarContainer />
+			<SbarContainer signal = {'expandAll'} />
 		</div>
 	</div>
 	<div class="content">
 		<slot></slot>
 	</div>
 	<div class="toc">
-		<!-- Ensure invalid argument are not passed to component -->
+		<!-- Ensure invalid argument are not passed to component, that would cause many problems -->
 		{#if headings && headings.length}
 			<TocList {headings} />
 		{/if}
