@@ -12,8 +12,8 @@
 	export let filter = '';
 
 	let option = 'chevron_down';
-
 	let up = false;
+	let title;
 
 	/**
 	 * An string includes all child object's links of this object 'tree', divide with character '`'.
@@ -57,26 +57,27 @@
 		} else {
 			visable = false;
 		}
+		const reg = RegExp(filter, 'i');
+		const match = reg.exec(tree._title);
+		title = tree._title.replace(reg, `<span class="highlightClass">${match}</span>`);
 	} else if (filter.length === 0) {
 		visable = true;
+		title = tree._title;
 	}
 
 	// A global signal to control the sidebar display.
 	$: if (signal === 'default') {
-		equal = nowLink === $url;
+		// equal = nowLink === $url;
 		include = $url.match(new RegExp(`^${nowLink}.+`));
 	} else if (signal === 'expandAll') {
-		equal = false;
+		// equal = false;
 		include = true;
 	}
 
 	// decide whether to expand by default,
 	// if the url is equal, then select this element,
 	// if the element's url is included by page's, then expand it, and if it's expanded, then no select it
-	$: if (equal) {
-		// expand = false;
-		// up = false;
-	} else if (include) {
+	$: if (include) {
 		expand = true;
 		up = true;
 	} else {
@@ -97,10 +98,10 @@
 	<div transition:slide|global class="tree-head">
 		{#if child_tree}
 			<button class:up on:click={toggle_display}><Icon {option} /></button>
-			<a class="sidebar" class:selected_item href={nowLink}>{tree._title}</a>
+			<a class="sidebar" class:selected_item href={nowLink}>{@html title}</a>
 		{:else}
 			<div class="sidebar-paddingblock"></div>
-			<a class="sidebar" class:selected_item href={nowLink}>{tree._title}</a>
+			<a class="sidebar" class:selected_item href={nowLink}>{@html title}</a>
 		{/if}
 	</div>
 
@@ -131,6 +132,10 @@
 		transition: all ease-in 0.2s;
 		&:hover {
 			text-decoration: underline;
+		}
+		& span.highlightClass{
+			background-color: var(--sidebar-filter-text-bg-bolor);
+			color:var(--sidebar-filter-text-bolor);
 		}
 	}
 	div.tree-head {

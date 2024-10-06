@@ -43,7 +43,7 @@
 </script>
 
 <div class="sidebar-heard">
-	<input bind:value={input} placeholder="filter" class:widther on:click={() => (widther = true)} />
+	<input bind:value={input} type="text" placeholder="filter" class:widther on:click={() => (widther = true)} />
 	<button class="clear-input" class:widther on:click={cleanInput}><Icon option="x" /></button>
 	<button class="expand" on:click={toggle_expand}><Icon option={icon} /></button>
 </div>

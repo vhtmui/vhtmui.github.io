@@ -63,7 +63,11 @@
 			<nav class="top">
 				<ul>
 					{#each links as link}
-						<li><a href="/{link._link}">{link._title}</a></li>
+						{#if link._link === urll.substring(1, urll.indexOf('/', 1))}
+							<li><a class="active" href="/{link._link}">{link._title}</a></li>
+						{:else}
+							<li><a href="/{link._link}">{link._title}</a></li>
+						{/if}
 					{/each}
 				</ul>
 			</nav>
@@ -76,7 +80,7 @@
 <main>
 	<div class="sidebar-container">
 		<div class="sidebar right">
-			<SbarContainer signal = {'expandAll'} />
+			<SbarContainer signal={'expandAll'} />
 		</div>
 	</div>
 	<div class="content">
@@ -107,9 +111,11 @@
 		--sidebar-border-top-color: #00000000;
 		--sidebar-border-left-color: #00000054;
 		--sidebar-border-color: #999999;
-		--sidebar-selected-text-color: #3c95e9;
+		--sidebar-selected-text-color: #0048c6;
 		--sidebar-selected-border-color: #3c95e9b5;
 		--sidebar-selected-border-style: groove;
+		--sidebar-filter-text-bg-bolor: #5d00ff;
+		--sidebar-filter-text-bolor: #ffffff;
 		--tocItem-text-color: #515151bf;
 		--input-focus-color: #659aff;
 		--scrollbar-color: #989898;
@@ -132,6 +138,8 @@
 		--sidebar-selected-text-color: #ff5a5a;
 		--sidebar-selected-border-color: brown;
 		--sidebar-selected-border-style: ridge;
+		--sidebar-filter-text-bg-bolor: #e8e87e;
+		--sidebar-filter-text-bolor: #000000;
 		--tocItem-text-color: #ffffffba;
 		--input-focus-color: #b42100;
 		--scrollbar-color: #525049;
@@ -150,10 +158,10 @@
 	:global(*) {
 		scrollbar-color: var(--scrollbar-color) #00000000;
 		text-wrap: wrap;
-		word-break: break-all;
 		scroll-behavior: smooth;
 	}
 	:root {
+		word-break: break-all;
 		font-family: 'Intel', 'Microsoft YaHei', Arial, sans-serif;
 		line-height: 1.75;
 		font-weight: normal;
@@ -176,7 +184,7 @@
 		color: var(--header-text-color);
 		background-color: var(--header-nav-bg-color);
 		border-bottom: 0px solid var(--header-border-color);
-		box-shadow: 0px 2px 5px 0px var(--header-border-color);
+		box-shadow: 0px 1px 4px 0px var(--header-border-color);
 		position: sticky;
 		top: 0;
 		& div.top.inner-container {
@@ -214,6 +222,10 @@
 						text-decoration: none;
 						color: inherit;
 						&:hover {
+							background-color: var(--header-block-hover-bg-color);
+							color: var(--header-text-hover-color);
+						}
+						&.active{
 							background-color: var(--header-block-hover-bg-color);
 							color: var(--header-text-hover-color);
 						}
@@ -266,6 +278,7 @@
 		color: var(--main-text-color);
 		& div.content {
 			padding: 0 1rem;
+			word-break: normal;
 		}
 		& div.sidebar-container {
 			border-right: 1px solid #9999996b;
