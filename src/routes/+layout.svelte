@@ -51,7 +51,7 @@
 		headings = document.querySelectorAll('h2');
 	});
 </script>
-
+<svelte:head/>
 <div class="top container">
 	<div class="top inner-container">
 		<button class="svg home">
