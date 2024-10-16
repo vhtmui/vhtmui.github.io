@@ -1,20 +1,21 @@
 <script>
-	import { root} from '../routes/tree';
-	import { get_childArray ,getAll_propertyNames} from './nav';
+	import { root } from '../../routes/tree';
+	import { get_childArray, getAll_propertyNames } from './nav';
 	import Sidebar from './Sidebar.svelte';
-	import Icon from './Icon.svelte';
+	import Icon from '$lib/Icon/Icon.svelte';
 	import { url } from './stores';
 
 	export let tree;
 	export let signal = 'default';
 	export let icon = 'plus';
 
-
 	let widther = false;
 	let input = '';
 
 	$: urll = ($url + '/').toString();
-	$: tree = urll.substring(1, urll.indexOf('/', 1)) ? root[urll.substring(1, urll.indexOf('/', 1))] : root;
+	$: tree = urll.substring(1, urll.indexOf('/', 1))
+		? root[urll.substring(1, urll.indexOf('/', 1))]
+		: root;
 
 	if (signal === 'default') {
 		icon = 'plus';
@@ -42,18 +43,34 @@
 	}
 </script>
 
-<div class="sidebar-heard">
-	<input bind:value={input} type="text" placeholder="filter" class:widther on:click={() => (widther = true)} />
-	<button class="clear-input" class:widther on:click={cleanInput}><Icon option="x" /></button>
-	<button class="expand" on:click={toggle_expand}><Icon option={icon} /></button>
+<div class="sidebar right">
+	<div class="sidebar-heard">
+		<input
+			bind:value={input}
+			type="text"
+			placeholder="filter"
+			class:widther
+			on:click={() => (widther = true)}
+		/>
+		<button class="clear-input" class:widther on:click={cleanInput}><Icon option="x" /></button>
+		<button class="expand" on:click={toggle_expand}><Icon option={icon} /></button>
+	</div>
+	<Sidebar {tree} {signal} filter={input} />
 </div>
-<Sidebar {tree} {signal} filter={input} />
 
 <style>
+	div.sidebar.right {
+		margin-right: auto;
+		margin-left: auto;
+		width: 100%;
+		padding-top: 1rem;
+		position: sticky;
+		top: var(--header-block-height);
+	}
 	div.sidebar-heard {
 		padding-bottom: 1rem;
 		display: flex;
-		justify-content:flex-end;
+		justify-content: flex-end;
 		& input {
 			background-color: transparent;
 			color: var(--main-text-color);
@@ -70,7 +87,7 @@
 			&.widther {
 				width: 100%;
 			}
-			&:focus{
+			&:focus {
 				border-color: var(--input-focus-color);
 				outline: none;
 			}
@@ -98,7 +115,7 @@
 			&:active {
 				transition: none;
 			}
-			& path{
+			& path {
 				fill: var(--sidebar-svg-color);
 			}
 		}

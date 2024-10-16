@@ -1,7 +1,7 @@
 <script>
 	import { getAll_propertyNames, get_childArray } from './nav';
-	import { url } from '$lib/stores';
-	import Icon from './Icon.svelte';
+	import { url } from './stores';
+	import Icon from '$lib/Icon/Icon.svelte';
 	import { slide } from 'svelte/transition';
 
 	export let tree;

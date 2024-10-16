@@ -1,13 +1,13 @@
 <script>
-	// @ts-nocheck
-
-	import Icon from '$lib/Icon.svelte';
-	import SbarContainer from '$lib/SbarContainer.svelte';
+	import Icon from '$lib/Icon/Icon.svelte';
+	import SbarContainer from '$lib/Sibar/SbarContainer.svelte';
 	import TocList from '$lib/TocList.svelte';
 	import { onMount, afterUpdate } from 'svelte';
 	import { root } from './tree';
-	import { get_childArray } from '$lib/nav';
-	import { url } from '$lib/stores';
+	import { get_childArray } from '$lib/Sibar/nav';
+	import { url } from '$lib/Sibar/stores';
+	import ThemeBtn from '$lib/ThemeBtn.svelte';
+	import Sidebar from '$lib/Sibar/Sidebar.svelte';
 
 	let theme;
 	let theme_icon;
@@ -51,64 +51,68 @@
 		headings = document.querySelectorAll('h2');
 	});
 </script>
-<svelte:head/>
-<div class="top container">
-	<div class="top inner-container">
-		<button class="svg home">
+
+<svelte:head>
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+				document.documentElement.setAttribute('data-theme', 'Dark');
+			} else {
+				document.documentElement.setAttribute('data-theme', 'Light');
+			}
+		});
+	</script>
+</svelte:head>
+<div class="topContainer">
+	<div class="topInnerContainer">
+		<button class="svg home" type="button">
 			<a href="/">
 				<Icon option={'home'} />
 			</a>
 		</button>
 		<header class="top">
 			<nav class="top">
-				<ul>
-					{#each links as link}
-						{#if link._link === urll.substring(1, urll.indexOf('/', 1))}
-							<li><a class="active" href="/{link._link}">{link._title}</a></li>
-						{:else}
-							<li><a href="/{link._link}">{link._title}</a></li>
-						{/if}
-					{/each}
-				</ul>
+				<ul></ul>
 			</nav>
-			<button class="svg theme" on:click={toggle_main_theme}>
-				<Icon option={theme_icon} />
-			</button>
+			<div class="toggleThme">
+				<ThemeBtn />
+			</div>
 		</header>
 	</div>
 </div>
 <main>
 	<div class="sidebar-container">
-		<div class="sidebar right">
-			<SbarContainer signal={'expandAll'} />
-		</div>
+		<SbarContainer />
 	</div>
 	<div class="content">
-		<slot></slot>
+		<slot />
 	</div>
 	<div class="toc">
-		<!-- Ensure invalid argument are not passed to component, that would cause many problems -->
-		{#if headings && headings.length}
-			<TocList {headings} />
-		{/if}
+		<!-- Ensure invalid argument are not passed to component, that would cause many problems
+        {#if headings && headings.length}
+          <TocList {headings} />
+        {/if} -->
 	</div>
 </main>
 
 <style>
-	/* Use :global to set attr of some element,class that dosn't apear in this file */
-	:global(:root[data-theme='Light']) {
-		--header-nav-bg-color: #ffffff;
-		--header-border-color: #99a4ae;
+	:root[data-theme='Light'] {
+		--header-nav-bg-color: rgba(255, 255, 255, 0);
+		--header-border-color: #888888;
 		--header-text-color: #4e4e4e;
 		--header-text-hover-color: #0069c2;
+		--header-text-active-color: #0057a3;
 		--header-block-hover-bg-color: #8cb4ff70;
-		--main-bg-color: #fdfdfd;
+		--header-btn-bg-color: rgb(255, 255, 255, 50%);
+		--header-btn-theme-bg-color: #ffc684;
+		--main-bg-color: #ffffff;
 		--main-text-color: #1b1b1b;
 		--main-a-color: #0069c2;
-		--main-visited-a-color: #8000c2;
-		--all-svg-color: var(--main-text-color);
+		--main-visited-a-color: var(--main-a-color);
+		--all-svg-color: var(--header-text-color);
+		--all-svg-hover-color: var(--header-text-hover-color);
 		--sidebar-svg-color: #454545ba;
-		--sidebar-border-top-color: #00000000;
+		--sidebar-border-top-color: #6f6f6f;
 		--sidebar-border-left-color: #00000054;
 		--sidebar-border-color: #999999;
 		--sidebar-selected-text-color: #0048c6;
@@ -120,17 +124,21 @@
 		--input-focus-color: #659aff;
 		--scrollbar-color: #989898;
 	}
-	:global(:root[data-theme='Dark']) {
-		--header-nav-bg-color: #181818;
+	:root[data-theme='Dark'] {
+		--header-nav-bg-color: rgba(255, 255, 255, 0);
 		--header-border-color: #8b8e91fc;
 		--header-text-color: #fdfefe;
-		--header-text-hover-color: #ff3d3dd6;
+		--header-text-hover-color: #ffa06f;
+		--header-text-active-color: #ffa06f;
 		--header-block-hover-bg-color: #ff73732e;
+		--header-btn-bg-color: rgb(27, 27, 27, 50%);
+		--header-btn-theme-bg-color: #ffc684;
 		--main-bg-color: #1b1b1b;
 		--main-text-color: #ffffff;
 		--main-a-color: #ff8c8c;
-		--main-visited-a-color: #c452ff;
+		--main-visited-a-color: var(--main-a-color);
 		--all-svg-color: var(--main-text-color);
+		--all-svg-hover-color: var(--header-text-color);
 		--sidebar-svg-color: #ffffff80;
 		--sidebar-border-top-color: #e6e6e6d2;
 		--sidebar-border-left-color: #ffffff54;
@@ -144,7 +152,7 @@
 		--input-focus-color: #b42100;
 		--scrollbar-color: #525049;
 	}
-	:global(:root) {
+	:root {
 		--header-block-height: 3rem;
 		--all-svg-width: 1.25rem;
 		& pre {
@@ -180,15 +188,13 @@
 			text-rendering: optimizeSpeed;
 		}
 	}
-	div.top.container {
+	div.topContainer {
 		color: var(--header-text-color);
 		background-color: var(--header-nav-bg-color);
-		border-bottom: 0px solid var(--header-border-color);
-		box-shadow: 0px 1px 4px 0px var(--header-border-color);
 		position: sticky;
 		top: 0;
-		& div.top.inner-container {
-			max-width: 1440px;
+		& div.topInnerContainer {
+			max-width: 1600px;
 			margin-left: auto;
 			margin-right: auto;
 			display: flex;
@@ -225,44 +231,43 @@
 							background-color: var(--header-block-hover-bg-color);
 							color: var(--header-text-hover-color);
 						}
-						&.active{
+						&.active {
 							background-color: var(--header-block-hover-bg-color);
 							color: var(--header-text-hover-color);
 						}
 					}
 				}
 			}
-			& button.svg {
+			& button.svg.home {
 				box-sizing: border-box;
 				margin: 0;
-				padding: 0 1rem 0 1rem;
+				padding: 0;
 				height: var(--header-block-height);
+				width: 3rem;
 				border: none;
+				border-radius: 0.7rem;
 				outline: none;
 				background-color: transparent;
-				transition: transform 0.5s ease;
-				transform: rotateY(0deg);
 				&:hover {
 					cursor: pointer;
-					transform: rotateY(180deg);
+					& path {
+						fill: var(--header-text-hover-color);
+					}
 				}
 				&:active {
-					transition: none;
-					transform: rotateY(180deg) scale(1.5);
+					& path {
+						fill: var(--header-text-active-color);
+					}
 				}
-				&.home {
-					transition: none;
-					&:hover {
-						cursor: pointer;
-						& path {
-							fill: var(--header-text-hover-color);
-						}
-					}
-					&:active {
-						transition: none;
-					}
+				& a {
+					display: flex;
+					width: 100%;
+					height: 100%;
+					align-items: center;
+					justify-content: center;
 				}
 			}
+
 			& svg {
 				vertical-align: middle;
 				& path {
@@ -284,14 +289,6 @@
 			border-right: 1px solid #9999996b;
 			padding-right: 1rem;
 		}
-		& div.sidebar.right {
-			margin-right: auto;
-			margin-left: auto;
-			width: 100%;
-			padding-top: 1rem;
-			position: sticky;
-			top: var(--header-block-height);
-		}
 		& h1,
 		h2,
 		h3,
@@ -301,7 +298,7 @@
 			margin: 2rem 0 1rem 0;
 			&:target {
 				/* padding-top: var(--header-block-height);
-				margin-top: calc(-1 * var(--header-block-height)); */
+            margin-top: calc(-1 * var(--header-block-height)); */
 				scroll-margin-top: var(--header-block-height);
 			}
 			& a {

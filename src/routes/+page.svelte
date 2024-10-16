@@ -1,8 +1,5 @@
 <script>
-	import ThemeBtn from "$lib/ThemeBtn.svelte";
 </script>
-
-<ThemeBtn />
 
 <article class="main-page-content" lang="zh-CN">
 	<h1>学习 Web 开发</h1>

@@ -10,13 +10,21 @@
 	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents">%sveltekit.body%</div>
 		<script>
-			document.addEventListener('DOMContentLoaded', function () {
-				if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-					document.documentElement.setAttribute('data-theme', 'Dark');
+			/**
+			 * Set theme on start
+			 */
+			(function () {
+				const localTheme = localStorage.getItem('theme');
+				if (localTheme === 'Dark' || localTheme === 'Light') {
+					document.documentElement.setAttribute('data-theme', localTheme);
 				} else {
-					document.documentElement.setAttribute('data-theme', 'Light');
+					if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+						document.documentElement.setAttribute('data-theme', 'Dark');
+					} else {
+						document.documentElement.setAttribute('data-theme', 'Light');
+					}
 				}
-			});
+			})();
 		</script>
 	</body>
 	<style>
