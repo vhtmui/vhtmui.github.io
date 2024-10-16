@@ -6,33 +6,11 @@
 	import { root } from './tree';
 	import { get_childArray } from '$lib/Sibar/nav';
 	import { url } from '$lib/Sibar/stores';
-	import ThemeBtn from '$lib/ThemeBtn.svelte';
-	import Sidebar from '$lib/Sibar/Sidebar.svelte';
+	import ThemeBtn from '$lib/ThemeBtn/ThemeBtn.svelte';
 
-	let theme;
-	let theme_icon;
 	let titles = 'h2';
 	let headings;
 	// let tree = root;
-
-	/**
-	 * Set the theme by set the attribute of <html> element
-	 * @param {string} string  - 'Light|Dark'
-	 */
-	function set_root_theme(string) {
-		document.documentElement.setAttribute('data-theme', string);
-	}
-	function toggle_main_theme() {
-		if (theme === 'Light') {
-			theme_icon = 'moon';
-			theme = 'Dark';
-			set_root_theme(theme);
-		} else {
-			theme_icon = 'sun';
-			theme = 'Light';
-			set_root_theme(theme);
-		}
-	}
 
 	$: urll = ($url + '/').toString();
 
@@ -43,8 +21,6 @@
 	$: links = get_childArray(root);
 
 	onMount(() => {
-		theme = document.documentElement.getAttribute('data-theme');
-		theme === 'Dark' ? (theme_icon = 'moon') : (theme_icon = 'sun');
 	});
 	afterUpdate(() => {
 		url.set(window.location.pathname);
@@ -54,13 +30,23 @@
 
 <svelte:head>
 	<script>
-		document.addEventListener('DOMContentLoaded', function () {
-			if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-				document.documentElement.setAttribute('data-theme', 'Dark');
+		/**
+		 * Set theme on start
+		 */
+
+		document.addEventListener('DOMContentLoaded', () => {
+			const localTheme = localStorage.getItem('theme');
+			if (localTheme === 'Dark' || localTheme === 'Light') {
+				document.documentElement.setAttribute('data-theme', localTheme);
 			} else {
-				document.documentElement.setAttribute('data-theme', 'Light');
-			}
-		});
+				if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+						document.documentElement.setAttribute('data-theme', 'Dark');
+					} else {
+						document.documentElement.setAttribute('data-theme', 'Light');
+					}
+				}
+			});
+
 	</script>
 </svelte:head>
 <div class="topContainer">
@@ -88,10 +74,10 @@
 		<slot />
 	</div>
 	<div class="toc">
-		<!-- Ensure invalid argument are not passed to component, that would cause many problems
+		<!-- Ensure invalid argument are not passed to component, that would cause many problems -->
         {#if headings && headings.length}
           <TocList {headings} />
-        {/if} -->
+        {/if}
 	</div>
 </main>
 
@@ -290,11 +276,11 @@
 			padding-right: 1rem;
 		}
 		& h1,
-		h2,
-		h3,
-		h4,
-		h5,
-		h6 {
+		& h2,
+		& h3,
+		& h4,
+		& h5,
+		& h6 {
 			margin: 2rem 0 1rem 0;
 			&:target {
 				/* padding-top: var(--header-block-height);

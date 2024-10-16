@@ -1,22 +1,21 @@
 <script>
 	import { onMount } from 'svelte';
-	import Icon from './Icon/Icon.svelte';
+	import Icon from '../Icon/Icon.svelte';
 
-	onMount(() => {
-		function setTheme(theme) {
-			if (theme === 'Dark' || theme === 'Light') {
-				document.documentElement.setAttribute('data-theme', theme);
-				localStorage.setItem('theme', theme);
-			} else if (theme === 'Auto') {
-				if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-					document.documentElement.setAttribute('data-theme', 'Dark');
-					localStorage.setItem('theme', 'Dark');
-				} else {
-					document.documentElement.setAttribute('data-theme', 'Light');
-					localStorage.setItem('theme', 'Dark');
-				}
+	function setTheme(theme) {
+		if (theme === 'Dark' || theme === 'Light') {
+			document.documentElement.setAttribute('data-theme', theme);
+			localStorage.setItem('theme', theme);
+		} else if (theme === 'Auto') {
+			localStorage.setItem('theme','Auto');
+			if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+				document.documentElement.setAttribute('data-theme', 'Dark');
+			} else {
+				document.documentElement.setAttribute('data-theme', 'Light');
 			}
 		}
+	}
+	onMount(() => {
 		const btns = document.querySelector('div.theme.btnContainer');
 		btns.addEventListener('click', (event) => {
 			const btn = event.target.closest?.('button');
@@ -33,6 +32,7 @@
 			}
 			btn.classList.add('selected');
 		});
+		// init button icon
 		const theme = localStorage.getItem('theme');
 		if (theme) {
 			document.querySelectorAll('div.theme.btnContainer button').forEach((ele) => {
