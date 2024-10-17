@@ -69,7 +69,7 @@
 		top: var(--header-block-height);
 	}
 	div.sidebar-heard {
-		padding-bottom: 3rem;
+		padding-bottom: 2rem;
 		display: flex;
 		justify-content: space-around;
 		& input {
@@ -148,8 +148,8 @@
 	}
 	div.sibar {
 		overflow-y: auto;
-		height:300px;
-		-webkit-mask-image:linear-gradient(180deg,#000 0 calc(100% - 3rem),#0000);
-		mask-image:linear-gradient(180deg,#000 0 calc(100% - 3rem),#0000);
+		padding-top: 1rem;
+		-webkit-mask-image:linear-gradient(180deg,#0000,#000 1rem calc(100% - 3rem),#0000);
+		mask-image:linear-gradient(180deg,#0000,#000 1rem calc(100% - 1rem),#0000);
 	}
 </style>
