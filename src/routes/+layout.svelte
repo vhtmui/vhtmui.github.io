@@ -20,8 +20,7 @@
 
 	$: links = get_childArray(root);
 
-	onMount(() => {
-	});
+	onMount(() => {});
 	afterUpdate(() => {
 		url.set(window.location.pathname);
 		headings = document.querySelectorAll('h2');
@@ -40,13 +39,12 @@
 				document.documentElement.setAttribute('data-theme', localTheme);
 			} else {
 				if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-						document.documentElement.setAttribute('data-theme', 'Dark');
-					} else {
-						document.documentElement.setAttribute('data-theme', 'Light');
-					}
+					document.documentElement.setAttribute('data-theme', 'Dark');
+				} else {
+					document.documentElement.setAttribute('data-theme', 'Light');
 				}
-			});
-
+			}
+		});
 	</script>
 </svelte:head>
 <div class="topContainer">
@@ -68,16 +66,16 @@
 </div>
 <main>
 	<div class="sidebar-container">
-		<SbarContainer signal = "expandAll"/>
+		<SbarContainer signal="expandAll" />
 	</div>
 	<div class="content">
 		<slot />
 	</div>
 	<div class="toc">
 		<!-- Ensure invalid argument are not passed to component, that would cause many problems -->
-        {#if headings && headings.length}
-          <TocList {headings} />
-        {/if}
+		{#if headings && headings.length}
+			<TocList {headings} />
+		{/if}
 	</div>
 </main>
 
@@ -269,11 +267,14 @@
 		color: var(--main-text-color);
 		& div.content {
 			padding: 0 1rem;
-			word-break: normal;
 		}
 		& div.sidebar-container {
+			display: none;
 			border-right: 1px solid #9999996b;
 			padding-right: 1rem;
+		}
+		& div.toc {
+			display: none;
 		}
 		& h1,
 		& h2,
@@ -310,6 +311,9 @@
 			gap: 2rem;
 			grid-template-columns: minmax(12rem, 0.8fr) minmax(0, 2.5fr);
 			padding: 0.5rem 2rem 0 2rem;
+		}
+		main div.sidebar-container {
+			display: block;
 		}
 		main div.toc {
 			display: none;
