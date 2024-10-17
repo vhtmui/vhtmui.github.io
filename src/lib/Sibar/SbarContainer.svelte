@@ -147,6 +147,9 @@
 		}
 	}
 	div.sibar {
-		width: fit-content;
+		overflow-y: auto;
+		height:300px;
+		-webkit-mask-image:linear-gradient(180deg,#000 0 calc(100% - 3rem),#0000);
+		mask-image:linear-gradient(180deg,#000 0 calc(100% - 3rem),#0000);
 	}
 </style>
