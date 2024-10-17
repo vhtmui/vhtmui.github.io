@@ -68,7 +68,7 @@
 </div>
 <main>
 	<div class="sidebar-container">
-		<SbarContainer />
+		<SbarContainer signal = "expandAll"/>
 	</div>
 	<div class="content">
 		<slot />
@@ -310,6 +310,9 @@
 			gap: 2rem;
 			grid-template-columns: minmax(12rem, 0.8fr) minmax(0, 2.5fr);
 			padding: 0.5rem 2rem 0 2rem;
+		}
+		main div.toc {
+			display: none;
 		}
 	}
 	@media (min-width: 1100px) {

@@ -48,18 +48,19 @@
 		<input
 			bind:value={input}
 			type="text"
-			placeholder="filter"
-			class:widther
-			on:click={() => (widther = true)}
+			placeholder="filter" class:widther on:click={() => (widther = true)}
 		/>
 		<button class="clear-input" class:widther on:click={cleanInput}><Icon option="x" /></button>
 		<button class="expand" on:click={toggle_expand}><Icon option={icon} /></button>
 	</div>
-	<Sidebar {tree} {signal} filter={input} />
+	<div class="sibar">
+		<Sidebar {tree} {signal} filter={input} />
+	</div>
 </div>
 
 <style>
 	div.sidebar.right {
+		font-size: small;
 		margin-right: auto;
 		margin-left: auto;
 		width: 100%;
@@ -68,9 +69,9 @@
 		top: var(--header-block-height);
 	}
 	div.sidebar-heard {
-		padding-bottom: 1rem;
+		padding-bottom: 3rem;
 		display: flex;
-		justify-content: flex-end;
+		justify-content: space-around;
 		& input {
 			background-color: transparent;
 			color: var(--main-text-color);
@@ -144,5 +145,8 @@
 				fill: var(--all-svg-color);
 			}
 		}
+	}
+	div.sibar {
+		width: fit-content;
 	}
 </style>

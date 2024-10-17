@@ -49,7 +49,7 @@
 
 <style>
 	div.toc-container {
-		font-size: 0.9rem;
+		font-size: 0.8rem;
 		margin-top: 5rem;
 		position: sticky;
 		top: calc(var(--header-block-height) + 5rem);
