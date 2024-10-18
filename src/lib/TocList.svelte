@@ -1,16 +1,26 @@
 <script>
 	import { afterUpdate, onMount } from 'svelte';
-	// import { headings } from './stores';
 
-	export const indent = 1;
-	export const scrollTrigger = 80;
+	/**
+	 * @type {number} - Indicate the indent raito
+	 */
+	export let indent = 1;
+	
+	/**
+	 * @param {number} scrollTrigger - Indicate the threshold for triggering hightlight
+	 */
+	export let scrollTrigger = 80;
+
+	/**
+	 * @type {NodeList} - Collection of HeadingElement nodes
+	 */
 	export let headings;
 
 	let prior;
 
 	$: prior = headings[0].nodeName;
 
-	function getHeadNum(ele) {
+	function getPadding(ele) {
 		let n = Number(ele.nodeName.substr(1));
 		return n;
 	}
@@ -31,17 +41,17 @@
 	onMount(() => {
 		addEventListener('scroll', setTocItem);
 		setTocItem();
-		addEventListener('DOMContentLoaded',()=>console.log('done'))
+		addEventListener('DOMContentLoaded', () => console.log('done'));
 	});
-
 </script>
+
 <div class="toc-container">
 	{#if headings}
 		{#each headings as head}
 			<a
 				class="tocItem {head.classList}"
 				href="#{head.id}"
-				style="padding-left: {getHeadNum(head) * indent}rem;">{head.textContent}</a
+				style="padding-left: {getPadding(head) * indent}rem;">{head.textContent}</a
 			><br />
 		{/each}
 	{/if}

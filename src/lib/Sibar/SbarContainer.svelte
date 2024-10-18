@@ -96,10 +96,10 @@
 		& button.clear-input {
 			visibility: hidden;
 			position: absolute;
-			right: 3rem;
+			right: 3.3rem;
 			box-sizing: border-box;
 			margin: 0;
-			padding: 0 0.5rem 0 0.5 rem;
+			padding: 0 0.5rem 0 0.5rem;
 			height: 2rem;
 			border: none;
 			outline: none;
@@ -123,7 +123,7 @@
 		& button.expand {
 			box-sizing: border-box;
 			margin: 0;
-			padding: 0 0.5rem 0 0.5 rem;
+			padding: 0 0.5rem 0 0.5rem;
 			height: 2rem;
 			border: none;
 			outline: none;

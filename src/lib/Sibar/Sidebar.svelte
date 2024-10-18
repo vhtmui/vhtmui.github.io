@@ -4,6 +4,9 @@
 	import Icon from '$lib/Icon/Icon.svelte';
 	import { slide } from 'svelte/transition';
 
+	/**
+	 * @type {Tree}
+	 */
 	export let tree;
 	export let expand = false;
 	export let preLink = '';
@@ -17,31 +20,31 @@
 
 	/**
 	 * An string includes all child object's links of this object 'tree', divide with character '`'.
-	 * @param {string} allChildNode
+	 * @type {string} allChildNode
 	 */
 	let allChildNode = getAll_propertyNames(tree);
 	let visable = true;
 
 	/**
 	 * For signal to determine if the href equal to page url.
-	 * @param {boolean} equal
+	 * @type {boolean}
 	 */
 	let equal = false;
 
 	/**
 	 * For signal to determine if the page url include the href.
-	 * @param {boolean} include
+	 * @type {boolean}
 	 */
 	let include = false;
 
 	/**
 	 * Relative links to the current component, also the href of <a>.
-	 * @param {string} nowLink
+	 * @type {string}
 	 */
 	$: nowLink = (preLink + '/' + tree._link).replace(RegExp('/+'), '/');
 
 	/**
-	 * @param {Tree} child_tree
+	 * @type {Tree}
 	 */
 	$: child_tree = get_childArray(tree);
 
@@ -140,7 +143,7 @@
 	}
 	div.tree-head {
 		display: flex;
-		line-height: 3rem;
+		line-height: var(--sibar-block-height);
 	}
 	div.sidebar-paddingblock {
 		display: inline;
@@ -161,7 +164,7 @@
 		box-sizing: border-box;
 		margin: 0;
 		padding: 0 0.5rem 0 0.5rem;
-		height: var(--header-block-height);
+		height: var(--sibar-block-height);
 		border: none;
 		outline: none;
 		background-color: transparent;

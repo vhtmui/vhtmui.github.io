@@ -8,6 +8,7 @@
 /**
  * Return child objects from a parent object, excluding objects whose names start with string '_'
  * @param {Tree} obj
+ * @returns {Tree}
  */
 export function get_childArray(obj) {
 	let keys;
@@ -26,6 +27,7 @@ export function get_childArray(obj) {
 /**
  * return child objects from a parent object.
  * @param {Tree} obj
+ * @returns {Tree}
  */
 export function getAll_propertyNames(obj) {
 	let alltitles = '';

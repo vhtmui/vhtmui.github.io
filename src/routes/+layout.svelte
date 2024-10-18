@@ -32,7 +32,6 @@
 		/**
 		 * Set theme on start
 		 */
-
 		document.addEventListener('DOMContentLoaded', () => {
 			const localTheme = localStorage.getItem('theme');
 			if (localTheme === 'Dark' || localTheme === 'Light') {
@@ -138,6 +137,7 @@
 	}
 	:root {
 		--header-block-height: 3rem;
+		--sibar-block-height: 2.5rem;
 		--all-svg-width: 1.25rem;
 		& pre {
 			overflow: auto;
@@ -270,7 +270,7 @@
 		}
 		& div.sidebar-container {
 			display: none;
-			border-right: 1px solid #9999996b;
+			/* border-right: 1px solid #9999996b; */
 			padding-right: 1rem;
 		}
 		& div.toc {
@@ -328,6 +328,12 @@
 			padding: 0.5rem 2rem 0 2rem;
 			margin: auto;
 			max-width: 1660px;
+		}
+		main div.sidebar-container {
+			display: block;
+		}
+		main div.toc {
+			display: block;
 		}
 	}
 </style>
