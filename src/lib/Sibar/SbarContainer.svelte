@@ -13,9 +13,10 @@
 	let input = '';
 
 	$: urll = ($url + '/').toString();
-	$: tree = urll.substring(1, urll.indexOf('/', 1))
-		? root[urll.substring(1, urll.indexOf('/', 1))]
-		: root;
+	$: tree = root;
+	// $: tree = urll.substring(1, urll.indexOf('/', 1))
+	// 	? root[urll.substring(1, urll.indexOf('/', 1))]
+	// 	: root;
 
 	if (signal === 'default') {
 		icon = 'plus';
@@ -24,11 +25,11 @@
 	}
 
 	function toggle_expand() {
-		if (signal === 'default') {
+		if (signal !== 'expandAll') {
 			signal = 'expandAll';
 			icon = 'minus';
 		} else {
-			signal = 'default';
+			signal = 'foldingAll';
 			icon = 'plus';
 		}
 	}

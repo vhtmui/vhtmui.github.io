@@ -8,22 +8,14 @@
 	import { url } from '$lib/Sibar/stores';
 	import ThemeBtn from '$lib/ThemeBtn/ThemeBtn.svelte';
 
-	let titles = 'h2';
+	let titles = 'h2,h4';
 	let headings;
 	// let tree = root;
-
-	$: urll = ($url + '/').toString();
-
-	$: tree = urll.substring(1, urll.indexOf('/', 1))
-		? root[urll.substring(1, urll.indexOf('/', 1))]
-		: root;
-
-	$: links = get_childArray(root);
 
 	onMount(() => {});
 	afterUpdate(() => {
 		url.set(window.location.pathname);
-		headings = document.querySelectorAll('h2');
+		headings = document.querySelectorAll(titles);
 	});
 </script>
 
@@ -48,11 +40,13 @@
 </svelte:head>
 <div class="topContainer">
 	<div class="topInnerContainer">
-		<button class="svg home" type="button">
-			<a href="/">
-				<Icon option={'home'} />
-			</a>
-		</button>
+		<div class="topLeftHeader">
+			<button class="svg home" type="button">
+				<a href="/">
+					<Icon option={'home'} />
+				</a>
+			</button>
+		</div>
 		<header class="top">
 			<nav class="top">
 				<ul></ul>
@@ -73,7 +67,7 @@
 	<div class="toc">
 		<!-- Ensure invalid argument are not passed to component, that would cause many problems -->
 		{#if headings && headings.length}
-			<TocList {headings} />
+			<TocList {headings} indent = 0.5/>
 		{/if}
 	</div>
 </main>
@@ -177,6 +171,7 @@
 		background-color: var(--header-nav-bg-color);
 		position: sticky;
 		top: 0;
+		pointer-events: none;
 		& div.topInnerContainer {
 			max-width: 1600px;
 			margin-left: auto;
@@ -194,6 +189,9 @@
 				gap: 0.5rem;
 				align-items: center;
 				justify-content: flex-start;
+				& * {
+					pointer-events: auto;
+				}
 				& nav.top {
 					margin-right: auto;
 					display: flex;
@@ -222,36 +220,40 @@
 					}
 				}
 			}
-			& button.svg.home {
-				box-sizing: border-box;
-				margin: 0;
-				padding: 0;
-				height: var(--header-block-height);
-				width: 3rem;
-				border: none;
-				border-radius: 0.7rem;
-				outline: none;
-				background-color: transparent;
-				&:hover {
-					cursor: pointer;
-					& path {
-						fill: var(--header-text-hover-color);
-					}
+			& .topLeftHeader {
+				& * {
+					pointer-events: auto;
 				}
-				&:active {
-					& path {
-						fill: var(--header-text-active-color);
+				& button.svg.home {
+					box-sizing: border-box;
+					margin: 0;
+					padding: 0;
+					height: var(--header-block-height);
+					width: 3rem;
+					border: none;
+					border-radius: 0.7rem;
+					outline: none;
+					background-color: transparent;
+					&:hover {
+						cursor: pointer;
+						& path {
+							fill: var(--header-text-hover-color);
+						}
 					}
-				}
-				& a {
-					display: flex;
-					width: 100%;
-					height: 100%;
-					align-items: center;
-					justify-content: center;
+					&:active {
+						& path {
+							fill: var(--header-text-active-color);
+						}
+					}
+					& a {
+						display: flex;
+						width: 100%;
+						height: 100%;
+						align-items: center;
+						justify-content: center;
+					}
 				}
 			}
-
 			& svg {
 				vertical-align: middle;
 				& path {
@@ -270,8 +272,7 @@
 		}
 		& div.sidebar-container {
 			display: none;
-			/* border-right: 1px solid #9999996b; */
-			padding-right: 1rem;
+			width: max-content;
 		}
 		& div.toc {
 			display: none;
@@ -284,8 +285,6 @@
 		& h6 {
 			margin: 2rem 0 1rem 0;
 			&:target {
-				/* padding-top: var(--header-block-height);
-            margin-top: calc(-1 * var(--header-block-height)); */
 				scroll-margin-top: var(--header-block-height);
 			}
 			& a {
@@ -309,7 +308,7 @@
 			display: grid;
 			grid-template-areas: 'Lsidebar content';
 			gap: 2rem;
-			grid-template-columns: minmax(12rem, 0.8fr) minmax(0, 2.5fr);
+			grid-template-columns: min-content minmax(0, 2.5fr);
 			padding: 0.5rem 2rem 0 2rem;
 		}
 		main div.sidebar-container {
@@ -324,13 +323,14 @@
 			display: grid;
 			grid-template-areas: 'Lsidebar content Rsidebar';
 			gap: 2rem;
-			grid-template-columns: minmax(16rem, 1fr) minmax(0, 2.5fr) minmax(8rem, 0.8fr);
+			grid-template-columns: minmax(0,1fr) minmax(0, 2.5fr) minmax(8rem,0.8fr);
 			padding: 0.5rem 2rem 0 2rem;
 			margin: auto;
 			max-width: 1660px;
 		}
 		main div.sidebar-container {
 			display: block;
+			width: 100%;
 		}
 		main div.toc {
 			display: block;

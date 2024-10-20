@@ -27,7 +27,7 @@ export function get_childArray(obj) {
 /**
  * return child objects from a parent object.
  * @param {Tree} obj
- * @returns {Tree}
+ * @returns {string}
  */
 export function getAll_propertyNames(obj) {
 	let alltitles = '';

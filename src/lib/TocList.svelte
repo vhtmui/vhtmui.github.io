@@ -7,7 +7,7 @@
 	export let indent = 1;
 	
 	/**
-	 * @param {number} scrollTrigger - Indicate the threshold for triggering hightlight
+	 * @type {number} scrollTrigger - Indicate the threshold for triggering hightlight
 	 */
 	export let scrollTrigger = 80;
 
@@ -15,10 +15,6 @@
 	 * @type {NodeList} - Collection of HeadingElement nodes
 	 */
 	export let headings;
-
-	let prior;
-
-	$: prior = headings[0].nodeName;
 
 	function getPadding(ele) {
 		let n = Number(ele.nodeName.substr(1));
@@ -41,7 +37,6 @@
 	onMount(() => {
 		addEventListener('scroll', setTocItem);
 		setTocItem();
-		addEventListener('DOMContentLoaded', () => console.log('done'));
 	});
 </script>
 

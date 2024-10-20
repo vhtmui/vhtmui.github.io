@@ -14,22 +14,32 @@
 	export let signal = 'default';
 	export let filter = '';
 
-	let option = 'chevron_down';
-	let up = false;
-	let title;
-
 	/**
-	 * An string includes all child object's links of this object 'tree', divide with character '`'.
-	 * @type {string} allChildNode
+	 * Indicate whether current node visable
 	 */
-	let allChildNode = getAll_propertyNames(tree);
 	let visable = true;
 
 	/**
-	 * For signal to determine if the href equal to page url.
+	 * The icon option
+	 */
+	let option = 'chevron_down';
+
+	/**
+	 * Plain html textContent of <a> 
+	 * @type {string}
+	 */
+	let title;
+
+	/**
+	 * Icon direction
 	 * @type {boolean}
 	 */
-	let equal = false;
+	$: IconUp = expand;
+
+	/**
+	 * An string includes all child object's links string of current tree object, divide with character '`'.
+	 */
+	let allChildNode = getAll_propertyNames(tree);
 
 	/**
 	 * For signal to determine if the page url include the href.
@@ -50,9 +60,9 @@
 
 	function toggle_display() {
 		expand = !expand;
-		up = !up;
 	}
 
+	//#region Filter
 	// Filte the sidebar
 	$: if (filter.length !== 0) {
 		if (allChildNode.match(RegExp(filter, 'i')) || tree._title.match(RegExp(filter, 'i'))) {
@@ -67,27 +77,27 @@
 		visable = true;
 		title = tree._title;
 	}
+	//#endregion
 
+	//#region Show
 	// A global signal to control the sidebar display.
 	$: if (signal === 'default') {
-		// equal = nowLink === $url;
-		include = $url.match(new RegExp(`^${nowLink}.+`));
+		// Determin by whether the url include the current link.
+		include = $url.match(new RegExp(`^${nowLink}.*`));
 	} else if (signal === 'expandAll') {
-		// equal = false;
 		include = true;
+	} else if(signal === 'foldingAll' && nowLink !== '/') {
+		include = false;
 	}
 
-	// decide whether to expand by default,
-	// if the url is equal, then select this element,
-	// if the element's url is included by page's, then expand it, and if it's expanded, then no select it
+	// If include, expand current element
 	$: if (include) {
 		expand = true;
-		up = true;
 	} else {
 		expand = false;
-		up = false;
 	}
 
+	// Set hightlight item
 	$: if (nowLink === $url) {
 		selected_item = true;
 	} else if ($url.match(new RegExp(`^${nowLink}.+`, 'i')) && expand === false) {
@@ -95,12 +105,14 @@
 	} else {
 		selected_item = false;
 	}
+	//#endregion
+
 </script>
 
 {#if tree && visable}
 	<div transition:slide|global class="tree-head">
 		{#if child_tree}
-			<button class:up on:click={toggle_display}><Icon {option} /></button>
+			<button class:IconUp on:click={toggle_display}><Icon {option} /></button>
 			<a class="sidebar" class:selected_item href={nowLink}>{@html title}</a>
 		{:else}
 			<div class="sidebar-paddingblock"></div>
@@ -136,9 +148,9 @@
 		&:hover {
 			text-decoration: underline;
 		}
-		& span.highlightClass{
+		& span.highlightClass {
 			background-color: var(--sidebar-filter-text-bg-bolor);
-			color:var(--sidebar-filter-text-bolor);
+			color: var(--sidebar-filter-text-bolor);
 		}
 	}
 	div.tree-head {
@@ -180,7 +192,7 @@
 			cursor: pointer;
 		}
 	}
-	button.up {
+	button.IconUp {
 		transition: cubic-bezier(0.01, 0.79, 0.45, 0.94) 0.25s;
 		transform: rotate(0deg);
 	}
