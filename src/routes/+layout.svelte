@@ -65,7 +65,6 @@
 		<slot />
 	</div>
 	<div class="toc">
-		<!-- Ensure invalid argument are not passed to component, that would cause many problems -->
 		{#if headings && headings.length}
 			<TocList {headings} indent = 0.5/>
 		{/if}
@@ -272,7 +271,7 @@
 		}
 		& div.sidebar-container {
 			display: none;
-			width: max-content;
+			width: 100%;
 		}
 		& div.toc {
 			display: none;
@@ -303,12 +302,12 @@
 		}
 	}
 
-	@media (min-width: 720px) {
+	@media (min-width: 768px) {
 		main {
 			display: grid;
 			grid-template-areas: 'Lsidebar content';
 			gap: 2rem;
-			grid-template-columns: min-content minmax(0, 2.5fr);
+			grid-template-columns: minmax(0,1fr) minmax(0, 2.5fr);
 			padding: 0.5rem 2rem 0 2rem;
 		}
 		main div.sidebar-container {
@@ -318,7 +317,7 @@
 			display: none;
 		}
 	}
-	@media (min-width: 1100px) {
+	/* @media (min-width: 1200px) {
 		main {
 			display: grid;
 			grid-template-areas: 'Lsidebar content Rsidebar';
@@ -333,6 +332,28 @@
 			width: 100%;
 		}
 		main div.toc {
+			display: block;
+		}
+	} */
+	@media (min-width: 1200px) {
+		main {
+			display:flex;
+			flex-wrap: nowrap;
+			gap: 2rem;
+			padding: 0.5rem 2rem 0 2rem;
+			margin: auto;
+			max-width: 1660px;
+		}
+		main div.sidebar-container {
+			flex:1;
+			display: block;
+			width: 100%;
+		}
+		main div.content{
+			flex: 3;
+		}
+		main div.toc {
+			flex:1;
 			display: block;
 		}
 	}

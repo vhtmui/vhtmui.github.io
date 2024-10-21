@@ -14,23 +14,28 @@
 
 	$: urll = ($url + '/').toString();
 	$: tree = root;
-	// $: tree = urll.substring(1, urll.indexOf('/', 1))
-	// 	? root[urll.substring(1, urll.indexOf('/', 1))]
-	// 	: root;
 
-	if (signal === 'default') {
-		icon = 'plus';
-	} else if (signal === 'expandAll') {
-		icon = 'minus';
+	function setExpand(mode) {
+		switch (mode) {
+			case 'expandAll':
+				signal = 'expandAll';
+				icon = 'minus';
+				break;
+			case 'foldingAll':
+				signal = 'foldingAll';
+				icon = 'plus';
+				break;
+			default:
+				signal = 'default';
+				icon = 'minus';
+				break;
+		}
 	}
-
 	function toggle_expand() {
 		if (signal !== 'expandAll') {
-			signal = 'expandAll';
-			icon = 'minus';
+			setExpand('expandAll');
 		} else {
-			signal = 'foldingAll';
-			icon = 'plus';
+			setExpand('foldingAll');
 		}
 	}
 	function cleanInput() {
@@ -38,18 +43,19 @@
 		widther = false;
 	}
 
+	setExpand('default');
 	$: if (input.length !== 0) {
-		signal = 'expandAll';
-		icon = 'minus';
+		setExpand('expandAll');
 	}
 </script>
-
 <div class="sidebar right">
 	<div class="sidebar-heard">
 		<input
 			bind:value={input}
 			type="text"
-			placeholder="filter" class:widther on:click={() => (widther = true)}
+			placeholder="filter"
+			class:widther
+			on:click={() => (widther = true)}
 		/>
 		<button class="clear-input" class:widther on:click={cleanInput}><Icon option="x" /></button>
 		<button class="expand" on:click={toggle_expand}><Icon option={icon} /></button>
@@ -150,7 +156,7 @@
 	div.sibar {
 		overflow-y: auto;
 		padding-top: 1rem;
-		-webkit-mask-image:linear-gradient(180deg,#0000,#000 1rem calc(100% - 3rem),#0000);
-		mask-image:linear-gradient(180deg,#0000,#000 1rem calc(100% - 1rem),#0000);
+		-webkit-mask-image: linear-gradient(180deg, #0000, #000 1rem calc(100% - 3rem), #0000);
+		mask-image: linear-gradient(180deg, #0000, #000 1rem calc(100% - 1rem), #0000);
 	}
 </style>
