@@ -4,6 +4,7 @@
 	import Sidebar from './Sidebar.svelte';
 	import Icon from '$lib/Icon/Icon.svelte';
 	import { url } from './stores';
+	import { elasticOut, linear, quadInOut, quadOut } from 'svelte/easing';
 
 	export let tree;
 	export let signal = 'default';
@@ -42,13 +43,26 @@
 		input = '';
 		widther = false;
 	}
-
+	function topFly(node, { delay = 0, duration = 400 }) {
+		return {
+			delay,
+			duration,
+			easing: quadInOut,
+			css(t, u) {
+				return `
+					transform: scaleX(${t});
+					transform-origin: left;
+				`;
+			}
+		};
+	}
 	setExpand('default');
 	$: if (input.length !== 0) {
 		setExpand('expandAll');
 	}
 </script>
-<div class="sidebar right">
+
+<div class="sidebar right" transition:topFly|global={{ duration: 400 }}>
 	<div class="sidebar-heard">
 		<input
 			bind:value={input}
@@ -70,11 +84,14 @@
 		font-size: small;
 		margin-right: auto;
 		margin-left: auto;
-		width: 100%;
+		/* keep width  */
+		width: min(calc((100vw - 4rem) * 0.2), calc(0.2 * (var(--main-max-width) - 4rem)));
 		padding-top: 1rem;
-		position: sticky;
+		position: fixed;
+		/* top: var(--header-block-height); */
+		/* transform: translateY(var(--header-block-height)); */
 		top: var(--header-block-height);
-		top:0;
+		/* top:0; */
 	}
 	div.sidebar-heard {
 		padding-bottom: 2rem;

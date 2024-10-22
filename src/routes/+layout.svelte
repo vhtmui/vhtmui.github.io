@@ -1,5 +1,6 @@
 <script>
 	import { slide } from 'svelte/transition';
+	import { quadOut } from 'svelte/easing';
 	import Icon from '$lib/Icon/Icon.svelte';
 	import SbarContainer from '$lib/Sibar/SbarContainer.svelte';
 	import TocList from '$lib/TocList.svelte';
@@ -14,7 +15,22 @@
 	let menuIcon = 'menu_fold';
 	let undisplay = true;
 	// let tree = root;
+	function flexSlide(node, {delay = 0, duration=400}) {
+		return {
+			delay,
+			duration,
+			easing: quadOut,
+			css(t, u) {
+				const grow = window.getComputedStyle(node).flexGrow;
 
+				return `
+            overflow: hidden;
+            min-width: 0;
+            flex: ${Math.round(t * 100 * grow) / 100} 1 0px;
+        `;
+			}
+		};
+	}
 	onMount(() => {});
 	afterUpdate(() => {
 		url.set(window.location.pathname);
@@ -65,12 +81,12 @@
 </div>
 <main>
 	{#if undisplay}
-		<div class="sidebar-container" transition:slide={{ axis: 'x' }}>
+		<div class="sidebar-container" transition:flexSlide|global = {{duration: 400}}>
 			<SbarContainer signal="expandAll" />
 			<!-- <div>hhhh</div> -->
 		</div>
 	{/if}
-	<div class="content" transition:slide|global={{ axis: 'x' }}>
+	<div class="content">
 		<slot />
 	</div>
 	<div class="toc" transition:slide|global={{ axis: 'x' }}>
@@ -141,6 +157,7 @@
 		--header-block-height: 3rem;
 		--sibar-block-height: 2.5rem;
 		--all-svg-width: 1.25rem;
+		--main-max-width: 1660px;
 		& pre {
 			overflow: auto;
 			text-wrap: nowrap;
@@ -281,8 +298,7 @@
 		min-height: 100vh;
 		color: var(--main-text-color);
 		& div.content {
-			padding: 0 1rem;
-			transition: all 1s ease;
+			padding: 0 3rem;
 			& a {
 				color: var(--main-a-color);
 				&:visited {
@@ -317,7 +333,7 @@
 		}
 	}
 
-	@media (min-width: 768px) and (max-width: 1199px){
+	@media (min-width: 768px) and (max-width: 1199px) {
 		main {
 			display: grid;
 			grid-template-areas: 'Lsidebar content';
@@ -330,6 +346,26 @@
 		}
 		main div.toc {
 			display: none;
+		}
+	}
+	@media (min-width: 1200px) {
+		main {
+			display: flex;
+			flex-wrap: nowrap;
+			padding: 0.5rem 2rem 0 2rem;
+			margin: auto;
+			max-width: var(--main-max-width);
+		}
+		main div.sidebar-container {
+			flex: 1;
+			display: block;
+		}
+		main div.content {
+			flex: 3;
+		}
+		main div.toc {
+			flex: 1;
+			display: block;
 		}
 	}
 	/* @media (min-width: 1200px) {
@@ -350,28 +386,4 @@
 			display: block;
 		}
 	} */
-	@media (min-width: 1200px) {
-		main {
-			display: flex;
-			flex-wrap: nowrap;
-			/* gap: 2rem; */
-			padding: 0.5rem 2rem 0 2rem;
-			margin: auto;
-			max-width: 1660px;
-		}
-		main div.sidebar-container {
-			/* flex: 1; */
-			display: block;
-			width:20%;
-		}
-		main div.content {
-			/* flex: 3; */
-			width: 60%;
-		}
-		main div.toc {
-			/* flex: 1; */
-			display: block;
-			width: 20%;
-		}
-	}
 </style>
