@@ -1,4 +1,5 @@
 <script>
+	import { slide } from 'svelte/transition';
 	import Icon from '$lib/Icon/Icon.svelte';
 	import SbarContainer from '$lib/Sibar/SbarContainer.svelte';
 	import TocList from '$lib/TocList.svelte';
@@ -10,6 +11,8 @@
 
 	let titles = 'h2,h4';
 	let headings;
+	let menuIcon = 'menu_fold';
+	let undisplay = true;
 	// let tree = root;
 
 	onMount(() => {});
@@ -41,6 +44,9 @@
 <div class="topContainer">
 	<div class="topInnerContainer">
 		<div class="topLeftHeader">
+			<button class="svg" on:click={() => (undisplay = !undisplay)}>
+				<Icon option={menuIcon} />
+			</button>
 			<button class="svg home" type="button">
 				<a href="/">
 					<Icon option={'home'} />
@@ -58,15 +64,18 @@
 	</div>
 </div>
 <main>
-	<div class="sidebar-container">
-		<SbarContainer signal="expandAll" />
-	</div>
-	<div class="content">
+	{#if undisplay}
+		<div class="sidebar-container" transition:slide={{ axis: 'x' }}>
+			<SbarContainer signal="expandAll" />
+			<!-- <div>hhhh</div> -->
+		</div>
+	{/if}
+	<div class="content" transition:slide|global={{ axis: 'x' }}>
 		<slot />
 	</div>
-	<div class="toc">
+	<div class="toc" transition:slide|global={{ axis: 'x' }}>
 		{#if headings && headings.length}
-			<TocList {headings} indent = 0.5/>
+			<TocList {headings} indent="0.5" />
 		{/if}
 	</div>
 </main>
@@ -220,10 +229,12 @@
 				}
 			}
 			& .topLeftHeader {
+				display: flex;
+				align-items: center;
 				& * {
 					pointer-events: auto;
 				}
-				& button.svg.home {
+				& button.svg {
 					box-sizing: border-box;
 					margin: 0;
 					padding: 0;
@@ -237,11 +248,13 @@
 						cursor: pointer;
 						& path {
 							fill: var(--header-text-hover-color);
+							stroke: var(--header-text-hover-color);
 						}
 					}
 					&:active {
 						& path {
 							fill: var(--header-text-active-color);
+							stroke: var(--header-text-hover-color);
 						}
 					}
 					& a {
@@ -255,8 +268,9 @@
 			}
 			& svg {
 				vertical-align: middle;
-				& path {
+				& * {
 					fill: var(--all-svg-color);
+					stroke: var(--all-svg-color);
 				}
 			}
 		}
@@ -268,6 +282,13 @@
 		color: var(--main-text-color);
 		& div.content {
 			padding: 0 1rem;
+			transition: all 1s ease;
+			& a {
+				color: var(--main-a-color);
+				&:visited {
+					color: var(--main-visited-a-color);
+				}
+			}
 		}
 		& div.sidebar-container {
 			display: none;
@@ -294,20 +315,14 @@
 				}
 			}
 		}
-		& div.content a {
-			color: var(--main-a-color);
-			&:visited {
-				color: var(--main-visited-a-color);
-			}
-		}
 	}
 
-	@media (min-width: 768px) {
+	@media (min-width: 768px) and (max-width: 1199px){
 		main {
 			display: grid;
 			grid-template-areas: 'Lsidebar content';
 			gap: 2rem;
-			grid-template-columns: minmax(0,1fr) minmax(0, 2.5fr);
+			grid-template-columns: minmax(0, 1fr) minmax(0, 2.5fr);
 			padding: 0.5rem 2rem 0 2rem;
 		}
 		main div.sidebar-container {
@@ -337,24 +352,26 @@
 	} */
 	@media (min-width: 1200px) {
 		main {
-			display:flex;
+			display: flex;
 			flex-wrap: nowrap;
-			gap: 2rem;
+			/* gap: 2rem; */
 			padding: 0.5rem 2rem 0 2rem;
 			margin: auto;
 			max-width: 1660px;
 		}
 		main div.sidebar-container {
-			flex:1;
+			/* flex: 1; */
 			display: block;
-			width: 100%;
+			width:20%;
 		}
-		main div.content{
-			flex: 3;
+		main div.content {
+			/* flex: 3; */
+			width: 60%;
 		}
 		main div.toc {
-			flex:1;
+			/* flex: 1; */
 			display: block;
+			width: 20%;
 		}
 	}
 </style>

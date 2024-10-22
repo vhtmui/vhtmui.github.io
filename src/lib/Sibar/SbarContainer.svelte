@@ -74,6 +74,7 @@
 		padding-top: 1rem;
 		position: sticky;
 		top: var(--header-block-height);
+		top:0;
 	}
 	div.sidebar-heard {
 		padding-bottom: 2rem;

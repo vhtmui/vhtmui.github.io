@@ -111,6 +111,7 @@
 					color: var(--header-text-hover-color);
 					& path {
 						fill: var(--header-text-hover-color);
+						stroke: var(--header-text-hover-color);
 					}
 				}
 				&:active {
