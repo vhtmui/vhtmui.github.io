@@ -62,7 +62,7 @@
 </div>
 
 <style>
-	div.themeBlock {
+	div.themeBlock :global {
 		display: flex;
 		position: relative;
 		width: 5rem;

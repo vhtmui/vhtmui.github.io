@@ -80,7 +80,7 @@
 </div>
 
 <style>
-	div.sidebar.right {
+	div.sidebar.right :global {
 		font-size: small;
 		margin-right: auto;
 		margin-left: auto;
@@ -92,89 +92,89 @@
 		/* transform: translateY(var(--header-block-height)); */
 		top: var(--header-block-height);
 		/* top:0; */
-	}
-	div.sidebar-heard {
-		padding-bottom: 2rem;
-		display: flex;
-		justify-content: space-around;
-		& input {
-			background-color: transparent;
-			color: var(--main-text-color);
-			border-radius: 0.5rem;
-			border: 1px solid var(--main-text-color);
-			font-size: small;
-			font-family: 'Intel', 'Microsoft YaHei', Arial, sans-serif;
-			height: 2rem;
-			width: 5.5rem;
-			margin-right: 1rem;
-			padding-left: 0.4rem;
-			padding-right: 2rem;
-			box-shadow: none;
-			&.widther {
-				width: 100%;
-			}
-			&:focus {
-				border-color: var(--input-focus-color);
-				outline: none;
-			}
-		}
-		& button.clear-input {
-			visibility: hidden;
-			position: absolute;
-			right: 3.3rem;
-			box-sizing: border-box;
-			margin: 0;
-			padding: 0 0.5rem 0 0.5rem;
-			height: 2rem;
-			border: none;
-			outline: none;
-			background-color: transparent;
-			&.widther {
-				visibility: visible;
-			}
-			&:hover {
-				cursor: pointer;
-				transform: none;
-				background-color: #80808075;
+		div.sidebar-heard {
+			padding-bottom: 2rem;
+			display: flex;
+			justify-content: space-around;
+			& input {
+				background-color: transparent;
+				color: var(--main-text-color);
 				border-radius: 0.5rem;
+				border: 1px solid var(--main-text-color);
+				font-size: small;
+				font-family: 'Intel', 'Microsoft YaHei', Arial, sans-serif;
+				height: 2rem;
+				width: 5.5rem;
+				margin-right: 1rem;
+				padding-left: 0.4rem;
+				padding-right: 2rem;
+				box-shadow: none;
+				&.widther {
+					width: 100%;
+				}
+				&:focus {
+					border-color: var(--input-focus-color);
+					outline: none;
+				}
 			}
-			&:active {
-				transition: none;
+			& button.clear-input {
+				visibility: hidden;
+				position: absolute;
+				right: 3.3rem;
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0 0.5rem 0 0.5rem;
+				height: 2rem;
+				border: none;
+				outline: none;
+				background-color: transparent;
+				&.widther {
+					visibility: visible;
+				}
+				&:hover {
+					cursor: pointer;
+					transform: none;
+					background-color: #80808075;
+					border-radius: 0.5rem;
+				}
+				&:active {
+					transition: none;
+				}
+				& path {
+					fill: var(--sidebar-svg-color);
+				}
 			}
-			& path {
-				fill: var(--sidebar-svg-color);
+			& button.expand {
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0 0.5rem 0 0.5rem;
+				height: 2rem;
+				border: none;
+				outline: none;
+				background-color: transparent;
+				transition: transform 0.3s ease;
+				transform: rotate(0deg);
+				&:hover {
+					cursor: pointer;
+					transform: rotate(180deg);
+				}
+				&:active {
+					transition: none;
+					transform: scale(1.5);
+				}
+			}
+			& svg {
+				vertical-align: middle;
+				& path {
+					fill: var(--all-svg-color);
+				}
 			}
 		}
-		& button.expand {
-			box-sizing: border-box;
-			margin: 0;
-			padding: 0 0.5rem 0 0.5rem;
-			height: 2rem;
-			border: none;
-			outline: none;
-			background-color: transparent;
-			transition: transform 0.3s ease;
-			transform: rotate(0deg);
-			&:hover {
-				cursor: pointer;
-				transform: rotate(180deg);
-			}
-			&:active {
-				transition: none;
-				transform: scale(1.5);
-			}
+		div.sibar {
+			overflow-y: auto;
+			padding-top: 1rem;
+			-webkit-mask-image: linear-gradient(180deg, #0000, #000 1rem calc(100% - 3rem), #0000);
+			mask-image: linear-gradient(180deg, #0000, #000 1rem calc(100% - 1rem), #0000);
 		}
-		& svg {
-			vertical-align: middle;
-			& path {
-				fill: var(--all-svg-color);
-			}
-		}
-	}
-	div.sibar {
-		overflow-y: auto;
-		padding-top: 1rem;
-		-webkit-mask-image: linear-gradient(180deg, #0000, #000 1rem calc(100% - 3rem), #0000);
-		mask-image: linear-gradient(180deg, #0000, #000 1rem calc(100% - 1rem), #0000);
 	}
 </style>

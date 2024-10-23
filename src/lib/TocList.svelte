@@ -53,7 +53,7 @@
 </div>
 
 <style>
-	div.toc-container {
+	div.toc-container :global {
 		font-size: 0.8rem;
 		margin-top: 5rem;
 		position: sticky;
