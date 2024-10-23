@@ -1,4 +1,10 @@
 <script>
-    /** @type {import('./$types').PageData} */
-    export let data;
+    
+    /**
+     * @typedef {Object} Props
+     * @property {import('./$types').PageData} data
+     */
+
+    /** @type {Props} */
+    let { data } = $props();
 </script>

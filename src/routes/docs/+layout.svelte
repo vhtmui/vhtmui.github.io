@@ -1,6 +1,12 @@
 <script>
-	/** @type {import('./$types').LayoutData} */
-	export let data;
+	
+	/**
+	 * @typedef {Object} Props
+	 * @property {import('./$types').LayoutData} data
+	 */
+
+	/** @type {Props} */
+	let { data } = $props();
 </script>
 
 <head>

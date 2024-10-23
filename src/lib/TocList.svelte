@@ -1,20 +1,15 @@
 <script>
-	import { afterUpdate, onMount } from 'svelte';
-
-	/**
-	 * @type {number} - Indicate the indent raito
-	 */
-	export let indent = 1;
+	import { onMount } from 'svelte';
 	
 	/**
-	 * @type {number} scrollTrigger - Indicate the threshold for triggering hightlight
+	 * @typedef {Object} Props
+	 * @property {number} [indent]
+	 * @property {number} [scrollTrigger]
+	 * @property {NodeList} headings
 	 */
-	export let scrollTrigger = 80;
 
-	/**
-	 * @type {NodeList} - Collection of HeadingElement nodes
-	 */
-	export let headings;
+	/** @type {Props} */
+	let { indent = 1, scrollTrigger = 80, headings } = $props();
 
 	function getPadding(ele) {
 		let n = Number(ele.nodeName.substr(1));

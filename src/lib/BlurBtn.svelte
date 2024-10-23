@@ -1,8 +1,15 @@
 <script>
+	/**
+	 * @typedef {Object} Props
+	 * @property {import('svelte').Snippet} [children]
+	 */
+
+	/** @type {Props} */
+	let props = $props();
 </script>
 
-<button>
-	<slot></slot>
+<button {...props}>
+	{@render props.children?.()}
 </button>
 
 <style>

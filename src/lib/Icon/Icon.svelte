@@ -3,13 +3,19 @@
 
 	import { paths, viewBoxs } from './icon';
 
-	export let option = 'sun';
 
-	export let height = '1.25rem';
-	export let width = '1.25rem';
+	/**
+	 * @typedef {Object} Props
+	 * @property {string} [option]
+	 * @property {string} [height]
+	 * @property {string} [width]
+	 */
 
-	$: viewBox = viewBoxs[option];
-	$: path = paths[option];
+	/** @type {Props} */
+	let { option = 'sun', height = '1.25rem', width = '1.25rem' } = $props();
+
+	let viewBox = $derived(viewBoxs[option]);
+	let path = $derived(paths[option]);
 </script>
 
 <svg {viewBox} {height} {width}>{@html path}</svg>

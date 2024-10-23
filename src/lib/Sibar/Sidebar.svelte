@@ -1,23 +1,37 @@
 <script>
+	import Sidebar from './Sidebar.svelte';
+	import { run } from 'svelte/legacy';
+
 	import { getAll_propertyNames, get_childArray } from './nav';
 	import { url } from './stores';
 	import Icon from '$lib/Icon/Icon.svelte';
 	import { slide } from 'svelte/transition';
 
 	/**
-	 * @type {Tree}
+	 * @typedef {Object} Props
+	 * @property {Tree} tree
+	 * @property {boolean} [expand]
+	 * @property {string} [preLink]
+	 * @property {boolean} [selected_item]
+	 * @property {string} [signal]
+	 * @property {string} [filter]
 	 */
-	export let tree;
-	export let expand = false;
-	export let preLink = '';
-	export let selected_item = false;
-	export let signal = 'default';
-	export let filter = '';
+
+	/** @type {Props} */
+	let {
+		tree,
+		preLink = '',
+		selected_item = false,
+		signal = 'default',
+		filter = ''
+	} = $props();
+
+	let expand = $state(true);
 
 	/**
 	 * Indicate whether current node visable
 	 */
-	let visable = true;
+	let visable = $state(true);
 
 	/**
 	 * The icon option
@@ -28,13 +42,13 @@
 	 * Plain html textContent of <a>
 	 * @type {string}
 	 */
-	let title;
+	let title = $state();
 
 	/**
 	 * Icon direction
 	 * @type {boolean}
 	 */
-	$: IconUp = expand;
+	let IconUp = $derived(expand);
 
 	/**
 	 * An string includes all child object's links string of current tree object, divide with character '`'.
@@ -45,18 +59,18 @@
 	 * For signal to determine if the page url include the href.
 	 * @type {boolean}
 	 */
-	let include = false;
+	let include = $state(false);
 
 	/**
 	 * Relative links to the current component, also the href of <a>.
 	 * @type {string}
 	 */
-	$: nowLink = (preLink + '/' + tree._link).replace(RegExp('/+'), '/');
+	let nowLink = $derived((preLink + '/' + tree._link).replace(RegExp('/+'), '/'));
 
 	/**
 	 * @type {Tree}
 	 */
-	$: child_tree = get_childArray(tree);
+	let child_tree = $derived(get_childArray(tree));
 
 	function toggle_display() {
 		expand = !expand;
@@ -64,54 +78,64 @@
 
 	//#region Filter
 	// Filte the sidebar
-	$: if (filter.length !== 0) {
-		if (allChildNode.match(RegExp(filter, 'i')) || tree._title.match(RegExp(filter, 'i'))) {
+	run(() => {
+		if (filter.length !== 0) {
+			if (allChildNode.match(RegExp(filter, 'i')) || tree._title.match(RegExp(filter, 'i'))) {
+				visable = true;
+			} else {
+				visable = false;
+			}
+			const reg = RegExp(filter, 'i');
+			const match = reg.exec(tree._title);
+			title = tree._title.replace(reg, `<span class="highlightClass">${match}</span>`);
+		} else if (filter.length === 0) {
 			visable = true;
-		} else {
-			visable = false;
+			title = tree._title;
 		}
-		const reg = RegExp(filter, 'i');
-		const match = reg.exec(tree._title);
-		title = tree._title.replace(reg, `<span class="highlightClass">${match}</span>`);
-	} else if (filter.length === 0) {
-		visable = true;
-		title = tree._title;
-	}
+	});
 	//#endregion
 
 	//#region Show
 	// A global signal to control the sidebar display.
-	$: if (signal === 'default') {
-		// Determin by whether the url include the current link.
-		include = $url.match(new RegExp(`^${nowLink}.*`));
-	} else if (signal === 'expandAll') {
-		include = true;
-	} else if (signal === 'foldingAll' && nowLink !== '/') {
-		include = false;
-	}
+	run(() => {
+		if (signal === 'default') {
+			// Determin by whether the url include the current link.
+			include = $url.match(new RegExp(`^${nowLink}.*`));
+		} else if (signal === 'expandAll') {
+			include = true;
+		} else if (signal === 'foldingAll' && nowLink !== '/') {
+			include = false;
+		}
+	});
 
 	// If include, expand current element
-	$: if (include) {
-		expand = true;
-	} else {
-		expand = false;
-	}
+	$effect(() => {
+		if (include) {
+			expand = true;
+		} else {
+			expand = false;
+		}
+	});
 
 	// Set hightlight item
-	$: if (nowLink === $url) {
-		selected_item = true;
-	} else if ($url.match(new RegExp(`^${nowLink}.+`, 'i')) && expand === false) {
-		selected_item = true;
-	} else {
-		selected_item = false;
-	}
+	run(() => {
+		if (nowLink === $url) {
+			selected_item = true;
+		} else if ($url.match(new RegExp(`^${nowLink}.+`, 'i')) && expand === false) {
+			selected_item = true;
+		} else {
+			selected_item = false;
+		}
+	});
 	//#endregion
 </script>
+
+<!-- {@debug expand} -->
 <div id="Sidebar">
 	{#if tree && visable}
 		<div transition:slide|global class="tree-head">
 			{#if child_tree}
-				<button class:IconUp on:click={toggle_display}><Icon {option} /></button>
+				<button class:IconUp onclick={toggle_display}><Icon {option} /></button>
 				<a class="sidebar" class:selected_item href={nowLink}>{@html title}</a>
 			{:else}
 				<div class="sidebar-paddingblock"></div>
@@ -124,7 +148,7 @@
 				{#each child_tree as t}
 					<div>
 						<div class="sidebar-paddingblock"></div>
-						<li><svelte:self tree={t} preLink={nowLink} {signal} {filter} /></li>
+						<li><Sidebar tree={t} preLink={nowLink} {signal} {filter} /></li>
 					</div>
 				{/each}
 			</ul>

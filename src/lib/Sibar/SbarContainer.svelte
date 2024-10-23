@@ -4,17 +4,22 @@
 	import Sidebar from './Sidebar.svelte';
 	import Icon from '$lib/Icon/Icon.svelte';
 	import { url } from './stores';
-	import { elasticOut, linear, quadInOut, quadOut } from 'svelte/easing';
+	import { quadOut } from 'svelte/easing';
 
-	export let tree;
-	export let signal = 'default';
-	export let icon = 'plus';
+	/**
+	 * @typedef {Object} Props
+	 * @property {string} [signal]
+	 * @property {string} [icon]
+	 */
 
-	let widther = false;
-	let input = '';
+	/** @type {Props} */
+	let { signal = $bindable('default'), icon = $bindable('plus') } = $props();
 
-	$: urll = ($url + '/').toString();
-	$: tree = root;
+	let widther = $state(false);
+	let input = $state('');
+
+	let urll = $derived(($url + '/').toString());
+	let tree = root;
 
 	function setExpand(mode) {
 		switch (mode) {
@@ -47,7 +52,7 @@
 		return {
 			delay,
 			duration,
-			easing: quadInOut,
+			easing: quadOut,
 			css(t, u) {
 				return `
 					transform: scaleX(${t});
@@ -57,9 +62,11 @@
 		};
 	}
 	setExpand('default');
-	$: if (input.length !== 0) {
-		setExpand('expandAll');
-	}
+	$effect(() => {
+		if (input.length !== 0) {
+			setExpand('expandAll');
+		}
+	});
 </script>
 
 <div class="sidebar right" transition:topFly|global={{ duration: 400 }}>
@@ -69,10 +76,10 @@
 			type="text"
 			placeholder="filter"
 			class:widther
-			on:click={() => (widther = true)}
+			onclick={() => (widther = true)}
 		/>
-		<button class="clear-input" class:widther on:click={cleanInput}><Icon option="x" /></button>
-		<button class="expand" on:click={toggle_expand}><Icon option={icon} /></button>
+		<button class="clear-input" class:widther onclick={cleanInput}><Icon option="x" /></button>
+		<button class="expand" onclick={toggle_expand}><Icon option={icon} /></button>
 	</div>
 	<div class="sibar">
 		<Sidebar {tree} {signal} filter={input} />

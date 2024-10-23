@@ -1,20 +1,22 @@
+<!-- @migration-task Error while migrating Svelte code: Can't migrate code with afterUpdate. Please migrate by hand. -->
 <script>
 	import { slide } from 'svelte/transition';
 	import { quadOut } from 'svelte/easing';
 	import Icon from '$lib/Icon/Icon.svelte';
 	import SbarContainer from '$lib/Sibar/SbarContainer.svelte';
 	import TocList from '$lib/TocList.svelte';
-	import { onMount, afterUpdate } from 'svelte';
+	import { onMount} from 'svelte';
 	import { root } from './tree';
 	import { get_childArray } from '$lib/Sibar/nav';
 	import { url } from '$lib/Sibar/stores';
 	import ThemeBtn from '$lib/ThemeBtn/ThemeBtn.svelte';
 	import BlurBtn from '$lib/BlurBtn.svelte';
 
-	let titles = 'h2,h4';
-	let headings;
-	let menuIcon = 'menu_fold';
-	let undisplay = true;
+	let {children} = $props();
+	let titles = $state('h2,h4');
+	let headings = $state();
+	let menuIcon = $state('menu_fold');
+	let undisplay = $state(true);
 	// let tree = root;
 	function flexSlide(node, { delay = 0, duration = 400 }) {
 		return {
@@ -33,10 +35,11 @@
 		};
 	}
 	onMount(() => {});
-	afterUpdate(() => {
+	$effect(()=>{
+		console.log('effect!');
 		url.set(window.location.pathname);
 		headings = document.querySelectorAll(titles);
-	});
+	})
 </script>
 
 <svelte:head>
@@ -61,14 +64,14 @@
 <div class="topContainer">
 	<div class="topInnerContainer">
 		<div class="topLeftHeader">
-			<BlurBtn on:click={() => (undisplay = !undisplay)}>
+			<BlurBtn onclick={() => {undisplay = !undisplay}}>
 				<Icon option={menuIcon} />
 			</BlurBtn>
-			<button class="svg home" type="button">
+			<BlurBtn>
 				<a href="/">
 					<Icon option={'home'} />
 				</a>
-			</button>
+			</BlurBtn>
 		</div>
 		<header class="top">
 			<nav class="top">
@@ -88,7 +91,7 @@
 		</div>
 	{/if}
 	<div class="content">
-		<slot />
+		{@render children?.()}
 	</div>
 	<div class="toc" transition:slide|global={{ axis: 'x' }}>
 		{#if headings && headings.length}
@@ -252,44 +255,6 @@
 					align-items: center;
 					& * {
 						pointer-events: auto;
-					}
-					& button.svg {
-						box-sizing: border-box;
-						margin: 0;
-						padding: 0;
-						height: var(--header-block-height);
-						width: 3rem;
-						border: none;
-						border-radius: 0.7rem;
-						outline: none;
-						background-color: transparent;
-						&:hover {
-							cursor: pointer;
-							& path {
-								fill: var(--header-text-hover-color);
-								stroke: var(--header-text-hover-color);
-							}
-						}
-						&:active {
-							& path {
-								fill: var(--header-text-active-color);
-								stroke: var(--header-text-hover-color);
-							}
-						}
-						& a {
-							display: flex;
-							width: 100%;
-							height: 100%;
-							align-items: center;
-							justify-content: center;
-						}
-					}
-				}
-				& svg {
-					vertical-align: middle;
-					& * {
-						fill: var(--all-svg-color);
-						stroke: var(--all-svg-color);
 					}
 				}
 			}
