@@ -1,16 +1,14 @@
 <script>
 	import Sidebar from './Sidebar.svelte';
-	import { run } from 'svelte/legacy';
-
 	import { getAll_propertyNames, get_childArray } from './nav';
-	import { url } from './stores';
 	import Icon from '$lib/Icon/Icon.svelte';
 	import { slide } from 'svelte/transition';
+	import { elasticIn, quadOut } from 'svelte/easing';
+	import { page } from '$app/stores';
 
 	/**
 	 * @typedef {Object} Props
 	 * @property {Tree} tree
-	 * @property {boolean} [expand]
 	 * @property {string} [preLink]
 	 * @property {boolean} [selected_item]
 	 * @property {string} [signal]
@@ -18,13 +16,7 @@
 	 */
 
 	/** @type {Props} */
-	let {
-		tree,
-		preLink = '',
-		selected_item = false,
-		signal = 'default',
-		filter = ''
-	} = $props();
+	let { tree, preLink = '', selected_item = false, signal = 'default', filter = '' } = $props();
 
 	let expand = $state(true);
 
@@ -42,7 +34,7 @@
 	 * Plain html textContent of <a>
 	 * @type {string}
 	 */
-	let title = $state();
+	let title = $state(tree._title);
 
 	/**
 	 * Icon direction
@@ -78,7 +70,7 @@
 
 	//#region Filter
 	// Filte the sidebar
-	run(() => {
+	$effect(() => {
 		if (filter.length !== 0) {
 			if (allChildNode.match(RegExp(filter, 'i')) || tree._title.match(RegExp(filter, 'i'))) {
 				visable = true;
@@ -88,7 +80,7 @@
 			const reg = RegExp(filter, 'i');
 			const match = reg.exec(tree._title);
 			title = tree._title.replace(reg, `<span class="highlightClass">${match}</span>`);
-		} else if (filter.length === 0) {
+		} else {
 			visable = true;
 			title = tree._title;
 		}
@@ -97,10 +89,10 @@
 
 	//#region Show
 	// A global signal to control the sidebar display.
-	run(() => {
+	$effect(() => {
 		if (signal === 'default') {
 			// Determin by whether the url include the current link.
-			include = $url.match(new RegExp(`^${nowLink}.*`));
+			include = $page.route.id.match(new RegExp(`^${nowLink}.*`));
 		} else if (signal === 'expandAll') {
 			include = true;
 		} else if (signal === 'foldingAll' && nowLink !== '/') {
@@ -118,22 +110,37 @@
 	});
 
 	// Set hightlight item
-	run(() => {
-		if (nowLink === $url) {
+	$effect(() => {
+		if (nowLink === $page.route.id) {
 			selected_item = true;
-		} else if ($url.match(new RegExp(`^${nowLink}.+`, 'i')) && expand === false) {
+		} else if ($page.route.id.match(new RegExp(`^${nowLink}.+`, 'i')) && expand === false) {
 			selected_item = true;
 		} else {
 			selected_item = false;
 		}
 	});
 	//#endregion
+
+	function cubicBezier(t, a, b, c, d) {
+		a = 0.01;
+		b = 0.79;
+		c = 0.45;
+		d = 0.96;
+		const t2 = t * t;
+		const t3 = t2 * t;
+		return (
+			a +
+			(-a * 3 + t * (3 * a - a * t)) * t +
+			(3 * b + t * (-6 * b + 3 * b * t)) * t +
+			(c * 3 - t * (3 * c + c * t)) * t +
+			d * t3
+		);
+	}
 </script>
 
-<!-- {@debug expand} -->
 <div id="Sidebar">
 	{#if tree && visable}
-		<div transition:slide|global class="tree-head">
+		<div transition:slide|global={{ easing: cubicBezier, duration: 400 }} class="tree-head">
 			{#if child_tree}
 				<button class:IconUp onclick={toggle_display}><Icon {option} /></button>
 				<a class="sidebar" class:selected_item href={nowLink}>{@html title}</a>
@@ -158,7 +165,7 @@
 
 <style>
 	div#Sidebar :global {
-		& ul {
+		ul {
 			list-style: none;
 			margin: 0 0 0 1.125rem; /* Half width of the button */
 			padding-left: 0;
@@ -166,10 +173,10 @@
 			/* border-top: 1px solid var(--sidebar-border-top-color); */
 			/* border-bottom: 1px solid; */
 		}
-		& a.sidebar {
+		a.sidebar {
 			text-decoration: none;
 			color: var(----main-text-color);
-			transition: all ease-in 0.2s;
+			transition: all cubic-bezier(0.01, 0.79, 0.45, 0.94) 0.4s; /*ease-in 0.2s;*/
 			&:hover {
 				text-decoration: underline;
 			}
@@ -178,16 +185,16 @@
 				color: var(--sidebar-filter-text-bolor);
 			}
 		}
-		& div.tree-head {
+		div.tree-head {
 			display: flex;
 			line-height: var(--sibar-block-height);
 		}
-		& div.sidebar-paddingblock {
+		div.sidebar-paddingblock {
 			display: inline;
 			width: 2.25rem;
 			/* Equal to the width of the button  */
 		}
-		& a.selected_item {
+		a.selected_item {
 			font-weight: bolder;
 			padding: 0 1.2rem 0 1.2rem;
 			color: var(--sidebar-selected-text-color);
@@ -195,9 +202,9 @@
 			border-left-style: var(--sidebar-selected-border-style);
 			border-color: var(--sidebar-selected-border-color);
 			/* background-color: #7e7e7657; */
-			transition: all ease-out 0.2s;
+			transition: all ease-out 0.4s;
 		}
-		& button {
+		button {
 			box-sizing: border-box;
 			margin: 0;
 			padding: 0 0.5rem 0 0.5rem;
@@ -205,7 +212,7 @@
 			border: none;
 			outline: none;
 			background-color: transparent;
-			transition: cubic-bezier(0.01, 0.79, 0.45, 0.94) 0.25s;
+			transition: cubic-bezier(0.01, 0.79, 0.45, 0.94) 0.4s;
 			transform: rotate(-90deg);
 			& svg {
 				vertical-align: middle;
@@ -217,8 +224,8 @@
 				cursor: pointer;
 			}
 		}
-		& button.IconUp {
-			transition: cubic-bezier(0.01, 0.79, 0.45, 0.94) 0.25s;
+		button.IconUp {
+			transition: cubic-bezier(0.01, 0.79, 0.45, 0.94) 0.4s;
 			transform: rotate(0deg);
 		}
 	}

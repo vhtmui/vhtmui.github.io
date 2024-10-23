@@ -3,7 +3,6 @@
 	import { get_childArray, getAll_propertyNames } from './nav';
 	import Sidebar from './Sidebar.svelte';
 	import Icon from '$lib/Icon/Icon.svelte';
-	import { url } from './stores';
 	import { quadOut } from 'svelte/easing';
 
 	/**
@@ -18,7 +17,6 @@
 	let widther = $state(false);
 	let input = $state('');
 
-	let urll = $derived(($url + '/').toString());
 	let tree = root;
 
 	function setExpand(mode) {
@@ -91,14 +89,10 @@
 		font-size: small;
 		margin-right: auto;
 		margin-left: auto;
-		/* keep width  */
 		width: min(calc((100vw - 4rem) * 0.2), calc(0.2 * (var(--main-max-width) - 4rem)));
 		padding-top: 1rem;
 		position: fixed;
-		/* top: var(--header-block-height); */
-		/* transform: translateY(var(--header-block-height)); */
 		top: var(--header-block-height);
-		/* top:0; */
 		div.sidebar-heard {
 			padding-bottom: 2rem;
 			display: flex;

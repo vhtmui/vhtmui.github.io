@@ -5,14 +5,14 @@
 	import Icon from '$lib/Icon/Icon.svelte';
 	import SbarContainer from '$lib/Sibar/SbarContainer.svelte';
 	import TocList from '$lib/TocList.svelte';
-	import { onMount} from 'svelte';
+	import { onMount } from 'svelte';
 	import { root } from './tree';
 	import { get_childArray } from '$lib/Sibar/nav';
-	import { url } from '$lib/Sibar/stores';
 	import ThemeBtn from '$lib/ThemeBtn/ThemeBtn.svelte';
 	import BlurBtn from '$lib/BlurBtn.svelte';
+	import { navigating } from '$app/stores';
 
-	let {children} = $props();
+	let { children } = $props();
 	let titles = $state('h2,h4');
 	let headings = $state();
 	let menuIcon = $state('menu_fold');
@@ -34,12 +34,15 @@
 			}
 		};
 	}
-	onMount(() => {});
-	$effect(()=>{
-		console.log('effect!');
-		url.set(window.location.pathname);
+	onMount(() => {
 		headings = document.querySelectorAll(titles);
-	})
+		console.dir(quadOut)
+		// window.addEventListener('hashchange', () => {
+		// 	console.log('effect!');
+		// 	url.set(window.location.pathname);
+		// 	headings = document.querySelectorAll(titles);
+		// });
+	});
 </script>
 
 <svelte:head>
@@ -61,10 +64,16 @@
 		});
 	</script>
 </svelte:head>
+<!-- {@debug $navigating}
+{$navigating?.to.url} -->
 <div class="topContainer">
 	<div class="topInnerContainer">
 		<div class="topLeftHeader">
-			<BlurBtn onclick={() => {undisplay = !undisplay}}>
+			<BlurBtn
+				onclick={() => {
+					undisplay = !undisplay;
+				}}
+			>
 				<Icon option={menuIcon} />
 			</BlurBtn>
 			<BlurBtn>
