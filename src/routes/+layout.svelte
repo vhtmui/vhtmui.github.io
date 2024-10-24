@@ -1,23 +1,26 @@
 <!-- @migration-task Error while migrating Svelte code: Can't migrate code with afterUpdate. Please migrate by hand. -->
 <script>
-	import { slide } from 'svelte/transition';
-	import { quadOut } from 'svelte/easing';
+	import BlurBtn from '$lib/BlurBtn/BlurBtn.svelte';
 	import Icon from '$lib/Icon/Icon.svelte';
 	import SbarContainer from '$lib/Sibar/SbarContainer.svelte';
-	import TocList from '$lib/TocList.svelte';
-	import { onMount } from 'svelte';
+	import TocList from '$lib/TocList/TocList.svelte';
 	import { root } from './tree';
 	import { get_childArray } from '$lib/Sibar/nav';
 	import ThemeBtn from '$lib/ThemeBtn/ThemeBtn.svelte';
-	import BlurBtn from '$lib/BlurBtn.svelte';
+
+	import { onMount } from 'svelte';
+	import { quadOut } from 'svelte/easing';
 	import { navigating } from '$app/stores';
+	import { slide } from 'svelte/transition';
 
 	let { children } = $props();
-	let titles = $state('h2,h4');
 	let headings = $state();
 	let menuIcon = $state('menu_fold');
 	let undisplay = $state(true);
-	// let tree = root;
+
+	let titles = 'h2,h4';
+	let BlurBtnSytle = ``;
+
 	function flexSlide(node, { delay = 0, duration = 400 }) {
 		return {
 			delay,
@@ -34,14 +37,10 @@
 			}
 		};
 	}
-	onMount(() => {
+	onMount(() => {});
+	$effect(() => {
+		$navigating;
 		headings = document.querySelectorAll(titles);
-		console.dir(quadOut)
-		// window.addEventListener('hashchange', () => {
-		// 	console.log('effect!');
-		// 	url.set(window.location.pathname);
-		// 	headings = document.querySelectorAll(titles);
-		// });
 	});
 </script>
 
@@ -69,13 +68,16 @@
 <div class="topContainer">
 	<div class="topInnerContainer">
 		<div class="topLeftHeader">
-			<BlurBtn
-				onclick={() => {
-					undisplay = !undisplay;
-				}}
-			>
-				<Icon option={menuIcon} />
-			</BlurBtn>
+			{#key undisplay}
+				<BlurBtn
+					onclick={() => {
+						undisplay = !undisplay;
+						!undisplay ? (menuIcon = 'menu_unfold') : (menuIcon = 'menu_fold');
+					}}
+				>
+					<Icon option={menuIcon} />
+				</BlurBtn>
+			{/key}
 			<BlurBtn>
 				<a href="/">
 					<Icon option={'home'} />
@@ -96,7 +98,6 @@
 	{#if undisplay}
 		<div class="sidebar-container" transition:flexSlide|global={{ duration: 400 }}>
 			<SbarContainer signal="expandAll" />
-			<!-- <div>hhhh</div> -->
 		</div>
 	{/if}
 	<div class="content">
@@ -268,7 +269,6 @@
 				}
 			}
 		}
-
 		main {
 			margin-top: 0;
 			min-height: 100vh;

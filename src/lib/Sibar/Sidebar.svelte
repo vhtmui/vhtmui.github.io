@@ -18,7 +18,7 @@
 	/** @type {Props} */
 	let { tree, preLink = '', selected_item = false, signal = 'default', filter = '' } = $props();
 
-	let expand = $state(true);
+	let expand = $state(false);
 
 	/**
 	 * Indicate whether current node visable

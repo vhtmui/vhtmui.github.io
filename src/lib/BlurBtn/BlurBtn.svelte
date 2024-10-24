@@ -1,4 +1,6 @@
 <script>
+	import { fade, slide } from 'svelte/transition';
+
 	/**
 	 * @typedef {Object} Props
 	 * @property {import('svelte').Snippet} [children]
@@ -6,9 +8,19 @@
 
 	/** @type {Props} */
 	let props = $props();
+
+	let d = $state('static');
 </script>
 
-<button {...props}>
+{@debug d}
+<button
+	style="position:{d}"
+	transition:slide={{ axis: 'x' }}
+	onoutrostart={() => {
+		d = 'absolute';
+	}}
+	{...props}
+>
 	{@render props.children?.()}
 </button>
 
