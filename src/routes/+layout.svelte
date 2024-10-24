@@ -180,7 +180,7 @@
 				}
 			}
 		}
-		:global(*) {
+		* {
 			scrollbar-color: var(--scrollbar-color) #00000000;
 			text-wrap: wrap;
 			scroll-behavior: smooth;

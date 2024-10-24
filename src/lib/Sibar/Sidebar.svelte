@@ -3,7 +3,7 @@
 	import { getAll_propertyNames, get_childArray } from './nav';
 	import Icon from '$lib/Icon/Icon.svelte';
 	import { slide } from 'svelte/transition';
-	import { elasticIn, quadOut } from 'svelte/easing';
+	import { quadOut } from 'svelte/easing';
 	import { page } from '$app/stores';
 
 	/**
@@ -120,27 +120,11 @@
 		}
 	});
 	//#endregion
-
-	function cubicBezier(t, a, b, c, d) {
-		a = 0.01;
-		b = 0.79;
-		c = 0.45;
-		d = 0.96;
-		const t2 = t * t;
-		const t3 = t2 * t;
-		return (
-			a +
-			(-a * 3 + t * (3 * a - a * t)) * t +
-			(3 * b + t * (-6 * b + 3 * b * t)) * t +
-			(c * 3 - t * (3 * c + c * t)) * t +
-			d * t3
-		);
-	}
 </script>
 
 <div id="Sidebar">
 	{#if tree && visable}
-		<div transition:slide|global={{ easing: cubicBezier, duration: 400 }} class="tree-head">
+		<div transition:slide|global={{ easing: quadOut, duration: 400 }} class="tree-head">
 			{#if child_tree}
 				<button class:IconUp onclick={toggle_display}><Icon {option} /></button>
 				<a class="sidebar" class:selected_item href={nowLink}>{@html title}</a>
