@@ -46,7 +46,7 @@
 		input = '';
 		widther = false;
 	}
-	function topFly(node, { delay = 0, duration = 400 }) {
+	function topFly(node, { delay = 0, duration = 200 }) {
 		return {
 			delay,
 			duration,
@@ -67,7 +67,7 @@
 	});
 </script>
 
-<div class="sidebar right" transition:topFly|global={{ duration: 400 }}>
+<div class="sidebar right" transition:topFly|global={{ duration: 200 }}>
 	<div class="sidebar-heard">
 		<input
 			bind:value={input}

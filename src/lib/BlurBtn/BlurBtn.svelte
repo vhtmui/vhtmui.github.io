@@ -9,16 +9,9 @@
 	/** @type {Props} */
 	let props = $props();
 
-	let d = $state('static');
 </script>
 
-{@debug d}
 <button
-	style="position:{d}"
-	transition:slide={{ axis: 'x' }}
-	onoutrostart={() => {
-		d = 'absolute';
-	}}
 	{...props}
 >
 	{@render props.children?.()}
@@ -34,7 +27,8 @@
 		border: none;
 		border-radius: 0.7rem;
 		outline: none;
-		background-color: transparent;
+		background-color: var(--header-btn-bg-color);
+		backdrop-filter: blur(10px);
 		&:hover {
 			cursor: pointer;
 			& path {

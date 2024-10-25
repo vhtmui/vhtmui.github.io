@@ -17,9 +17,9 @@
 	let headings = $state();
 	let menuIcon = $state('menu_fold');
 	let undisplay = $state(true);
+	let BlurBtnSytle = $state();
 
 	let titles = 'h2,h4';
-	let BlurBtnSytle = ``;
 
 	function flexSlide(node, { delay = 0, duration = 400 }) {
 		return {
@@ -63,21 +63,20 @@
 		});
 	</script>
 </svelte:head>
-<!-- {@debug $navigating}
-{$navigating?.to.url} -->
 <div class="topContainer">
 	<div class="topInnerContainer">
 		<div class="topLeftHeader">
-			{#key undisplay}
-				<BlurBtn
-					onclick={() => {
-						undisplay = !undisplay;
-						!undisplay ? (menuIcon = 'menu_unfold') : (menuIcon = 'menu_fold');
-					}}
-				>
-					<Icon option={menuIcon} />
-				</BlurBtn>
-			{/key}
+			<BlurBtn
+				style={BlurBtnSytle}
+				onclick={() => {
+					undisplay
+						? (BlurBtnSytle = 'transform: rotateY(180deg); transition: transform 300ms ease-out;')
+						: (BlurBtnSytle = 'transform: rotateY(0deg); transition: transform 300ms ease-out;');
+					undisplay = !undisplay;
+				}}
+			>
+				<Icon option={menuIcon} />
+			</BlurBtn>
 			<BlurBtn>
 				<a href="/">
 					<Icon option={'home'} />
@@ -121,7 +120,7 @@
 			--header-block-hover-bg-color: #8cb4ff70;
 			--header-btn-bg-color: rgb(255, 255, 255, 50%);
 			--header-btn-theme-bg-color: #ffc684;
-			--main-bg-color: #ffffff;
+			--main-bg-color: rgb(255, 255, 255);
 			--main-text-color: #1b1b1b;
 			--main-a-color: #0069c2;
 			--main-visited-a-color: var(--main-a-color);
@@ -344,23 +343,5 @@
 				display: block;
 			}
 		}
-		/* @media (min-width: 1200px) {
-		main {
-			display: grid;
-			grid-template-areas: 'Lsidebar content Rsidebar';
-			gap: 2rem;
-			grid-template-columns: minmax(0,1fr) minmax(0, 2.5fr) minmax(8rem,0.8fr);
-			padding: 0.5rem 2rem 0 2rem;
-			margin: auto;
-			max-width: 1660px;
-		}
-		main div.sidebar-container {
-			display: block;
-			width: 100%;
-		}
-		main div.toc {
-			display: block;
-		}
-	} */
 	}
 </style>
