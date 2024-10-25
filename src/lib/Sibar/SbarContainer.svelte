@@ -67,7 +67,7 @@
 	});
 </script>
 
-<div class="sidebar right" transition:topFly|global={{ duration: 200 }}>
+<div class="sidebar right" transition:topFly|global={{ duration: 300, delay: 70 }}>
 	<div class="sidebar-heard">
 		<input
 			bind:value={input}
@@ -153,7 +153,7 @@
 				border: none;
 				outline: none;
 				background-color: transparent;
-				transition: transform 0.3s ease;
+				transition: transform 300ms ease 70ms;
 				transform: rotate(0deg);
 				&:hover {
 					cursor: pointer;

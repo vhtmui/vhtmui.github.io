@@ -124,7 +124,7 @@
 
 <div id="Sidebar">
 	{#if tree && visable}
-		<div transition:slide|global={{ easing: quadOut, duration: 200 }} class="tree-head">
+		<div transition:slide|global={{ easing: quadOut, duration: 300, delay: 70 }} class="tree-head">
 			{#if child_tree}
 				<button class:IconUp onclick={toggle_display}><Icon {option} /></button>
 				<a class="sidebar" class:selected_item href={nowLink}>{@html title}</a>
@@ -154,13 +154,11 @@
 			margin: 0 0 0 1.125rem; /* Half width of the button */
 			padding-left: 0;
 			border-left: 1px solid var(--sidebar-border-left-color);
-			/* border-top: 1px solid var(--sidebar-border-top-color); */
-			/* border-bottom: 1px solid; */
 		}
 		a.sidebar {
 			text-decoration: none;
 			color: var(----main-text-color);
-			transition: all cubic-bezier(0.165, 0.84, 0.44, 1) 0.2s; /*ease-in 0.2s;*/
+			transition: all cubic-bezier(0.165, 0.84, 0.44, 1) 300ms 70ms; 
 			&:hover {
 				text-decoration: underline;
 			}
@@ -185,8 +183,7 @@
 			border-left: 10px;
 			border-left-style: var(--sidebar-selected-border-style);
 			border-color: var(--sidebar-selected-border-color);
-			/* background-color: #7e7e7657; */
-			transition: all cubic-bezier(0.165, 0.84, 0.44, 1) 0.2s;
+			transition: all cubic-bezier(0.165, 0.84, 0.44, 1) 300ms 70ms;
 		}
 		button {
 			box-sizing: border-box;
@@ -196,7 +193,7 @@
 			border: none;
 			outline: none;
 			background-color: transparent;
-			transition: cubic-bezier(0.165, 0.84, 0.44, 1) 0.2s;
+			transition: cubic-bezier(0.165, 0.84, 0.44, 1) 300ms 70ms;
 			transform: rotate(-90deg);
 			& svg {
 				vertical-align: middle;
@@ -209,7 +206,7 @@
 			}
 		}
 		button.IconUp {
-			transition: cubic-bezier(0.165, 0.84, 0.44, 1) 0.2s;
+			transition: cubic-bezier(0.165, 0.84, 0.44, 1) 300ms 70ms;
 			transform: rotate(0deg);
 		}
 	}

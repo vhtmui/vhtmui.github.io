@@ -100,12 +100,12 @@
 				margin: 0;
 				padding: 0;
 				line-height: var(--header-block-height);
-				border: none;
+				border: 0px solid;
 				border-radius: 0;
 				outline: none;
 				background-color: transparent;
 				opacity: 0;
-				transition: all cubic-bezier(0.165, 0.84, 0.44, 1) 200ms;
+				transition: all cubic-bezier(0.165, 0.84, 0.44, 1) 300ms 70ms;
 				&:hover {
 					cursor: pointer;
 					color: var(--header-text-hover-color);
@@ -128,10 +128,14 @@
 					opacity: 1;
 					transition: all cubic-bezier(0.165, 0.84, 0.44, 1) 300ms 70ms;
 					visibility: visible;
+					border: none;
 					--ThemeBtn-border: 1px solid var(--header-border-color);
 					&:nth-child(1 of :not(.selected)) {
 						top: var(--header-block-height);
 						border-top: var(--ThemeBtn-border);
+						&::before{
+
+						}
 					}
 					&:nth-child(2 of :not(.selected)) {
 						top: calc(2 * var(--header-block-height));

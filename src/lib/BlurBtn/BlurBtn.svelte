@@ -8,12 +8,9 @@
 
 	/** @type {Props} */
 	let props = $props();
-
 </script>
 
-<button
-	{...props}
->
+<button {...props}>
 	{@render props.children?.()}
 </button>
 
@@ -29,6 +26,9 @@
 		outline: none;
 		background-color: var(--header-btn-bg-color);
 		backdrop-filter: blur(10px);
+		display: flex;
+		justify-content: center;
+		align-items: center;
 		&:hover {
 			cursor: pointer;
 			& path {

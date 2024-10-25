@@ -18,6 +18,7 @@
 	let menuIcon = $state('menu_fold');
 	let undisplay = $state(true);
 	let BlurBtnSytle = $state();
+	let hiddeHead = $state(false);
 
 	let titles = 'h2,h4';
 
@@ -37,7 +38,27 @@
 			}
 		};
 	}
-	onMount(() => {});
+	onMount(() => {
+		let timeoutId = null;
+		let lastScrollY = window.scrollY;
+		console.log(lastScrollY);
+		function hiddeHeader() {
+			if (timeoutId) {
+				clearTimeout(timeoutId);
+			}
+			timeoutId = setTimeout(() => {
+				const offset = window.scrollY - lastScrollY;
+				console.log(`offset:${offset}\nlastScrolly:${lastScrollY}`);
+				if (offset > 0) {
+					hiddeHead = true;
+				} else if (offset < 0) {
+					hiddeHead = false;
+				}
+				lastScrollY = window.scrollY;
+			}, 100);
+		}
+		addEventListener('scroll', hiddeHeader);
+	});
 	$effect(() => {
 		$navigating;
 		headings = document.querySelectorAll(titles);
@@ -63,15 +84,17 @@
 		});
 	</script>
 </svelte:head>
-<div class="topContainer">
+<div class="topContainer" >
 	<div class="topInnerContainer">
 		<div class="topLeftHeader">
 			<BlurBtn
 				style={BlurBtnSytle}
 				onclick={() => {
 					undisplay
-						? (BlurBtnSytle = 'transform: rotateY(180deg); transition: transform 300ms ease-out;')
-						: (BlurBtnSytle = 'transform: rotateY(0deg); transition: transform 300ms ease-out;');
+						? (BlurBtnSytle =
+								'transform: rotateY(180deg); transition: transform 300ms ease-out 70ms;')
+						: (BlurBtnSytle =
+								'transform: rotateY(0deg); transition: transform 300ms ease-out 70ms;');
 					undisplay = !undisplay;
 				}}
 			>
@@ -95,14 +118,14 @@
 </div>
 <main>
 	{#if undisplay}
-		<div class="sidebar-container" transition:flexSlide|global={{ duration: 400 }}>
+		<div class="sidebar-container" transition:flexSlide|global={{ duration: 300, delay: 70 }}>
 			<SbarContainer signal="expandAll" />
 		</div>
 	{/if}
 	<div class="content">
 		{@render children?.()}
 	</div>
-	<div class="toc" transition:slide|global={{ axis: 'x' }}>
+	<div class="toc">
 		{#if headings && headings.length}
 			<TocList {headings} indent="0.5" />
 		{/if}
@@ -209,8 +232,13 @@
 			color: var(--header-text-color);
 			background-color: var(--header-nav-bg-color);
 			position: sticky;
-			top: 0;
+			top: calc(0rem - var(--header-block-height));
+			transition: top 100ms linear;
 			pointer-events: none;
+			&.hiddeHead {
+				top: calc(0rem - var(--header-block-height));
+				transition: top 100ms linear;
+			}
 			& div.topInnerContainer {
 				max-width: 1600px;
 				margin-left: auto;
