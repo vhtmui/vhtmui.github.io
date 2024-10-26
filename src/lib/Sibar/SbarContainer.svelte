@@ -31,7 +31,7 @@
 				break;
 			default:
 				signal = 'default';
-				icon = 'minus';
+				icon = 'plus';
 				break;
 		}
 	}

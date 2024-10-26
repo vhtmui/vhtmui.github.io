@@ -41,14 +41,12 @@
 	onMount(() => {
 		let timeoutId = null;
 		let lastScrollY = window.scrollY;
-		console.log(lastScrollY);
 		function hiddeHeader() {
 			if (timeoutId) {
 				clearTimeout(timeoutId);
 			}
 			timeoutId = setTimeout(() => {
 				const offset = window.scrollY - lastScrollY;
-				console.log(`offset:${offset}\nlastScrolly:${lastScrollY}`);
 				if (offset > 0) {
 					hiddeHead = true;
 				} else if (offset < 0) {
@@ -84,7 +82,7 @@
 		});
 	</script>
 </svelte:head>
-<div class="topContainer" >
+<div class="topContainer" class:hiddeHead>
 	<div class="topInnerContainer">
 		<div class="topLeftHeader">
 			<BlurBtn
@@ -232,7 +230,7 @@
 			color: var(--header-text-color);
 			background-color: var(--header-nav-bg-color);
 			position: sticky;
-			top: calc(0rem - var(--header-block-height));
+			top: 0; 
 			transition: top 100ms linear;
 			pointer-events: none;
 			&.hiddeHead {
