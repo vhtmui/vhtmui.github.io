@@ -25,7 +25,7 @@ export function get_childArray(obj) {
 }
 
 /**
- * return child objects from a parent object.
+ * return a string consisting of all the child objects of the parent object.
  * @param {Tree} obj
  * @returns {string}
  */
