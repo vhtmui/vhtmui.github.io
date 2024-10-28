@@ -127,7 +127,6 @@
 					document.documentElement.setAttribute('data-theme', 'Light');
 				}
 			}
-			rt;
 		});
 	</script>
 </svelte:head>
