@@ -87,12 +87,13 @@
 <style>
 	div.sidebar.right :global {
 		font-size: small;
-		margin-right: auto;
-		margin-left: auto;
-		width: min(calc((100vw - 4rem) * 0.2), calc(0.2 * (var(--main-max-width) - 4rem)));
+		/* margin-right: auto;
+		margin-left: auto; */
+		/* width: min(calc((100% - 4rem) * 0.2), calc(0.2 * (var(--main-max-width) - 4rem))); */
+		width: 100%;
 		padding-top: 1rem;
-		position: fixed;
-		top: var(--header-block-height);
+		/* position: fixed; */
+		/* top: var(--header-block-height); */
 		div.sidebar-heard {
 			padding-bottom: 2rem;
 			display: flex;

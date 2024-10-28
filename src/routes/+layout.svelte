@@ -20,7 +20,11 @@
 	let BlurBtnSytle = $state();
 	let hiddeHead = $state(false);
 
+	let tocBlock;
 	let titles = 'h2,h4';
+	let tocDisplay = $state();
+	let timeoutId = null;
+	let lastScrollY;
 
 	function flexSlide(node, { delay = 0, duration = 400 }) {
 		return {
@@ -38,28 +42,41 @@
 			}
 		};
 	}
-	onMount(() => {
-		let timeoutId = null;
-		let lastScrollY = window.scrollY;
-		function hiddeHeader() {
-			if (timeoutId) {
-				clearTimeout(timeoutId);
-			}
-			timeoutId = setTimeout(() => {
-				const offset = window.scrollY - lastScrollY;
-				if (offset > 0) {
-					hiddeHead = true;
-				} else if (offset < 0) {
-					hiddeHead = false;
-				}
-				lastScrollY = window.scrollY;
-			}, 100);
+
+	function hiddeHeader() {
+		if (timeoutId) {
+			clearTimeout(timeoutId);
 		}
+		timeoutId = setTimeout(() => {
+			const offset = window.scrollY - lastScrollY;
+			if (offset > 0) {
+				hiddeHead = true;
+			} else if (offset < 0) {
+				hiddeHead = false;
+			}
+			lastScrollY = window.scrollY;
+		}, 100);
+	}	
+
+	onMount(() => {
+		timeoutId = null;
+		lastScrollY = window.scrollY;
+		tocDisplay = window.getComputedStyle(tocBlock).display;
 		addEventListener('scroll', hiddeHeader);
+		addEventListener('resize', () => {
+			console.log('resizing');
+			setTimeout(() => {
+				tocDisplay = window.getComputedStyle(tocBlock).display;
+			}, 100);
+		});
 	});
 	$effect(() => {
 		$navigating;
-		headings = document.querySelectorAll(titles);
+		if (tocDisplay !== 'none') {
+			headings = document.querySelectorAll(titles);
+		} else {
+			headings = null;
+		}
 	});
 </script>
 
@@ -79,6 +96,8 @@
 					document.documentElement.setAttribute('data-theme', 'Light');
 				}
 			}
+			let sibarWidth = document.querySelector('div.sidebar-container');
+			
 		});
 	</script>
 </svelte:head>
@@ -86,6 +105,7 @@
 	<div class="topInnerContainer">
 		<div class="topLeftHeader">
 			<BlurBtn
+				class="sibarBtn"
 				style={BlurBtnSytle}
 				onclick={() => {
 					undisplay
@@ -98,7 +118,7 @@
 			>
 				<Icon option={menuIcon} />
 			</BlurBtn>
-			<BlurBtn>
+			<BlurBtn style="margin-left: 3rem">
 				<a href="/">
 					<Icon option={'home'} />
 				</a>
@@ -116,15 +136,32 @@
 </div>
 <main>
 	{#if undisplay}
-		<div class="sidebar-container" transition:flexSlide|global={{ duration: 300, delay: 70 }}>
-			<SbarContainer signal="expandAll" />
+		<div
+			onoutroend={() => {
+				addEventListener('scroll', hiddeHeader);
+			}}
+			onintroend={() => {
+				addEventListener('scroll', hiddeHeader);
+			}}
+			onoutrostart={() => {
+				removeEventListener('scroll', hiddeHeader);
+			}}
+			onintrostart={() => {
+				removeEventListener('scroll', hiddeHeader);
+			}}
+			class="sidebar-container"
+			transition:flexSlide|global={{ duration: 300, delay: 70 }}
+		>
+			<div class="sibar-innercontainer">
+				<SbarContainer signal="expandAll" />
+			</div>
 		</div>
 	{/if}
 	<div class="content">
 		{@render children?.()}
 	</div>
-	<div class="toc">
-		{#if headings && headings.length}
+	<div class="toc" bind:this={tocBlock}>
+		{#if headings && headings?.length}
 			<TocList {headings} indent="0.5" />
 		{/if}
 	</div>
@@ -193,6 +230,7 @@
 			--sibar-block-height: 2.5rem;
 			--all-svg-width: 1.25rem;
 			--main-max-width: 1660px;
+			--sibar-width: ;
 			& pre {
 				overflow: auto;
 				text-wrap: nowrap;
@@ -230,7 +268,7 @@
 			color: var(--header-text-color);
 			background-color: var(--header-nav-bg-color);
 			position: sticky;
-			top: 0; 
+			top: 0;
 			transition: top 100ms linear;
 			pointer-events: none;
 			&.hiddeHead {
@@ -239,6 +277,7 @@
 			}
 			& div.topInnerContainer {
 				max-width: 1600px;
+				padding: 0 1rem 0 1rem;
 				margin-left: auto;
 				margin-right: auto;
 				display: flex;
@@ -291,6 +330,9 @@
 					& * {
 						pointer-events: auto;
 					}
+					& .sibarBtn {
+						position: fixed;
+					}
 				}
 			}
 		}
@@ -299,7 +341,6 @@
 			min-height: 100vh;
 			color: var(--main-text-color);
 			& div.content {
-				padding: 0 3rem;
 				& a {
 					color: var(--main-a-color);
 					&:visited {
@@ -308,10 +349,17 @@
 				}
 			}
 			& div.sidebar-container {
+				padding-right: 1%;
 				display: none;
 				width: 100%;
+				& div.sibar-innercontainer {
+					position: fixed;
+					top: var(--header-block-height);
+					width: var(--sibar-width);
+				}
 			}
 			& div.toc {
+				padding-left: 3%;
 				display: none;
 			}
 			& h1,
@@ -336,17 +384,21 @@
 
 		@media (min-width: 768px) and (max-width: 1199px) {
 			main {
-				display: grid;
-				grid-template-areas: 'Lsidebar content';
-				gap: 2rem;
-				grid-template-columns: minmax(0, 1fr) minmax(0, 2.5fr);
+				display: flex;
+				flex-wrap: nowrap;
 				padding: 0.5rem 2rem 0 2rem;
-			}
-			main div.sidebar-container {
-				display: block;
-			}
-			main div.toc {
-				display: none;
+				margin: auto;
+				max-width: var(--main-max-width);
+				& div.sidebar-container {
+					flex: 1;
+					display: block;
+				}
+				& div.content {
+					flex: 3;
+				}
+				& main div.toc {
+					display: none;
+				}
 			}
 		}
 		@media (min-width: 1200px) {
@@ -356,17 +408,17 @@
 				padding: 0.5rem 2rem 0 2rem;
 				margin: auto;
 				max-width: var(--main-max-width);
-			}
-			main div.sidebar-container {
-				flex: 1;
-				display: block;
-			}
-			main div.content {
-				flex: 3;
-			}
-			main div.toc {
-				flex: 1;
-				display: block;
+				& div.sidebar-container {
+					flex: 1;
+					display: block;
+				}
+				& div.content {
+					flex: 3;
+				}
+				& div.toc {
+					flex: 1;
+					display: block;
+				}
 			}
 		}
 	}

@@ -133,9 +133,6 @@
 					&:nth-child(1 of :not(.selected)) {
 						top: var(--header-block-height);
 						border-top: var(--ThemeBtn-border);
-						&::before{
-
-						}
 					}
 					&:nth-child(2 of :not(.selected)) {
 						top: calc(2 * var(--header-block-height));

@@ -1,5 +1,5 @@
 <script>
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 
 	/**
 	 * @typedef {Object} Props
@@ -16,27 +16,30 @@
 		return n;
 	}
 
-	onMount(() => {
-		let timeoutId = null;
-		function setTocItem() {
-			if (timeoutId) {
-				clearTimeout(timeoutId);
-			}
-			timeoutId = setTimeout(() => {
-				const a = document.querySelectorAll('a.tocItem');
-				let flag = false;
-				for (let index = headings.length - 1; index >= 0; index--) {
-					if (window.scrollY - headings[index].offsetTop > -scrollTrigger && !flag) {
-						a[index].classList.add('scrollTo');
-						flag = true;
-					} else {
-						a[index].classList.remove('scrollTo');
-					}
-				}
-			},100);
+	let timeoutId = null;
+	function setTocItem() {
+		if (timeoutId) {
+			clearTimeout(timeoutId);
 		}
+		timeoutId = setTimeout(() => {
+			const a = document.querySelectorAll('a.tocItem');
+			let flag = false;
+			for (let index = headings?.length - 1; index >= 0; index--) {
+				if (window.scrollY - headings[index].offsetTop > -scrollTrigger && !flag) {
+					a[index].classList.add('scrollTo');
+					flag = true;
+				} else {
+					a[index].classList.remove('scrollTo');
+				}
+			}
+		}, 100);
+	}
+	onMount(() => {
 		addEventListener('scroll', setTocItem);
 		setTocItem();
+	});
+	onDestroy(() => {
+		removeEventListener('scroll', setTocItem);
 	});
 </script>
 
