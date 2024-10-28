@@ -92,6 +92,9 @@
 		/* width: min(calc((100% - 4rem) * 0.2), calc(0.2 * (var(--main-max-width) - 4rem))); */
 		width: 100%;
 		padding-top: 1rem;
+		padding-right: 1vw;
+		/* max-height: 100vh;
+		overflow: auto; */
 		/* position: fixed; */
 		/* top: var(--header-block-height); */
 		div.sidebar-heard {
@@ -122,7 +125,7 @@
 			& button.clear-input {
 				visibility: hidden;
 				position: absolute;
-				right: 3.3rem;
+				right: calc(3.3rem + 1vw);
 				box-sizing: border-box;
 				margin: 0;
 				padding: 0 0.5rem 0 0.5rem;
@@ -173,6 +176,7 @@
 			}
 		}
 		div.sibar {
+			max-height: calc(100vh - 8rem);
 			overflow-y: auto;
 			padding-top: 1rem;
 			-webkit-mask-image: linear-gradient(180deg, #0000, #000 1rem calc(100% - 3rem), #0000);

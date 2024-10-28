@@ -12,19 +12,18 @@
 	import { quadOut } from 'svelte/easing';
 	import { navigating } from '$app/stores';
 	import { slide } from 'svelte/transition';
+	import Page from './+page.svelte';
 
 	let { children } = $props();
 	let headings = $state();
 	let menuIcon = $state('menu_fold');
-	let undisplay = $state(true);
+	let display = $state(true);
 	let BlurBtnSytle = $state();
 	let hiddeHead = $state(false);
 
 	let tocBlock;
 	let titles = 'h2,h4';
 	let tocDisplay = $state();
-	let timeoutId = null;
-	let lastScrollY;
 
 	function flexSlide(node, { delay = 0, duration = 400 }) {
 		return {
@@ -32,17 +31,21 @@
 			duration,
 			easing: quadOut,
 			css(t, u) {
-				const grow = window.getComputedStyle(node).flexGrow;
+				const flex = window.getComputedStyle(node).flexGrow;
+				const padding_r = window.getComputedStyle(node).paddingRight.slice(0, -2);
 
 				return `
             overflow: hidden;
             min-width: 0;
-            flex: ${Math.round(t * 100 * grow) / 100} 1 0px;
+            flex: ${Math.round(t * 100 * flex) / 100} 1 0px;
+			padding-right: ${padding_r * t}px;
         `;
 			}
 		};
 	}
 
+	let lastScrollY;
+	let timeoutId = null;
 	function hiddeHeader() {
 		if (timeoutId) {
 			clearTimeout(timeoutId);
@@ -56,22 +59,50 @@
 			}
 			lastScrollY = window.scrollY;
 		}, 100);
-	}	
+	}
 
 	onMount(() => {
-		timeoutId = null;
+		const mediaQuery = window.matchMedia('(max-width: 767px)');
+		mediaQuery.addListener(function (mql) {
+			console.log('match!');
+			if (mql.matches) {
+				display = false;
+			} else {
+				display = true;
+			}
+		});
+		if (mediaQuery.matches) {
+			display = false;
+			BlurBtnSytle = 'transform: rotateY(180deg); transition: transform 300ms ease-out 70ms;';
+		}
+
+		/**
+		 * hide topbar while scroll down, and display it while scroll up.
+		 */
 		lastScrollY = window.scrollY;
-		tocDisplay = window.getComputedStyle(tocBlock).display;
 		addEventListener('scroll', hiddeHeader);
+
+		/**
+		 * doing things while resizing
+		 *
+		 * destroy toclist component while the container display none
+		 */
+		let timeoutId2 = null;
+		tocDisplay = window.getComputedStyle(tocBlock).display;
 		addEventListener('resize', () => {
-			console.log('resizing');
-			setTimeout(() => {
+			timeoutId2 && clearTimeout(timeoutId2);
+			timeoutId2 = setTimeout(() => {
 				tocDisplay = window.getComputedStyle(tocBlock).display;
 			}, 100);
 		});
 	});
 	$effect(() => {
+		// trigger effect while navigating
 		$navigating;
+
+		/**
+		 * destroy toclist component while the container display none
+		 */
 		if (tocDisplay !== 'none') {
 			headings = document.querySelectorAll(titles);
 		} else {
@@ -96,11 +127,11 @@
 					document.documentElement.setAttribute('data-theme', 'Light');
 				}
 			}
-			let sibarWidth = document.querySelector('div.sidebar-container');
-			
+			rt;
 		});
 	</script>
 </svelte:head>
+
 <div class="topContainer" class:hiddeHead>
 	<div class="topInnerContainer">
 		<div class="topLeftHeader">
@@ -108,12 +139,12 @@
 				class="sibarBtn"
 				style={BlurBtnSytle}
 				onclick={() => {
-					undisplay
+					display
 						? (BlurBtnSytle =
 								'transform: rotateY(180deg); transition: transform 300ms ease-out 70ms;')
 						: (BlurBtnSytle =
 								'transform: rotateY(0deg); transition: transform 300ms ease-out 70ms;');
-					undisplay = !undisplay;
+					display = !display;
 				}}
 			>
 				<Icon option={menuIcon} />
@@ -135,9 +166,13 @@
 	</div>
 </div>
 <main>
-	{#if undisplay}
+	{#if display}
 		<div
+			class="sidebar-container"
 			onoutroend={() => {
+				/**
+				 * prevent scrolled event while animation displaying.
+				 */
 				addEventListener('scroll', hiddeHeader);
 			}}
 			onintroend={() => {
@@ -149,7 +184,6 @@
 			onintrostart={() => {
 				removeEventListener('scroll', hiddeHeader);
 			}}
-			class="sidebar-container"
 			transition:flexSlide|global={{ duration: 300, delay: 70 }}
 		>
 			<div class="sibar-innercontainer">
@@ -230,7 +264,6 @@
 			--sibar-block-height: 2.5rem;
 			--all-svg-width: 1.25rem;
 			--main-max-width: 1660px;
-			--sibar-width: ;
 			& pre {
 				overflow: auto;
 				text-wrap: nowrap;
@@ -245,7 +278,7 @@
 			scroll-behavior: smooth;
 		}
 		:root {
-			word-break: break-all;
+			word-break: break-word;
 			font-family: 'Intel', 'Microsoft YaHei', Arial, sans-serif;
 			line-height: 1.75;
 			font-weight: normal;
@@ -276,8 +309,8 @@
 				transition: top 100ms linear;
 			}
 			& div.topInnerContainer {
-				max-width: 1600px;
-				padding: 0 1rem 0 1rem;
+				max-width: 1660px;
+				padding: 0 1rem 0 0;
 				margin-left: auto;
 				margin-right: auto;
 				display: flex;
@@ -340,7 +373,14 @@
 			margin-top: 0;
 			min-height: 100vh;
 			color: var(--main-text-color);
+			display: flex;
+			flex-wrap: nowrap;
+			padding: 0.5rem 1rem 0 2rem;
+			margin: auto;
+			max-width: 100%;
 			& div.content {
+				max-width: 100%;
+				overflow-wrap: break-word;
 				& a {
 					color: var(--main-a-color);
 					&:visited {
@@ -349,13 +389,15 @@
 				}
 			}
 			& div.sidebar-container {
-				padding-right: 1%;
-				display: none;
-				width: 100%;
-				& div.sibar-innercontainer {
+				padding-right: 0;
+				display: block;
+				width: 0;
+				& .sibar-innercontainer {
+					background-color: var(--header-btn-bg-color);
+					backdrop-filter: blur(10px);
 					position: fixed;
-					top: var(--header-block-height);
-					width: var(--sibar-width);
+					border-radius: 1rem;
+					min-width: 85%;
 				}
 			}
 			& div.toc {
@@ -386,12 +428,21 @@
 			main {
 				display: flex;
 				flex-wrap: nowrap;
-				padding: 0.5rem 2rem 0 2rem;
+				padding: 0.5rem 2rem 0 4rem;
 				margin: auto;
 				max-width: var(--main-max-width);
 				& div.sidebar-container {
+					padding-right: 1%;
 					flex: 1;
 					display: block;
+					& .sibar-innercontainer {
+						width: calc((100% - 6rem) * 0.25 - 1%);
+						position: fixed;
+						top: var(--header-block-height);
+						background-color: transparent;
+						backdrop-filter: none;
+						min-width: initial;
+					}
 				}
 				& div.content {
 					flex: 3;
@@ -405,12 +456,21 @@
 			main {
 				display: flex;
 				flex-wrap: nowrap;
-				padding: 0.5rem 2rem 0 2rem;
+				padding: 0.5rem 2rem 0 4rem;
 				margin: auto;
 				max-width: var(--main-max-width);
 				& div.sidebar-container {
+					padding-right: 1%;
 					flex: 1;
 					display: block;
+					& .sibar-innercontainer {
+						width: calc((100% - 6rem) * 0.2 - 1%);
+						position: fixed;
+						top: var(--header-block-height);
+						background-color: transparent;
+						backdrop-filter: none;
+						min-width: initial;
+					}
 				}
 				& div.content {
 					flex: 3;
