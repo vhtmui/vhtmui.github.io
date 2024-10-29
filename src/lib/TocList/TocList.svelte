@@ -32,7 +32,7 @@
 					a[index].classList.remove('scrollTo');
 				}
 			}
-		}, 100);
+		}, 0);
 	}
 	onMount(() => {
 		addEventListener('scroll', setTocItem);

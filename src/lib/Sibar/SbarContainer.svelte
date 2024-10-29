@@ -1,8 +1,10 @@
 <script>
-	import { root } from '../../routes/tree';
-	import { get_childArray, getAll_propertyNames } from './nav';
 	import Sidebar from './Sidebar.svelte';
 	import Icon from '$lib/Icon/Icon.svelte';
+
+	import { root } from '../../routes/tree';
+	import { get_childArray, getAll_propertyNames } from './nav';
+	
 	import { quadOut } from 'svelte/easing';
 
 	/**
@@ -110,6 +112,7 @@
 				font-family: 'Intel', 'Microsoft YaHei', Arial, sans-serif;
 				height: 2rem;
 				width: 5.5rem;
+				margin-left: 1rem;
 				margin-right: 1rem;
 				padding-left: 0.4rem;
 				padding-right: 2rem;

@@ -1,6 +1,7 @@
 <script>
-	import { onMount } from 'svelte';
 	import Icon from '../Icon/Icon.svelte';
+
+	import { onMount } from 'svelte';
 
 	function setTheme(theme) {
 		if (theme === 'Dark' || theme === 'Light') {

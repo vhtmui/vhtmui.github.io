@@ -4,25 +4,56 @@
 	import Icon from '$lib/Icon/Icon.svelte';
 	import SbarContainer from '$lib/Sibar/SbarContainer.svelte';
 	import TocList from '$lib/TocList/TocList.svelte';
+	import ThemeBtn from '$lib/ThemeBtn/ThemeBtn.svelte';
+
 	import { root } from './tree';
 	import { get_childArray } from '$lib/Sibar/nav';
-	import ThemeBtn from '$lib/ThemeBtn/ThemeBtn.svelte';
 
 	import { onMount } from 'svelte';
 	import { quadOut } from 'svelte/easing';
 	import { navigating } from '$app/stores';
 	import { slide } from 'svelte/transition';
-	import Page from './+page.svelte';
 
 	let { children } = $props();
-	let headings = $state();
-	let menuIcon = $state('menu_fold');
-	let display = $state(true);
-	let BlurBtnSytle = $state();
-	let hiddeHead = $state(false);
 
-	let tocBlock;
+	/**
+	 * @type {string} - icon of sidebar menu
+	 */
+	let menuIcon = $state('menu_fold');
+
+	/**
+	 * @type {boolean} - indicate sidebar's display behavior
+	 */
+	let display = $state(true);
+
+	/**
+	 * @type {string} - css string of sidebar menu
+	 */
+	let BlurBtnSytle = $state();
+
+	/**
+	 * @type {boolean} - indicate whether to hide header block
+	 */
+	let hideHead = $state(false);
+
+	/**
+	 * @type {HTMLDivElement} - bind to topic list element
+	 */
+	let tocBlock = $state();
+
+	/**
+	 * @type {string} - title levels to display in topic list
+	 */
 	let titles = 'h2,h4';
+
+	/**
+	 * @type {nodeList} - nodelist passed to TocList.svelte
+	 */
+	let headings = $state();
+
+	/**
+	 * @type {string} - the `display` attribute of topic list element's style
+	 */
 	let tocDisplay = $state();
 
 	function flexSlide(node, { delay = 0, duration = 400 }) {
@@ -46,52 +77,37 @@
 
 	let lastScrollY;
 	let timeoutId = null;
-	function hiddeHeader() {
+	function hideHeader() {
 		if (timeoutId) {
 			clearTimeout(timeoutId);
 		}
 		timeoutId = setTimeout(() => {
 			const offset = window.scrollY - lastScrollY;
 			if (offset > 0) {
-				hiddeHead = true;
+				hideHead = true;
 			} else if (offset < 0) {
-				hiddeHead = false;
+				hideHead = false;
 			}
 			lastScrollY = window.scrollY;
 		}, 100);
 	}
 
 	onMount(() => {
-		const mediaQuery = window.matchMedia('(max-width: 767px)');
-		mediaQuery.addListener(function (mql) {
-			console.log('match!');
-			if (mql.matches) {
-				display = false;
-			} else {
-				display = true;
-			}
-		});
-		if (mediaQuery.matches) {
-			display = false;
-			BlurBtnSytle = 'transform: rotateY(180deg); transition: transform 300ms ease-out 70ms;';
-		}
-
 		/**
 		 * hide topbar while scroll down, and display it while scroll up.
 		 */
 		lastScrollY = window.scrollY;
-		addEventListener('scroll', hiddeHeader);
+		addEventListener('scroll', hideHeader);
 
 		/**
 		 * doing things while resizing
-		 *
-		 * destroy toclist component while the container display none
 		 */
 		let timeoutId2 = null;
 		tocDisplay = window.getComputedStyle(tocBlock).display;
 		addEventListener('resize', () => {
 			timeoutId2 && clearTimeout(timeoutId2);
 			timeoutId2 = setTimeout(() => {
+				// destroy toclist component while its container display none
 				tocDisplay = window.getComputedStyle(tocBlock).display;
 			}, 100);
 		});
@@ -100,9 +116,7 @@
 		// trigger effect while navigating
 		$navigating;
 
-		/**
-		 * destroy toclist component while the container display none
-		 */
+		// destroy toclist component while its container display none
 		if (tocDisplay !== 'none') {
 			headings = document.querySelectorAll(titles);
 		} else {
@@ -114,94 +128,68 @@
 <svelte:head>
 	<script>
 		/**
-		 * Set theme on start
+		 * Set theme on start, no need to wait domcontentload
 		 */
-		document.addEventListener('DOMContentLoaded', () => {
-			const localTheme = localStorage.getItem('theme');
-			if (localTheme === 'Dark' || localTheme === 'Light') {
-				document.documentElement.setAttribute('data-theme', localTheme);
+		const localTheme = localStorage.getItem('theme');
+		if (localTheme === 'Dark' || localTheme === 'Light') {
+			document.documentElement.setAttribute('data-theme', localTheme);
+		} else {
+			if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+				document.documentElement.setAttribute('data-theme', 'Dark');
 			} else {
-				if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-					document.documentElement.setAttribute('data-theme', 'Dark');
-				} else {
-					document.documentElement.setAttribute('data-theme', 'Light');
-				}
+				document.documentElement.setAttribute('data-theme', 'Light');
 			}
-		});
+		}
 	</script>
-</svelte:head>
-
-<div class="topContainer" class:hiddeHead>
-	<div class="topInnerContainer">
-		<div class="topLeftHeader">
-			<BlurBtn
-				class="sibarBtn"
-				style={BlurBtnSytle}
-				onclick={() => {
-					display
-						? (BlurBtnSytle =
-								'transform: rotateY(180deg); transition: transform 300ms ease-out 70ms;')
-						: (BlurBtnSytle =
-								'transform: rotateY(0deg); transition: transform 300ms ease-out 70ms;');
-					display = !display;
-				}}
-			>
-				<Icon option={menuIcon} />
-			</BlurBtn>
-			<BlurBtn style="margin-left: 3rem">
-				<a href="/">
-					<Icon option={'home'} />
-				</a>
-			</BlurBtn>
-		</div>
-		<header class="top">
-			<nav class="top">
-				<ul></ul>
-			</nav>
-			<div class="toggleThme">
-				<ThemeBtn />
-			</div>
-		</header>
-	</div>
-</div>
-<main>
-	{#if display}
-		<div
-			class="sidebar-container"
-			onoutroend={() => {
-				/**
-				 * prevent scrolled event while animation displaying.
-				 */
-				addEventListener('scroll', hiddeHeader);
-			}}
-			onintroend={() => {
-				addEventListener('scroll', hiddeHeader);
-			}}
-			onoutrostart={() => {
-				removeEventListener('scroll', hiddeHeader);
-			}}
-			onintrostart={() => {
-				removeEventListener('scroll', hiddeHeader);
-			}}
-			transition:flexSlide|global={{ duration: 300, delay: 70 }}
-		>
-			<div class="sibar-innercontainer">
-				<SbarContainer signal="expandAll" />
-			</div>
-		</div>
-	{/if}
-	<div class="content">
-		{@render children?.()}
-	</div>
-	<div class="toc" bind:this={tocBlock}>
-		{#if headings && headings?.length}
-			<TocList {headings} indent="0.5" />
-		{/if}
-	</div>
-</main>
-
-<style>
-	:global {
+	<style>
+		@font-face {
+			font-family: 'Intel';
+			src: url('/fonts/IntelOneMono-Bold.woff2') format('woff2');
+			font-weight: bolder;
+			font-style: normal;
+		}
+		@font-face {
+			font-family: 'Intel';
+			src: url('/fonts/IntelOneMono-BoldItalic.woff2') format('woff2');
+			font-weight: bolder;
+			font-style: italic;
+		}
+		@font-face {
+			font-family: 'Intel';
+			src: url('/fonts/IntelOneMono-Italic.woff2') format('woff2');
+			font-weight: normal;
+			font-style: italic;
+		}
+		@font-face {
+			font-family: 'Intel';
+			src: url('/fonts/IntelOneMono-Light.woff2') format('woff2');
+			font-weight: lighter;
+			font-style: normal;
+		}
+		@font-face {
+			font-family: 'Intel';
+			src: url('/fonts/IntelOneMono-LightItalic.woff2') format('woff2');
+			font-weight: lighter;
+			font-style: italic;
+		}
+		@font-face {
+			font-family: 'Intel';
+			src: url('/fonts/IntelOneMono-Medium.woff2') format('woff2');
+			font-weight: bold;
+			font-style: normal;
+		}
+		@font-face {
+			font-family: 'Intel';
+			src: url('/fonts/IntelOneMono-MediumItalic.woff2') format('woff2');
+			font-weight: bold;
+			font-style: italic;
+		}
+		@font-face {
+			font-family: 'Intel';
+			src: url('/fonts/IntelOneMono-Regular.woff2') format('woff2');
+			font-weight: normal;
+			font-style: normal;
+		}
 		:root[data-theme='Light'] {
 			--header-nav-bg-color: rgba(255, 255, 255, 0);
 			--header-border-color: #888888;
@@ -263,14 +251,88 @@
 			--sibar-block-height: 2.5rem;
 			--all-svg-width: 1.25rem;
 			--main-max-width: 1660px;
-			& pre {
-				overflow: auto;
-				text-wrap: nowrap;
-				& * {
-					text-wrap: unset;
-				}
-			}
 		}
+	</style>
+</svelte:head>
+
+<div class="topContainer" class:hideHead>
+	<div class="topInnerContainer">
+		<div class="topLeftHeader">
+			<BlurBtn
+				class="sibarBtn"
+				style={BlurBtnSytle}
+				onclick={() => {
+					display
+						? (BlurBtnSytle =
+								'transform: rotateY(180deg); transition: transform 300ms ease-out 70ms;')
+						: (BlurBtnSytle =
+								'transform: rotateY(0deg); transition: transform 300ms ease-out 70ms;');
+					display = !display;
+				}}
+			>
+				<Icon option={menuIcon} />
+			</BlurBtn>
+			<BlurBtn style="margin-left: 3rem">
+				<a href="/">
+					<Icon option={'home'} />
+				</a>
+			</BlurBtn>
+		</div>
+		<header class="top">
+			<nav class="top">
+				<ul></ul>
+			</nav>
+			<div class="toggleThme">
+				<ThemeBtn />
+			</div>
+		</header>
+	</div>
+</div>
+<main>
+	{#if display}
+		<div
+			class="sidebar-container"
+			onoutroend={() => {
+				/**
+				 * prevent scrolled event while animation displaying.
+				 */
+				addEventListener('scroll', hideHeader);
+			}}
+			onintroend={() => {
+				addEventListener('scroll', hideHeader);
+			}}
+			onoutrostart={() => {
+				removeEventListener('scroll', hideHeader);
+			}}
+			onintrostart={() => {
+				removeEventListener('scroll', hideHeader);
+			}}
+			transition:flexSlide|global={{ duration: 300, delay: 70 }}
+		>
+			<div class="sibar-innercontainer">
+				<SbarContainer signal="expandAll" />
+			</div>
+		</div>
+	{/if}
+	{#if !display}
+		<div class="mobilesidebar-container">
+			<div class="sibar-innercontainer">
+				<SbarContainer signal="expandAll" />
+			</div>
+		</div>
+	{/if}
+	<div class="content">
+		{@render children?.()}
+	</div>
+	<div class="toc" bind:this={tocBlock}>
+		{#if headings && headings?.length}
+			<TocList {headings} indent="0.5" />
+		{/if}
+	</div>
+</main>
+
+<style>
+	:global {
 		* {
 			scrollbar-color: var(--scrollbar-color) #00000000;
 			text-wrap: wrap;
@@ -284,6 +346,13 @@
 			font-size: 16px;
 			background-color: var(--main-bg-color);
 			height: 100%;
+			& pre {
+				overflow: auto;
+				text-wrap: nowrap;
+				& * {
+					text-wrap: unset;
+				}
+			}
 			& *,
 			:after,
 			:before {
@@ -303,13 +372,12 @@
 			top: 0;
 			transition: top 100ms linear;
 			pointer-events: none;
-			&.hiddeHead {
+			&.hideHead {
 				top: calc(0rem - var(--header-block-height));
 				transition: top 100ms linear;
 			}
 			& div.topInnerContainer {
 				max-width: 1660px;
-				padding: 0 1rem 0 0;
 				margin-left: auto;
 				margin-right: auto;
 				display: flex;
@@ -318,7 +386,7 @@
 				& header.top {
 					box-sizing: border-box;
 					font-weight: normal;
-					padding: 0 1rem 0 1rem;
+					padding: 0 2vw 0 1rem;
 					width: 100%;
 					display: flex;
 					flex: 1 1;
@@ -388,14 +456,17 @@
 				}
 			}
 			& div.sidebar-container {
-				padding-right: 0;
+				display: none;
+			}
+			& div.mobilesidebar-container {
 				display: block;
-				width: 0;
+				position: fixed;
 				& .sibar-innercontainer {
 					background-color: var(--header-btn-bg-color);
 					backdrop-filter: blur(10px);
 					position: fixed;
 					border-radius: 1rem;
+					left: 0;
 					min-width: 85%;
 				}
 			}
@@ -427,7 +498,7 @@
 			main {
 				display: flex;
 				flex-wrap: nowrap;
-				padding: 0.5rem 2rem 0 4rem;
+				padding: 0.5rem 2rem 0 2rem;
 				margin: auto;
 				max-width: var(--main-max-width);
 				& div.sidebar-container {
@@ -442,6 +513,9 @@
 						backdrop-filter: none;
 						min-width: initial;
 					}
+				}
+				& div.mobilesidebar-container {
+					display: none;
 				}
 				& div.content {
 					flex: 3;
@@ -470,6 +544,9 @@
 						backdrop-filter: none;
 						min-width: initial;
 					}
+				}
+				& div.mobilesidebar-container {
+					display: none;
 				}
 				& div.content {
 					flex: 3;
