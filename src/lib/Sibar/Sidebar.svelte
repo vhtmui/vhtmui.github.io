@@ -1,7 +1,9 @@
 <script>
 	import Sidebar from './Sidebar.svelte';
-	import { getAll_propertyNames, get_childArray } from './nav';
 	import Icon from '$lib/Icon/Icon.svelte';
+	
+	import { getAll_propertyNames, get_childArray } from './nav';
+
 	import { slide } from 'svelte/transition';
 	import { quadOut } from 'svelte/easing';
 	import { page } from '$app/stores';

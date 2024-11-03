@@ -1,6 +1,5 @@
 <script>
 	// @ts-nocheck
-
 	import { paths, viewBoxs } from './icon';
 
 
