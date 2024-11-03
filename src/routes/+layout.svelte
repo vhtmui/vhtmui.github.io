@@ -308,7 +308,7 @@
 				transition: top 100ms linear;
 			}
 			& div.topInnerContainer {
-				max-width: 1660px;
+				max-width: var(--main-max-width);
 				padding: 0 1rem 0 0;
 				margin-left: auto;
 				margin-right: auto;
@@ -463,7 +463,7 @@
 					flex: 1;
 					display: block;
 					& .sibar-innercontainer {
-						width: calc((100% - 6rem) * 0.2 - 1%);
+						width: calc((min(var(--main-max-width), 100%) - 6rem) * 0.96 * 0.2);
 						position: fixed;
 						top: var(--header-block-height);
 						background-color: transparent;
