@@ -97,7 +97,7 @@
 		 * hide topbar while scroll down, and display it while scroll up.
 		 */
 		lastScrollY = window.scrollY;
-		addEventListener('scroll', hideHeader);
+		addEventListener('scroll', hideHeader, {passive:true});
 
 		/**
 		 * doing things while resizing

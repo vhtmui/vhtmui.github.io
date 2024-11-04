@@ -11,37 +11,28 @@
 	/** @type {Props} */
 	let { indent = 1, scrollTrigger = 80, headings } = $props();
 
+	let Y = $state();
+
 	function getPadding(ele) {
 		let n = Number(ele.nodeName.substr(1));
 		return n;
 	}
 
-	let timeoutId = null;
-	function setTocItem() {
-		if (timeoutId) {
-			clearTimeout(timeoutId);
-		}
-		timeoutId = setTimeout(() => {
-			const a = document.querySelectorAll('a.tocItem');
-			let flag = false;
-			for (let index = headings?.length - 1; index >= 0; index--) {
-				if (window.scrollY - headings[index].offsetTop > -scrollTrigger && !flag) {
-					a[index].classList.add('scrollTo');
-					flag = true;
-				} else {
-					a[index].classList.remove('scrollTo');
-				}
+	$effect(() => {
+		const a = document.querySelectorAll('a.tocItem');
+		let flag = false;
+		for (let index = headings?.length - 1; index >= 0; index--) {
+			if (Y - headings[index].offsetTop > -scrollTrigger && !flag) {
+				a[index].classList.add('scrollTo');
+				flag = true;
+			} else {
+				a[index].classList.remove('scrollTo');
 			}
-		}, 0);
-	}
-	onMount(() => {
-		addEventListener('scroll', setTocItem);
-		setTocItem();
-	});
-	onDestroy(() => {
-		removeEventListener('scroll', setTocItem);
+		}
 	});
 </script>
+
+<svelte:window bind:scrollY={Y} />
 
 <div class="toc-container">
 	{#if headings}
