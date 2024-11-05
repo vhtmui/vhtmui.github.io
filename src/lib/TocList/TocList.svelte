@@ -1,3 +1,7 @@
+<script module>
+	let CurrentIndex;
+</script>
+
 <script>
 	import { onDestroy, onMount } from 'svelte';
 
@@ -11,6 +15,10 @@
 	/** @type {Props} */
 	let { indent = 1, scrollTrigger = 80, headings } = $props();
 
+	/**
+	 *  @type {Array} - an array indicate whitch item in the list should be heighlight.
+	 */
+	let classes = $state(Array(headings.length));
 	let Y = $state();
 
 	function getPadding(ele) {
@@ -19,14 +27,15 @@
 	}
 
 	$effect(() => {
-		const a = document.querySelectorAll('a.tocItem');
-		let flag = false;
+		// highlight corresponding topic item while scrolling.
 		for (let index = headings?.length - 1; index >= 0; index--) {
-			if (Y - headings[index].offsetTop > -scrollTrigger && !flag) {
-				a[index].classList.add('scrollTo');
-				flag = true;
-			} else {
-				a[index].classList.remove('scrollTo');
+			if (Y - headings[index].offsetTop > -scrollTrigger ) {
+				if (index !== CurrentIndex) {
+					classes[index] = true;
+					classes[CurrentIndex] = false;
+					CurrentIndex = index;
+				}
+				break;
 			}
 		}
 	});
@@ -36,9 +45,9 @@
 
 <div class="toc-container">
 	{#if headings}
-		{#each headings as head}
+		{#each headings as head, i}
 			<a
-				class="tocItem {head.classList}"
+				class="tocItem {classes[i] ? 'scrollTo' : ''}"
 				href="#{head.id}"
 				style="padding-left: {getPadding(head) * indent}rem;">{head.textContent}</a
 			><br />
