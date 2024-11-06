@@ -1,9 +1,9 @@
 <script>
-	import Sidebar from './Sidebar.svelte';
-	import Icon from '$lib/Icon/Icon.svelte';
+	import ZSidebar from './ZSidebar.svelte';
+	import ZIcon from '$lib/ZIcon/ZIcon.svelte';
 
 	import { root } from '../../routes/tree';
-	import { get_childArray, getAll_propertyNames } from './nav';
+	import { get_childArray, getAll_propertyNames } from './Znav';
 	
 	import { quadOut } from 'svelte/easing';
 
@@ -78,11 +78,11 @@
 			class:widther
 			onclick={() => (widther = true)}
 		/>
-		<button class="clear-input" class:widther onclick={cleanInput}><Icon option="x" /></button>
-		<button class="expand" onclick={toggle_expand}><Icon option={icon} /></button>
+		<button class="clear-input" class:widther onclick={cleanInput}><ZIcon option="x" /></button>
+		<button class="expand" onclick={toggle_expand}><ZIcon option={icon} /></button>
 	</div>
 	<div class="sibar">
-		<Sidebar {tree} {signal} filter={input} />
+		<ZSidebar {tree} {signal} filter={input} />
 	</div>
 </div>
 

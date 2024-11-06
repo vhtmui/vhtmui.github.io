@@ -1,13 +1,13 @@
 <!-- @migration-task Error while migrating Svelte code: Can't migrate code with afterUpdate. Please migrate by hand. -->
 <script>
-	import BlurBtn from '$lib/BlurBtn/BlurBtn.svelte';
-	import Icon from '$lib/Icon/Icon.svelte';
-	import SbarContainer from '$lib/Sibar/SbarContainer.svelte';
-	import TocList from '$lib/TocList/TocList.svelte';
-	import ThemeBtn from '$lib/ThemeBtn/ThemeBtn.svelte';
+	import ZBlurBtn from '$lib/ZBlurBtn/ZBlurBtn.svelte';
+	import ZIcon from '$lib/ZIcon/ZIcon.svelte';
+	import ZSbarContainer from '$lib/ZSibar/ZSbarContainer.svelte';
+	import ZTocList from '$lib/ZTocList/ZTocList.svelte';
+	import ZThemeBtn from '$lib/ZThemeBtn/ZThemeBtn.svelte';
 
 	import { root } from './tree';
-	import { get_childArray } from '$lib/Sibar/nav';
+	import { get_childArray } from '$lib/ZSibar/Znav';
 
 	import { onMount } from 'svelte';
 	import { quadOut } from 'svelte/easing';
@@ -47,7 +47,7 @@
 	let titles = 'h2,h4';
 
 	/**
-	 * @type {nodeList} - nodelist passed to TocList.svelte
+	 * @type {nodeList} - nodelist passed to ZTocList.svelte
 	 */
 	let headings = $state();
 
@@ -147,7 +147,7 @@
 <div class="topContainer" class:hideHead>
 	<div class="topInnerContainer">
 		<div class="topLeftHeader">
-			<BlurBtn
+			<ZBlurBtn
 				class="sibarBtn"
 				style={BlurBtnSytle}
 				onclick={() => {
@@ -159,20 +159,20 @@
 					display = !display;
 				}}
 			>
-				<Icon option={menuIcon} />
-			</BlurBtn>
-			<BlurBtn style="margin-left: 3rem">
+				<ZIcon option={menuIcon} />
+			</ZBlurBtn>
+			<ZBlurBtn style="margin-left: 3rem">
 				<a href="/">
-					<Icon option={'home'} />
+					<ZIcon option={'home'} />
 				</a>
-			</BlurBtn>
+			</ZBlurBtn>
 		</div>
 		<header class="top">
 			<nav class="top">
 				<ul></ul>
 			</nav>
 			<div class="toggleThme">
-				<ThemeBtn />
+				<ZThemeBtn />
 			</div>
 		</header>
 	</div>
@@ -199,14 +199,14 @@
 			transition:flexSlide|global={{ duration: 300, delay: 70 }}
 		>
 			<div class="sibar-innercontainer">
-				<SbarContainer signal="expandAll" />
+				<ZSbarContainer signal="expandAll" />
 			</div>
 		</div>
 	{/if}
 	{#if !display}
 		<div class="mobilesidebar-container">
 			<div class="sibar-innercontainer">
-				<SbarContainer signal="expandAll" />
+				<ZSbarContainer signal="expandAll" />
 			</div>
 		</div>
 	{/if}
@@ -215,7 +215,7 @@
 	</div>
 	<div class="toc" bind:this={tocBlock}>
 		{#if headings && headings?.length}
-			<TocList {headings} indent="0.5" />
+			<ZTocList {headings} indent="0.5" />
 		{/if}
 	</div>
 </main>

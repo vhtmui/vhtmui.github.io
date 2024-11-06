@@ -1,8 +1,8 @@
 <script>
-	import Sidebar from './Sidebar.svelte';
-	import Icon from '$lib/Icon/Icon.svelte';
+	import ZSidebar from './ZSidebar.svelte';
+	import ZIcon from '$lib/ZIcon/ZIcon.svelte';
 	
-	import { getAll_propertyNames, get_childArray } from './nav';
+	import { getAll_propertyNames, get_childArray } from './Znav';
 
 	import { slide } from 'svelte/transition';
 	import { quadOut } from 'svelte/easing';
@@ -28,7 +28,7 @@
 	let visable = $state(true);
 
 	/**
-	 * The icon option
+	 * The ZIcon option
 	 */
 	let option = 'chevron_down';
 
@@ -39,7 +39,7 @@
 	let title = $state(tree._title);
 
 	/**
-	 * Icon direction
+	 * ZIcon direction
 	 * @type {boolean}
 	 */
 	let IconUp = $derived(expand);
@@ -128,7 +128,7 @@
 	{#if tree && visable}
 		<div transition:slide|global={{ easing: quadOut, duration: 300, delay: 70 }} class="tree-head">
 			{#if child_tree}
-				<button class:IconUp onclick={toggle_display}><Icon {option} /></button>
+				<button class:IconUp onclick={toggle_display}><ZIcon {option} /></button>
 				<a class="sidebar" class:selected_item href={nowLink}>{@html title}</a>
 			{:else}
 				<div class="sidebar-paddingblock"></div>
@@ -141,7 +141,7 @@
 				{#each child_tree as t}
 					<div>
 						<div class="sidebar-paddingblock"></div>
-						<li><Sidebar tree={t} preLink={nowLink} {signal} {filter} /></li>
+						<li><ZSidebar tree={t} preLink={nowLink} {signal} {filter} /></li>
 					</div>
 				{/each}
 			</ul>

@@ -1,14 +1,23 @@
+<script module>
+</script>
+
 <script>
-	import Icon from '../Icon/Icon.svelte';
+	import ZIcon from '../ZIcon/ZIcon.svelte';
 
 	import { onMount } from 'svelte';
 
+	let { localTheme } = $props();
+
+	let BtnList = $state([false, false, true]);
+	let currentBtn = $state(2);
+
 	function setTheme(theme) {
+		console.log('clickbtn');
 		if (theme === 'Dark' || theme === 'Light') {
 			document.documentElement.setAttribute('data-theme', theme);
 			localStorage.setItem('theme', theme);
 		} else if (theme === 'Auto') {
-			localStorage.setItem('theme','Auto');
+			localStorage.setItem('theme', 'Auto');
 			if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
 				document.documentElement.setAttribute('data-theme', 'Dark');
 			} else {
@@ -16,48 +25,69 @@
 			}
 		}
 	}
-	onMount(() => {
-		const btns = document.querySelector('div.theme.btnContainer');
-		btns.addEventListener('click', (event) => {
-			const btn = event.target.closest?.('button');
-			if (btn.className.includes('Dark')) {
-				setTheme('Dark');
-			} else if (btn.className.includes('Light')) {
-				setTheme('Light');
-			} else {
-				setTheme('Auto');
-			}
+	function setCurrentBtn(index) {
+		BtnList[index] = true;
+		BtnList[currentBtn] = false;
+		currentBtn = index;
+	}
 
-			for (const child of btn.parentNode.children) {
-				child.classList.remove('selected');
-			}
-			btn.classList.add('selected');
-		});
+	onMount(() => {
+		// const btns = document.querySelector('div.theme.btnContainer');
+		// btns.addEventListener('click', (event) => {
+		// 	const btn = event.target.closest?.('button');
+
+		// 	for (const child of btn.parentNode.children) {
+		// 		child.classList.remove('selected');
+		// 	}
+		// 	btn.classList.add('selected');
+		// });
 		// init button icon
 		const theme = localStorage.getItem('theme');
-		if (theme) {
-			document.querySelectorAll('div.theme.btnContainer button').forEach((ele) => {
-				if (ele.className.includes(theme)) {
-					ele.classList.add('selected');
-					return;
-				}
-			});
-		} else {
-			document.querySelector('div.theme.btnContainer button.Auto').classList.add('selected');
-		}
+		// if (theme) {
+		// 	document.querySelectorAll('div.theme.btnContainer button').forEach((ele) => {
+		// 		if (ele.className.includes(theme)) {
+		// 			ele.classList.add('selected');
+		// 			return;
+		// 		}
+		// 	});
+		// } else {
+		// 	document.querySelector('div.theme.btnContainer button.Auto').classList.add('selected');
+		// }
 	});
 </script>
 
 <div class="themeBlock" data-theme>
 	<div class="theme btnContainer">
-		<button type="button" class="svg Light">
-			Light <Icon option="sun" />
+		<button
+			type="button"
+			class="svg Light"
+			class:selected={BtnList[0]}
+			onclick={() => {
+				setTheme('Light');
+				setCurrentBtn(0);
+			}}
+		>
+			Light <ZIcon option="sun" />
 		</button>
-		<button class="svg Dark">
-			Dark <Icon option="moon" />
+		<button
+			class="svg Dark"
+			class:selected={BtnList[1]}
+			onclick={() => {
+				setTheme('Dark');
+				setCurrentBtn(1);
+			}}
+		>
+			Dark <ZIcon option="moon" />
 		</button>
-		<button class="svg Auto">
-			Auto <Icon option="monitor" />
+		<button
+			class="svg Auto"
+			class:selected={BtnList[2]}
+			onclick={() => {
+				setTheme('Auto');
+				setCurrentBtn(2);
+			}}
+		>
+			Auto <ZIcon option="monitor" />
 		</button>
 	</div>
 </div>
