@@ -1,15 +1,10 @@
-<script module>
-</script>
-
 <script>
 	import ZIcon from '../ZIcon/ZIcon.svelte';
 
 	import { onMount } from 'svelte';
 
-	let { localTheme } = $props();
-
-	let BtnList = $state([false, false, true]);
-	let currentBtn = $state(2);
+	let BtnList = $state([false, false, false]);
+	let currentBtn = $state();
 
 	function setTheme(theme) {
 		console.log('clickbtn');
@@ -32,27 +27,15 @@
 	}
 
 	onMount(() => {
-		// const btns = document.querySelector('div.theme.btnContainer');
-		// btns.addEventListener('click', (event) => {
-		// 	const btn = event.target.closest?.('button');
-
-		// 	for (const child of btn.parentNode.children) {
-		// 		child.classList.remove('selected');
-		// 	}
-		// 	btn.classList.add('selected');
-		// });
-		// init button icon
+		//init theme button
 		const theme = localStorage.getItem('theme');
-		// if (theme) {
-		// 	document.querySelectorAll('div.theme.btnContainer button').forEach((ele) => {
-		// 		if (ele.className.includes(theme)) {
-		// 			ele.classList.add('selected');
-		// 			return;
-		// 		}
-		// 	});
-		// } else {
-		// 	document.querySelector('div.theme.btnContainer button.Auto').classList.add('selected');
-		// }
+		if (theme === 'Light') {
+			setCurrentBtn(0);
+		} else if(theme === 'Dark') {
+			setCurrentBtn(1);
+		} else{
+			setCurrentBtn(2);
+		}
 	});
 </script>
 

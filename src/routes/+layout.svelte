@@ -1,4 +1,5 @@
-<!-- @migration-task Error while migrating Svelte code: Can't migrate code with afterUpdate. Please migrate by hand. -->
+<!-- #region Script
+-->
 <script>
 	import ZBlurBtn from '$lib/ZBlurBtn/ZBlurBtn.svelte';
 	import ZIcon from '$lib/ZIcon/ZIcon.svelte';
@@ -14,7 +15,7 @@
 	import { navigating } from '$app/stores';
 	import { slide } from 'svelte/transition';
 
-	let { children } = $props();
+	let { data, children } = $props();
 
 	/**
 	 * @type {string} - icon of sidebar menu
@@ -97,7 +98,7 @@
 		 * hide topbar while scroll down, and display it while scroll up.
 		 */
 		lastScrollY = window.scrollY;
-		addEventListener('scroll', hideHeader, {passive:true});
+		addEventListener('scroll', hideHeader, { passive: true });
 
 		/**
 		 * doing things while resizing
@@ -125,6 +126,10 @@
 	});
 </script>
 
+<!-- #endregion -->
+
+<!-- #region Set head 
+ -->
 <svelte:head>
 	<script>
 		/**
@@ -143,7 +148,10 @@
 	</script>
 	<link href="/global.css" rel="stylesheet" />
 </svelte:head>
+<!-- #endregion -->
 
+<!-- #region Content
+-->
 <div class="topContainer" class:hideHead>
 	<div class="topInnerContainer">
 		<div class="topLeftHeader">
@@ -219,7 +227,10 @@
 		{/if}
 	</div>
 </main>
+<!-- #endregion -->
 
+<!-- #region Style
+-->
 <style>
 	:global {
 		* {
@@ -449,3 +460,4 @@
 		}
 	}
 </style>
+<!-- #endregion -->

@@ -2,7 +2,7 @@
  * @typedef {Object} Tree
  * @property {string} _link - The link for the tree.
  * @property {string} _title - The title for the tree.
- * @property {Object<Tree>} [children] - Optional children nodes. Each child must also be a Tree.
+ * @property {Tree} [children] - Optional children nodes. Each child must also be a Tree.
  */
 
 /**
@@ -44,3 +44,31 @@ export function getAll_propertyNames(obj) {
 		return null;
 	}
 }
+
+  /**
+   * Builds the tree from an array of links.
+   * @param {string[]} links - The array of links to build the tree from.
+   * @returns {Tree} - The root of the tree.
+   */
+  export function buildTree(r,links) {
+    const root = r;
+
+    links.forEach((link) => {
+      if (link === "") return;
+
+      const parts = link.split("/").filter(Boolean);
+      let currentNode = root;
+
+      parts.forEach((part) => {
+        if (!currentNode[part]) {
+          currentNode[part] = {
+            _link: `${part}`,
+            _title: part,
+          };
+        }
+        currentNode = currentNode[part];
+      });
+    });
+
+    return root;
+  }
