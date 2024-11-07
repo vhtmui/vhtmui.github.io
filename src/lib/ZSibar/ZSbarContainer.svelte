@@ -78,8 +78,8 @@
 			class:widther
 			onclick={() => (widther = true)}
 		/>
-		<button class="clear-input" class:widther onclick={cleanInput}><ZIcon option="x" /></button>
-		<button class="expand" onclick={toggle_expand}><ZIcon option={icon} /></button>
+		<button type="button" class="clear-input" class:widther onclick={cleanInput}><ZIcon option="x" /></button>
+		<button type="button" class="expand" onclick={toggle_expand}><ZIcon option={icon} /></button>
 	</div>
 	<div class="sibar">
 		<ZSidebar {tree} {signal} filter={input} />

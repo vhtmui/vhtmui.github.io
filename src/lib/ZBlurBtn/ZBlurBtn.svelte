@@ -10,7 +10,7 @@
 	let props = $props();
 </script>
 
-<button {...props}>
+<button type="button" {...props}>
 	{@render props.children?.()}
 </button>
 

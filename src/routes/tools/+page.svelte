@@ -1,9 +1,11 @@
 <script>
+	import { preventDefault } from 'svelte/legacy';
+
 	let {data} =$props();
 
 </script>
 
-<form method="POST">
+<form method="POST" onsubmit={(event)=>event.preventDefault()}>
 	<label>
 		add a todo:
 		<input name="description" autocomplete="off" />
