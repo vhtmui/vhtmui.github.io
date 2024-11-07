@@ -1,0 +1,110 @@
+@font-face {
+	font-family: 'Intel';
+	src: url('/fonts/IntelOneMono-Bold.woff2') format('woff2');
+	font-weight: bolder;
+	font-style: normal;
+}
+@font-face {
+	font-family: 'Intel';
+	src: url('/fonts/IntelOneMono-BoldItalic.woff2') format('woff2');
+	font-weight: bolder;
+	font-style: italic;
+}
+@font-face {
+	font-family: 'Intel';
+	src: url('/fonts/IntelOneMono-Italic.woff2') format('woff2');
+	font-weight: normal;
+	font-style: italic;
+}
+@font-face {
+	font-family: 'Intel';
+	src: url('/fonts/IntelOneMono-Light.woff2') format('woff2');
+	font-weight: lighter;
+	font-style: normal;
+}
+@font-face {
+	font-family: 'Intel';
+	src: url('/fonts/IntelOneMono-LightItalic.woff2') format('woff2');
+	font-weight: lighter;
+	font-style: italic;
+}
+@font-face {
+	font-family: 'Intel';
+	src: url('/fonts/IntelOneMono-Medium.woff2') format('woff2');
+	font-weight: bold;
+	font-style: normal;
+}
+@font-face {
+	font-family: 'Intel';
+	src: url('/fonts/IntelOneMono-MediumItalic.woff2') format('woff2');
+	font-weight: bold;
+	font-style: italic;
+}
+@font-face {
+	font-family: 'Intel';
+	src: url('/fonts/IntelOneMono-Regular.woff2') format('woff2');
+	font-weight: normal;
+	font-style: normal;
+}
+:root[data-theme='Light'] {
+	--header-nav-bg-color: rgba(255, 255, 255, 0);
+	--header-border-color: #888888;
+	--header-text-color: #4e4e4e;
+	--header-text-hover-color: #0069c2;
+	--header-text-active-color: #0057a3;
+	--header-block-hover-bg-color: #8cb4ff70;
+	--header-btn-bg-color: rgb(255, 255, 255, 50%);
+	--header-btn-theme-bg-color: #ffc684;
+	--main-bg-color: rgb(255, 255, 255);
+	--main-text-color: #1b1b1b;
+	--main-a-color: #0069c2;
+	--main-visited-a-color: var(--main-a-color);
+	--all-svg-color: var(--header-text-color);
+	--all-svg-hover-color: var(--header-text-hover-color);
+	--sidebar-svg-color: #454545ba;
+	--sidebar-border-top-color: #6f6f6f;
+	--sidebar-border-left-color: #00000054;
+	--sidebar-border-color: #999999;
+	--sidebar-selected-text-color: #0048c6;
+	--sidebar-selected-border-color: #3c95e9b5;
+	--sidebar-selected-border-style: groove;
+	--sidebar-filter-text-bg-bolor: #5d00ff;
+	--sidebar-filter-text-bolor: #ffffff;
+	--tocItem-text-color: #515151bf;
+	--input-focus-color: #659aff;
+	--scrollbar-color: #989898;
+}
+:root[data-theme='Dark'] {
+	--header-nav-bg-color: rgba(255, 255, 255, 0);
+	--header-border-color: #8b8e91fc;
+	--header-text-color: #fdfefe;
+	--header-text-hover-color: #ffa06f;
+	--header-text-active-color: #ffa06f;
+	--header-block-hover-bg-color: #ff73732e;
+	--header-btn-bg-color: rgb(27, 27, 27, 50%);
+	--header-btn-theme-bg-color: #ffc684;
+	--main-bg-color: #1b1b1b;
+	--main-text-color: #ffffff;
+	--main-a-color: #ff8c8c;
+	--main-visited-a-color: var(--main-a-color);
+	--all-svg-color: var(--main-text-color);
+	--all-svg-hover-color: var(--header-text-color);
+	--sidebar-svg-color: #ffffff80;
+	--sidebar-border-top-color: #e6e6e6d2;
+	--sidebar-border-left-color: #ffffff54;
+	--sidebar-border-color: #999999;
+	--sidebar-selected-text-color: #ff5a5a;
+	--sidebar-selected-border-color: brown;
+	--sidebar-selected-border-style: ridge;
+	--sidebar-filter-text-bg-bolor: #e8e87e;
+	--sidebar-filter-text-bolor: #000000;
+	--tocItem-text-color: #ffffffba;
+	--input-focus-color: #b42100;
+	--scrollbar-color: #525049;
+}
+:root {
+	--header-block-height: 3rem;
+	--sibar-block-height: 2.5rem;
+	--all-svg-width: 1.25rem;
+	--main-max-width: 1660px;
+}
