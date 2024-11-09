@@ -14,6 +14,7 @@
 	import { quadOut } from 'svelte/easing';
 	import { navigating } from '$app/stores';
 	import { slide } from 'svelte/transition';
+	import { afterNavigate } from '$app/navigation';
 
 	let { data, children } = $props();
 
@@ -113,10 +114,7 @@
 			}, 100);
 		});
 	});
-	$effect(() => {
-		// trigger effect while navigating
-		$navigating;
-
+	afterNavigate(() => {
 		// destroy toclist component while its container display none
 		if (tocDisplay !== 'none') {
 			headings = document.querySelectorAll(titles);
@@ -227,6 +225,8 @@
 		{/if}
 	</div>
 </main>
+<!-- #endregion -->
+
 <!-- #endregion -->
 
 <!-- #region Style
@@ -460,4 +460,3 @@
 		}
 	}
 </style>
-<!-- #endregion -->

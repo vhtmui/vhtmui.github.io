@@ -4,7 +4,7 @@
 
 	import { root } from '../../routes/tree';
 	import { get_childArray, getAll_propertyNames } from './Znav';
-	
+
 	import { quadOut } from 'svelte/easing';
 
 	/**
@@ -14,7 +14,7 @@
 	 */
 
 	/** @type {Props} */
-	let { signal = $bindable('default'), icon = $bindable('plus') } = $props();
+	let { signal = 'default', icon = 'plus' } = $props();
 
 	let widther = $state(false);
 	let input = $state('');
@@ -41,7 +41,7 @@
 		if (signal !== 'expandAll') {
 			setExpand('expandAll');
 		} else {
-			setExpand('foldingAll');
+			setExpand('default');
 		}
 	}
 	function cleanInput() {
@@ -78,7 +78,9 @@
 			class:widther
 			onclick={() => (widther = true)}
 		/>
-		<button type="button" class="clear-input" class:widther onclick={cleanInput}><ZIcon option="x" /></button>
+		<button type="button" class="clear-input" class:widther onclick={cleanInput}
+			><ZIcon option="x" /></button
+		>
 		<button type="button" class="expand" onclick={toggle_expand}><ZIcon option={icon} /></button>
 	</div>
 	<div class="sibar">
@@ -182,8 +184,8 @@
 			max-height: calc(100vh - 8rem);
 			overflow-y: auto;
 			padding-top: 1rem;
-			-webkit-mask-image: linear-gradient(180deg, #0000, #000 1rem calc(100% - 3rem), #0000);
-			mask-image: linear-gradient(180deg, #0000, #000 1rem calc(100% - 1rem), #0000);
+			-webkit-mask-image: linear-gradient(180deg, #0000, #000 1rem calc(100% - 0.5rem), #0000);
+			mask-image: linear-gradient(180deg, #0000, #000 1rem calc(100% - 0.5rem), #0000);
 		}
 	}
 </style>

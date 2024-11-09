@@ -1,7 +1,3 @@
-<script module>
-	let CurrentIndex;
-</script>
-
 <script>
 	import { onDestroy, onMount } from 'svelte';
 
@@ -19,6 +15,15 @@
 	 *  @type {Array} - an array indicate whitch item in the list should be heighlight.
 	 */
 	let classes = $state(Array(headings.length));
+
+	/**
+	 * @type {number} - indicate the index of current hightlight item.
+	 */
+	let CurrentIndex;
+
+	/**
+	 * @type {number} - binded to the `window.scrollY`.
+	 */
 	let Y = $state();
 
 	function getPadding(ele) {

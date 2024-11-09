@@ -56,7 +56,7 @@
 	let include = $state(false);
 
 	/**
-	 * Relative links to the current component, also the href of <a>.
+	 * Link relative to the root, also the property `href` of <a>.
 	 * @type {string}
 	 */
 	let nowLink = $derived((preLink + '/' + tree._link).replace(RegExp('/+'), '/'));

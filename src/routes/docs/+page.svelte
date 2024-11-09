@@ -7,4 +7,8 @@
 
     /** @type {Props} */
     let { data } = $props();
+    import { page } from '$app/stores';
+
 </script>
+
+<p>{$page.route.id}</p>
