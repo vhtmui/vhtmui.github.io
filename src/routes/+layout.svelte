@@ -77,27 +77,26 @@
 		};
 	}
 
-	let lastScrollY;
-	let timeoutId = null;
-	function hideHeader() {
-		if (timeoutId) {
-			clearTimeout(timeoutId);
-		}
-		timeoutId = setTimeout(() => {
-			const offset = window.scrollY - lastScrollY;
-			if (offset > 0) {
-				hideHead = true;
-			} else if (offset < 0) {
-				hideHead = false;
-			}
-			lastScrollY = window.scrollY;
-		}, 100);
-	}
-
 	onMount(() => {
 		/**
 		 * hide topbar while scroll down, and display it while scroll up.
 		 */
+		let lastScrollY;
+		let timeoutId = null;
+		function hideHeader() {
+			if (timeoutId) {
+				clearTimeout(timeoutId);
+			}
+			timeoutId = setTimeout(() => {
+				const offset = window.scrollY - lastScrollY;
+				if (offset > 0) {
+					hideHead = true;
+				} else if (offset < 0) {
+					hideHead = false;
+				}
+				lastScrollY = window.scrollY;
+			}, 100);
+		}
 		lastScrollY = window.scrollY;
 		addEventListener('scroll', hideHeader, { passive: true });
 
@@ -105,25 +104,20 @@
 		 * doing things while resizing
 		 */
 		let timeoutId2 = null;
-		tocDisplay = window.getComputedStyle(tocBlock).display;
+		tocDisplay = window.getComputedStyle(tocBlock).display === 'none' ? false : true;
 		addEventListener('resize', () => {
 			timeoutId2 && clearTimeout(timeoutId2);
 			timeoutId2 = setTimeout(() => {
-				// destroy toclist component while its container display none
-				tocDisplay = window.getComputedStyle(tocBlock).display;
+				// destroy toclist component while its parent container display none
+				tocDisplay = window.getComputedStyle(tocBlock).display === 'none' ? false : true;
 			}, 100);
 		});
 	});
 	afterNavigate(() => {
-		// destroy toclist component while its container display none
-		if (tocDisplay !== 'none') {
-			headings = document.querySelectorAll(titles);
-		} else {
-			headings = null;
-		}
+		// get head elements passed to <ZTocList>.
+		headings = document.querySelectorAll(titles);
 	});
 </script>
-
 <!-- #endregion -->
 
 <!-- #region Set head 
@@ -178,7 +172,7 @@
 				<ul></ul>
 			</nav>
 			<div class="toggleThme">
-				<ZThemeBtn />
+				<ZThemeBtn theme={data.theme}/>
 			</div>
 		</header>
 	</div>
@@ -220,13 +214,11 @@
 		{@render children?.()}
 	</div>
 	<div class="toc" bind:this={tocBlock}>
-		{#if headings && headings?.length}
+		{#if tocDisplay && headings && headings?.length}
 			<ZTocList {headings} indent="0.5" />
 		{/if}
 	</div>
 </main>
-<!-- #endregion -->
-
 <!-- #endregion -->
 
 <!-- #region Style

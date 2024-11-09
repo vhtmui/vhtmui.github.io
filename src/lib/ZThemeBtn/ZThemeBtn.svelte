@@ -3,6 +3,8 @@
 
 	import { onMount } from 'svelte';
 
+	let { theme } = $props();
+
 	let BtnList = $state([false, false, false]);
 	let currentBtn = $state();
 
@@ -10,9 +12,9 @@
 		console.log('clickbtn');
 		if (theme === 'Dark' || theme === 'Light') {
 			document.documentElement.setAttribute('data-theme', theme);
-			localStorage.setItem('theme', theme);
+			document.cookie = `theme=${theme};path=/`;
 		} else if (theme === 'Auto') {
-			localStorage.setItem('theme', 'Auto');
+			document.cookie = `theme=Auto;path=/`;
 			if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
 				document.documentElement.setAttribute('data-theme', 'Dark');
 			} else {
@@ -26,20 +28,17 @@
 		currentBtn = index;
 	}
 
-	onMount(() => {
-		//init theme button
-		const theme = localStorage.getItem('theme');
-		if (theme === 'Light') {
-			setCurrentBtn(0);
-		} else if(theme === 'Dark') {
-			setCurrentBtn(1);
-		} else{
-			setCurrentBtn(2);
-		}
-	});
+	// init theme button
+	if (theme === 'Light') {
+		setCurrentBtn(0);
+	} else if (theme === 'Dark') {
+		setCurrentBtn(1);
+	} else {
+		setCurrentBtn(2);
+	}
 </script>
 
-<div class="themeBlock" data-theme>
+<div class="themeBlock">
 	<div class="theme btnContainer">
 		<button
 			type="button"
