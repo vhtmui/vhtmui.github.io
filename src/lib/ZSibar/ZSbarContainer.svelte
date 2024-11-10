@@ -2,7 +2,6 @@
 	import ZSidebar from './ZSidebar.svelte';
 	import ZIcon from '$lib/ZIcon/ZIcon.svelte';
 
-	import { root } from '../../routes/tree';
 	import { get_childArray, getAll_propertyNames, buildTree } from './Znav';
 
 	import { cubicOut, quadOut } from 'svelte/easing';
@@ -14,12 +13,12 @@
 	 */
 
 	/** @type {Props} */
-	let { signal = 'default', icon = 'plus' } = $props();
+	let { treeArray, signal = 'default', icon = 'plus' } = $props();
 
 	let widther = $state(false);
 	let input = $state('');
 
-	let tree = root;
+	let tree = buildTree({ _link: '/', _title: 'Home' }, treeArray);
 
 	function setExpand(mode) {
 		switch (mode) {

@@ -7,7 +7,9 @@ const items = await readdir('src/routes', { recursive: true, withFileTypes: true
 const dir = items
 	.filter((d) => d.isDirectory())
 	.map((d) => {
-		return normalize(join(d.parentPath, d.name));
+		const abp = join(d.parentPath, d.name).replaceAll('\\', '/');
+
+		return abp;
 	});
 
 dir.forEach((d) => {

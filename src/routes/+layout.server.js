@@ -3,16 +3,18 @@ import * as path from 'node:path';
 
 /** @type {import('./$types').LayoutServerLoad} */
 export async function load(event) {
+	// get theme cookies setted to html atrribute
 	const t = event.cookies.get('theme');
 
-	// const items = await readdir('src/routes', { recursive: true, withFileTypes: true });
+	// get dir array, pass to `ZSbarContainer.svelte`
+	const baseDir = 'src/routes';
+	const items = await readdir(baseDir, { recursive: true, withFileTypes: true });
+	const dir = items
+		.filter((d) => d.isDirectory())
+		.map((d) => path.join(d.parentPath, d.name).replaceAll('\\', '/').replaceAll(baseDir, ''));
 
-	// const dir = items
-	// 	.filter((d) => d.isDirectory())
-	// 	.map((d) => {
-	// 		return path.normalize(path.join(d.parentPath, d.name));
-	// 	});
-	// const content = readFile('./tree.js');
+	// get content
+	const mdContent = await readFile('docs/PowerShell.md');
 
-	return { theme: t};
+	return { theme: t, dir, mdContent };
 }

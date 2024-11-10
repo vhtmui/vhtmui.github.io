@@ -7,7 +7,6 @@
 	import ZTocList from '$lib/ZTocList/ZTocList.svelte';
 	import ZThemeBtn from '$lib/ZThemeBtn/ZThemeBtn.svelte';
 
-	import { root } from './tree';
 	import { get_childArray } from '$lib/ZSibar/Znav';
 
 	import { onMount } from 'svelte';
@@ -46,7 +45,7 @@
 	/**
 	 * @type {string} - title levels to display in topic list
 	 */
-	let titles = 'h2,h4';
+	let titles = 'h2,h3,h4,h5,h6';
 
 	/**
 	 * @type {nodeList} - nodelist passed to ZTocList.svelte
@@ -201,14 +200,14 @@
 			transition:flexSlide|global={{ duration: 400 }}
 		>
 			<div class="sibar-innercontainer">
-				<ZSbarContainer signal="expandAll" />
+				<ZSbarContainer treeArray={data.dir} signal="expandAll" />
 			</div>
 		</div>
 	{/if}
 	{#if !display}
 		<div class="mobilesidebar-container">
 			<div class="sibar-innercontainer">
-				<ZSbarContainer signal="expandAll" />
+				<ZSbarContainer treeArray={data.dir} signal="expandAll" />
 			</div>
 		</div>
 	{/if}

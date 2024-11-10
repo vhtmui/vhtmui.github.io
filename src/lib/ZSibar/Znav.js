@@ -45,30 +45,31 @@ export function getAll_propertyNames(obj) {
 	}
 }
 
-  /**
-   * Builds the tree from an array of links.
-   * @param {string[]} links - The array of links to build the tree from.
-   * @returns {Tree} - The root of the tree.
-   */
-  export function buildTree(r,links) {
-    const root = r;
+/**
+ * Builds the tree from an array of links.
+ * @param {string[]} links - The array of links to build the tree from.
+ * @returns {Tree} - The root of the tree.
+ */
+export function buildTree(r, links) {
+	const root = r;
+	if (links) {
+		links.forEach((link) => {
+			if (link === '') return;
 
-    links.forEach((link) => {
-      if (link === "") return;
+			const parts = link.split('/').filter(Boolean);
+			let currentNode = root;
 
-      const parts = link.split("/").filter(Boolean);
-      let currentNode = root;
+			parts.forEach((part) => {
+				if (!currentNode[part]) {
+					currentNode[part] = {
+						_link: `${part}`,
+						_title: part
+					};
+				}
+				currentNode = currentNode[part];
+			});
+		});
+	}
 
-      parts.forEach((part) => {
-        if (!currentNode[part]) {
-          currentNode[part] = {
-            _link: `${part}`,
-            _title: part,
-          };
-        }
-        currentNode = currentNode[part];
-      });
-    });
-
-    return root;
-  }
+	return root;
+}
