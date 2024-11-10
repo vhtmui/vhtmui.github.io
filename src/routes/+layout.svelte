@@ -11,7 +11,7 @@
 	import { get_childArray } from '$lib/ZSibar/Znav';
 
 	import { onMount } from 'svelte';
-	import { quadOut } from 'svelte/easing';
+	import { cubicOut, quadOut, quintOut } from 'svelte/easing';
 	import { navigating } from '$app/stores';
 	import { slide } from 'svelte/transition';
 	import { afterNavigate } from '$app/navigation';
@@ -62,7 +62,7 @@
 		return {
 			delay,
 			duration,
-			easing: quadOut,
+			easing: cubicOut,
 			css(t, u) {
 				const flex = window.getComputedStyle(node).flexGrow;
 				const padding_r = window.getComputedStyle(node).paddingRight.slice(0, -2);
@@ -118,6 +118,7 @@
 		headings = document.querySelectorAll(titles);
 	});
 </script>
+
 <!-- #endregion -->
 
 <!-- #region Set head 
@@ -127,7 +128,7 @@
 		/**
 		 * Set theme on start, no need to wait domcontentload
 		 */
-		const localTheme = localStorage.getItem('theme');
+		const localTheme = document.cookie.match('(?:^|;)\\s*theme\\s*=\\s*([^;]+)')[1];
 		if (localTheme === 'Dark' || localTheme === 'Light') {
 			document.documentElement.setAttribute('data-theme', localTheme);
 		} else {
@@ -139,6 +140,7 @@
 		}
 	</script>
 	<link href="/global.css" rel="stylesheet" />
+	<title>MyWeb2</title>
 </svelte:head>
 <!-- #endregion -->
 
@@ -172,7 +174,7 @@
 				<ul></ul>
 			</nav>
 			<div class="toggleThme">
-				<ZThemeBtn theme={data.theme}/>
+				<ZThemeBtn initTheme={data.theme} />
 			</div>
 		</header>
 	</div>
@@ -196,7 +198,7 @@
 			onintrostart={() => {
 				removeEventListener('scroll', hideHeader);
 			}}
-			transition:flexSlide|global={{ duration: 300, delay: 70 }}
+			transition:flexSlide|global={{ duration: 400 }}
 		>
 			<div class="sibar-innercontainer">
 				<ZSbarContainer signal="expandAll" />
@@ -219,6 +221,7 @@
 		{/if}
 	</div>
 </main>
+
 <!-- #endregion -->
 
 <!-- #region Style
@@ -232,7 +235,7 @@
 		}
 		:root {
 			word-break: break-word;
-			font-family: 'Intel', 'Microsoft YaHei', Arial, sans-serif;
+			font-family: 'Segoe UI', 'Microsoft YaHei', Arial, sans-serif;
 			line-height: 1.75;
 			font-weight: normal;
 			font-size: 16px;

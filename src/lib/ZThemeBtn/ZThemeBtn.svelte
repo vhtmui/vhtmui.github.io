@@ -3,7 +3,7 @@
 
 	import { onMount } from 'svelte';
 
-	let { theme } = $props();
+	let { initTheme } = $props();
 
 	let BtnList = $state([false, false, false]);
 	let currentBtn = $state();
@@ -29,9 +29,9 @@
 	}
 
 	// init theme button
-	if (theme === 'Light') {
+	if (initTheme === 'Light') {
 		setCurrentBtn(0);
-	} else if (theme === 'Dark') {
+	} else if (initTheme === 'Dark') {
 		setCurrentBtn(1);
 	} else {
 		setCurrentBtn(2);

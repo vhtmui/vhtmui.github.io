@@ -1,14 +1,17 @@
 <script>
-    
-    /**
-     * @typedef {Object} Props
-     * @property {import('./$types').PageData} data
-     */
+	/**
+	 * @typedef {Object} Props
+	 * @property {import('./$types').PageData} data
+	 */
 
-    /** @type {Props} */
-    let { data } = $props();
-    import { page } from '$app/stores';
-
+	/** @type {Props} */
+	let { data } = $props();
 </script>
 
-<p>{$page.route.id}</p>
+<svelte:head>
+	<title>Docs</title>
+</svelte:head>
+
+{#each data.dir as dir }
+    <p>{dir}</p>
+{/each}

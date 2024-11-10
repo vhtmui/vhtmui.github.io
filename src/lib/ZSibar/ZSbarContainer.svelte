@@ -3,9 +3,9 @@
 	import ZIcon from '$lib/ZIcon/ZIcon.svelte';
 
 	import { root } from '../../routes/tree';
-	import { get_childArray, getAll_propertyNames } from './Znav';
+	import { get_childArray, getAll_propertyNames, buildTree } from './Znav';
 
-	import { quadOut } from 'svelte/easing';
+	import { cubicOut, quadOut } from 'svelte/easing';
 
 	/**
 	 * @typedef {Object} Props
@@ -52,7 +52,7 @@
 		return {
 			delay,
 			duration,
-			easing: quadOut,
+			easing: cubicOut,
 			css(t, u) {
 				return `
 					transform: scaleX(${t});
@@ -61,7 +61,7 @@
 			}
 		};
 	}
-	setExpand('default');
+	setExpand(signal);
 	$effect(() => {
 		if (input.length !== 0) {
 			setExpand('expandAll');
@@ -69,7 +69,7 @@
 	});
 </script>
 
-<div class="sidebar right" transition:topFly|global={{ duration: 300, delay: 70 }}>
+<div class="sidebar right" transition:topFly|global={{ duration: 300 }}>
 	<div class="sidebar-heard">
 		<input
 			bind:value={input}
@@ -90,17 +90,9 @@
 
 <style>
 	div.sidebar.right :global {
-		font-size: small;
-		/* margin-right: auto;
-		margin-left: auto; */
-		/* width: min(calc((100% - 4rem) * 0.2), calc(0.2 * (var(--main-max-width) - 4rem))); */
 		width: 100%;
 		padding-top: 1rem;
 		padding-right: 1vw;
-		/* max-height: 100vh;
-		overflow: auto; */
-		/* position: fixed; */
-		/* top: var(--header-block-height); */
 		div.sidebar-heard {
 			padding-bottom: 2rem;
 			display: flex;
@@ -110,8 +102,7 @@
 				color: var(--main-text-color);
 				border-radius: 0.5rem;
 				border: 1px solid var(--main-text-color);
-				font-size: small;
-				font-family: 'Intel', 'Microsoft YaHei', Arial, sans-serif;
+				font-size: medium;
 				height: 2rem;
 				width: 5.5rem;
 				margin-left: 1rem;
