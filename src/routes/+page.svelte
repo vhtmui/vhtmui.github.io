@@ -260,7 +260,7 @@
 						<pre
 							class="brush: bash notranslate"
 							data-signature="4IQDe+FT9F3HniKMAkuFBrdB2K5UajJUp2JTy0ZO1uA="><code
-								><span class="token function">git</span> clone https://github.com/mdn/learning-area</code></pre>
+								><span class="token function">git</span> clone https://github.com/mdn/learning-area22222222222222222222222222222222222222222222222222222222222222222222222222222222222222</code></pre>
 					</div>
 				</li>
 				<li>

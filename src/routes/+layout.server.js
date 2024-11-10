@@ -13,8 +13,7 @@ export async function load(event) {
 		.filter((d) => d.isDirectory())
 		.map((d) => path.join(d.parentPath, d.name).replaceAll('\\', '/').replaceAll(baseDir, ''));
 
-	// get content
-	const mdContent = await readFile('docs/PowerShell.md');
 
-	return { theme: t, dir, mdContent };
+
+	return { theme: t, dir };
 }

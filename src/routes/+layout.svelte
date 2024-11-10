@@ -398,7 +398,7 @@
 				max-width: var(--main-max-width);
 				& div.sidebar-container {
 					padding-right: 1%;
-					flex: 1;
+					width: 25%;
 					display: block;
 					& .sibar-innercontainer {
 						width: calc((100% - 6rem) * 0.25 - 1%);
@@ -413,7 +413,7 @@
 					display: none;
 				}
 				& div.content {
-					flex: 3;
+					width: 75%;
 				}
 				& main div.toc {
 					display: none;
@@ -429,7 +429,7 @@
 				max-width: var(--main-max-width);
 				& div.sidebar-container {
 					padding-right: 1%;
-					flex: 1;
+					width: 20%;
 					display: block;
 					& .sibar-innercontainer {
 						width: calc((min(var(--main-max-width), 100%) - 6rem) * 0.96 * 0.2);
@@ -444,10 +444,10 @@
 					display: none;
 				}
 				& div.content {
-					flex: 3;
+					width: 70%;
 				}
 				& div.toc {
-					flex: 1;
+					width: 20%;
 					display: block;
 				}
 			}
