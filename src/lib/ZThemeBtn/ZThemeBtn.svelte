@@ -9,7 +9,6 @@
 	let currentBtn = $state();
 
 	function setTheme(theme) {
-		console.log('clickbtn');
 		if (theme === 'Dark' || theme === 'Light') {
 			document.documentElement.setAttribute('data-theme', theme);
 			document.cookie = `theme=${theme};path=/`;

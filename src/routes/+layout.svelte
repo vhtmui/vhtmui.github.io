@@ -334,6 +334,7 @@
 			}
 		}
 		main {
+			box-sizing: content-box !important;
 			margin-top: 0;
 			min-height: 100vh;
 			color: var(--main-text-color);
@@ -341,7 +342,7 @@
 			flex-wrap: nowrap;
 			padding: 0.5rem 1rem 0 2rem;
 			margin: auto;
-			max-width: 100%;
+			max-width: var(--main-max-width);
 			& div.content {
 				max-width: 100%;
 				overflow-wrap: break-word;
@@ -393,11 +394,10 @@
 
 		@media (min-width: 768px) and (max-width: 1199px) {
 			main {
-				display: flex;
+				display: grid;
 				flex-wrap: nowrap;
 				padding: 0.5rem 2rem 0 2rem;
 				margin: auto;
-				max-width: var(--main-max-width);
 				& div.sidebar-container {
 					padding-right: 1%;
 					width: 25%;
@@ -424,15 +424,13 @@
 		}
 		@media (min-width: 1200px) {
 			main {
-				display: flex;
-				flex-wrap: nowrap;
+				display: grid;
+				grid-template-areas: "sb art toc";
+				grid-template-columns: 20% 60% 20%;
 				padding: 0.5rem 2rem 0 4rem;
 				margin: auto;
-				max-width: var(--main-max-width);
 				& div.sidebar-container {
-					padding-right: 1%;
-					flex: 1;
-					width: 20%;
+					grid-area: sb;
 					display: block;
 					& .sibar-innercontainer {
 						width: calc((min(var(--main-max-width), 100%) - 6rem) * 0.96 * 0.2);
@@ -447,12 +445,11 @@
 					display: none;
 				}
 				& div.content {
-					flex: 3;
-					width: 60%;
+					grid-area: art;
+					padding: 0 2rem 0 1rem;
 				}
 				& div.toc {
-					flex: 1;
-					width: 20%;
+					grid-area: toc;
 					display: block;
 				}
 			}
