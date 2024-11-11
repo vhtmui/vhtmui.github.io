@@ -199,7 +199,7 @@
 			onintrostart={() => {
 				removeEventListener('scroll', hideHeader);
 			}}
-			transition:flexSlide|global={{ duration: 400 }}
+			transition:flexSlide={{ duration: 400 }}
 		>
 			<div class="sibar-innercontainer">
 				<ZSbarContainer treeArray={data.dir} signal="expandAll" />
