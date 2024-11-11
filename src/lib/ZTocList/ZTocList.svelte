@@ -21,6 +21,8 @@
 	 */
 	let CurrentIndex = $state();
 
+	let tocContainer;
+
 	let As = $state(Array(headings.length));
 
 	/**
@@ -47,8 +49,10 @@
 						clearTimeout(timer);
 					}
 					timer = setTimeout(() => {
-						As[CurrentIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
-					}, 300);
+						const height = tocContainer.clientHeight / 2;
+
+						tocContainer.scroll({ top: As[CurrentIndex].offsetTop - height, behavior: 'smooth' });
+					}, 200);
 				}
 				break;
 			}
@@ -58,7 +62,7 @@
 
 <svelte:window bind:scrollY={Y} />
 
-<div class="toc-container">
+<div class="toc-container" bind:this={tocContainer}>
 	{#if headings}
 		{#each headings as head, i}
 			<a

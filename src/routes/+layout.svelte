@@ -69,33 +69,34 @@
 				return `
             overflow: hidden;
             min-width: 0;
-            flex: ${Math.round(t * 100 * flex) / 100} 1 0px;
+            flex: ${Math.round(t * 100 * flex) / 100};
 			padding-right: ${padding_r * t}px;
         `;
 			}
 		};
 	}
 
+	let lastScrollY;
+	let timeoutId = null;
+	function hideHeader() {
+		if (timeoutId) {
+			clearTimeout(timeoutId);
+		}
+		timeoutId = setTimeout(() => {
+			const offset = window.scrollY - lastScrollY;
+			if (offset > 0) {
+				hideHead = true;
+			} else if (offset < 0) {
+				hideHead = false;
+			}
+			lastScrollY = window.scrollY;
+		}, 100);
+	}
+
 	onMount(() => {
 		/**
 		 * hide topbar while scroll down, and display it while scroll up.
 		 */
-		let lastScrollY;
-		let timeoutId = null;
-		function hideHeader() {
-			if (timeoutId) {
-				clearTimeout(timeoutId);
-			}
-			timeoutId = setTimeout(() => {
-				const offset = window.scrollY - lastScrollY;
-				if (offset > 0) {
-					hideHead = true;
-				} else if (offset < 0) {
-					hideHead = false;
-				}
-				lastScrollY = window.scrollY;
-			}, 100);
-		}
 		lastScrollY = window.scrollY;
 		addEventListener('scroll', hideHeader, { passive: true });
 
@@ -430,6 +431,7 @@
 				max-width: var(--main-max-width);
 				& div.sidebar-container {
 					padding-right: 1%;
+					flex: 1;
 					width: 20%;
 					display: block;
 					& .sibar-innercontainer {
@@ -445,9 +447,11 @@
 					display: none;
 				}
 				& div.content {
+					flex: 3;
 					width: 60%;
 				}
 				& div.toc {
+					flex: 1;
 					width: 20%;
 					display: block;
 				}
