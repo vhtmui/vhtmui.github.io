@@ -127,7 +127,8 @@
 		/**
 		 * Set theme on start, no need to wait domcontentload
 		 */
-		const localTheme = document.cookie.match('(?:^|;)\\s*theme\\s*=\\s*([^;]+)')[1];
+		const match = document.cookie.match('(?:^|;)\\s*theme\\s*=\\s*([^;]+)');
+		const localTheme = match ? match[1] : null;
 		if (localTheme === 'Dark' || localTheme === 'Light') {
 			document.documentElement.setAttribute('data-theme', localTheme);
 		} else {
@@ -444,7 +445,7 @@
 					display: none;
 				}
 				& div.content {
-					width: 70%;
+					width: 60%;
 				}
 				& div.toc {
 					width: 20%;

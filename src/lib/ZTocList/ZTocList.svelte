@@ -19,7 +19,9 @@
 	/**
 	 * @type {number} - indicate the index of current hightlight item.
 	 */
-	let CurrentIndex;
+	let CurrentIndex = $state();
+
+	let As = $state(Array(headings.length));
 
 	/**
 	 * @type {number} - binded to the `window.scrollY`.
@@ -34,11 +36,19 @@
 	$effect(() => {
 		// highlight corresponding topic item while scrolling.
 		for (let index = headings?.length - 1; index >= 0; index--) {
-			if (Y - headings[index].offsetTop > -scrollTrigger ) {
+			if (Y - headings[index].offsetTop > -scrollTrigger) {
 				if (index !== CurrentIndex) {
 					classes[index] = true;
 					classes[CurrentIndex] = false;
 					CurrentIndex = index;
+
+					let timer;
+					if (timer) {
+						clearTimeout(timer);
+					}
+					timer = setTimeout(() => {
+						As[CurrentIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+					}, 300);
 				}
 				break;
 			}
@@ -52,6 +62,7 @@
 	{#if headings}
 		{#each headings as head, i}
 			<a
+				bind:this={As[i]}
 				class="tocItem {classes[i] ? 'scrollTo' : ''}"
 				href="#{head.id}"
 				style="padding-left: {getPadding(head) * indent}rem;">{head.textContent}</a
@@ -67,6 +78,8 @@
 		position: sticky;
 		top: calc(var(--header-block-height) + 5rem);
 		border-left: 1px solid #828282;
+		overflow-y: auto;
+		height: 70vh;
 		& a.tocItem {
 			display: inline-block;
 			padding-top: 0.5rem;
