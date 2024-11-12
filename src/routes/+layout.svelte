@@ -425,12 +425,10 @@
 		@media (min-width: 1200px) {
 			main {
 				display: grid;
-				grid-template-areas: "sb art toc";
-				grid-template-columns: 20% 60% 20%;
+				grid-template-columns: minmax(20%, 1fr) minmax(0, 3fr) minmax(20%, 1fr);
 				padding: 0.5rem 2rem 0 4rem;
 				margin: auto;
 				& div.sidebar-container {
-					grid-area: sb;
 					display: block;
 					& .sibar-innercontainer {
 						width: calc((min(var(--main-max-width), 100%) - 6rem) * 0.96 * 0.2);
@@ -445,11 +443,9 @@
 					display: none;
 				}
 				& div.content {
-					grid-area: art;
 					padding: 0 2rem 0 1rem;
 				}
 				& div.toc {
-					grid-area: toc;
 					display: block;
 				}
 			}
