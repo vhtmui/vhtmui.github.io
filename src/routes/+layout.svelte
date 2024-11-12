@@ -57,6 +57,13 @@
 	 */
 	let tocDisplay = $state();
 
+	/**
+	 * @type {number} - bind to the `clientWidth` of `div.sidebar-container`
+	 */
+	let SibarWidth = $state();
+
+	let mobileSibar = $state();
+
 	function flexSlide(node, { delay = 0, duration = 400 }) {
 		return {
 			delay,
@@ -67,11 +74,11 @@
 				const padding_r = window.getComputedStyle(node).paddingRight.slice(0, -2);
 
 				return `
-            overflow: hidden;
-            min-width: 0;
-            flex: ${Math.round(t * 100 * flex) / 100};
-			padding-right: ${padding_r * t}px;
-        `;
+					overflow: hidden;
+					min-width: 0;
+					flex: ${Math.round(t * 100 * flex) / 100};
+					padding:${padding_r * t};
+				`;
 			}
 		};
 	}
@@ -93,6 +100,18 @@
 		}, 100);
 	}
 
+	function clickOutsideMobileSibarHandler() {
+		if (window.getComputedStyle(mobileSibar).display !== 'none') {
+			function addHandler(event) {
+				if (!mobileSibar.contains(event.target)) {
+					display = false;
+					document.removeEventListener('click', addHandler);
+				}
+			}
+			document.addEventListener('click', addHandler);
+		}
+	}
+
 	onMount(() => {
 		/**
 		 * hide topbar while scroll down, and display it while scroll up.
@@ -110,6 +129,7 @@
 			timeoutId2 = setTimeout(() => {
 				// destroy toclist component while its parent container display none
 				tocDisplay = window.getComputedStyle(tocBlock).display === 'none' ? false : true;
+				console.log('toc change!');
 			}, 100);
 		});
 	});
@@ -160,6 +180,7 @@
 						: (BlurBtnSytle =
 								'transform: rotateY(0deg); transition: transform 300ms ease-out 70ms;');
 					display = !display;
+					clickOutsideMobileSibarHandler();
 				}}
 			>
 				<ZIcon option={menuIcon} />
@@ -186,7 +207,7 @@
 			class="sidebar-container"
 			onoutroend={() => {
 				/**
-				 * prevent scrolled event while animation displaying.
+				 * prevent scrolled event listener while animation displaying.
 				 */
 				addEventListener('scroll', hideHeader);
 			}}
@@ -199,16 +220,19 @@
 			onintrostart={() => {
 				removeEventListener('scroll', hideHeader);
 			}}
-			transition:flexSlide={{ duration: 400 }}
+			transition:flexSlide={{ duration: 300 }}
+			bind:clientWidth={SibarWidth}
 		>
-			<div class="sibar-innercontainer">
+			<div class="sibar-innercontainer" style="width: {SibarWidth}px;">
 				<ZSbarContainer treeArray={data.dir} signal="expandAll" />
 			</div>
 		</div>
-	{/if}
-	{#if !display}
 		<div class="mobilesidebar-container">
-			<div class="sibar-innercontainer">
+			<div
+				bind:this={mobileSibar1}
+				class="sibar-innercontainer"
+				transition:slide|global={{ axis: 'x' }}
+			>
 				<ZSbarContainer treeArray={data.dir} signal="expandAll" />
 			</div>
 		</div>
@@ -365,7 +389,7 @@
 					position: fixed;
 					border-radius: 1rem;
 					left: 0;
-					min-width: 85%;
+					width: 100%;
 				}
 			}
 			& div.toc {
@@ -394,11 +418,12 @@
 
 		@media (min-width: 768px) and (max-width: 1199px) {
 			main {
-				display: grid;
+				display: flex;
 				flex-wrap: nowrap;
 				padding: 0.5rem 2rem 0 2rem;
 				margin: auto;
 				& div.sidebar-container {
+					flex: 1;
 					padding-right: 1%;
 					width: 25%;
 					display: block;
@@ -415,6 +440,7 @@
 					display: none;
 				}
 				& div.content {
+					flex: 3;
 					width: 75%;
 				}
 				& main div.toc {
@@ -424,14 +450,13 @@
 		}
 		@media (min-width: 1200px) {
 			main {
-				display: grid;
-				grid-template-columns: minmax(20%, 1fr) minmax(0, 3fr) minmax(20%, 1fr);
+				display: flex;
 				padding: 0.5rem 2rem 0 4rem;
 				margin: auto;
 				& div.sidebar-container {
+					flex: 1;
 					display: block;
 					& .sibar-innercontainer {
-						width: calc((min(var(--main-max-width), 100%) - 6rem) * 0.96 * 0.2);
 						position: fixed;
 						top: var(--header-block-height);
 						background-color: transparent;
@@ -443,9 +468,12 @@
 					display: none;
 				}
 				& div.content {
+					flex: 3;
+					width: 60%;
 					padding: 0 2rem 0 1rem;
 				}
 				& div.toc {
+					flex: 1;
 					display: block;
 				}
 			}

@@ -49,7 +49,7 @@
 						clearTimeout(timer);
 					}
 					timer = setTimeout(() => {
-						const height = tocContainer.clientHeight / 2;
+						const height = tocContainer.clientHeight * 0.45;
 
 						tocContainer.scroll({ top: As[CurrentIndex].offsetTop - height, behavior: 'smooth' });
 					}, 200);
@@ -84,6 +84,8 @@
 		border-left: 1px solid #828282;
 		overflow-y: auto;
 		height: 70vh;
+		-webkit-mask-image: linear-gradient(180deg, #0000, #000 3% 97%, #0000);
+		mask-image: linear-gradient(180deg, #0000, #000 3% 97%, #0000);
 		& a.tocItem {
 			display: inline-block;
 			padding-top: 0.5rem;

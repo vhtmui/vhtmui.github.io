@@ -74,14 +74,14 @@
 	// Filte the sidebar
 	$effect(() => {
 		if (filter.length !== 0) {
-			if (allChildNode.match(RegExp(filter, 'i')) || tree._title.match(RegExp(filter, 'i'))) {
+			const pattern = RegExp(filter.replace(/\[|\.|\*|\+|\?|\^|\$|\{|\}|\(|\)|\||\\|\]/g, '\\$&'),'i');
+			if (allChildNode.match(pattern) || tree._title.match(pattern)) {
 				visable = true;
 			} else {
 				visable = false;
 			}
-			const reg = RegExp(filter, 'i');
-			const match = reg.exec(tree._title);
-			title = tree._title.replace(reg, `<span class="highlightClass">${match}</span>`);
+			const match =pattern.exec(tree._title);
+			title = tree._title.replace(pattern, `<span class="highlightClass">${match}</span>`);
 		} else {
 			visable = true;
 			title = tree._title;
@@ -160,7 +160,7 @@
 		a.sidebar {
 			text-decoration: none;
 			color: var(----main-text-color);
-			transition: all cubic-bezier(0.165, 0.84, 0.44, 1) 300ms 70ms; 
+			transition: all cubic-bezier(0.165, 0.84, 0.44, 1) 300ms 70ms;
 			&:hover {
 				text-decoration: underline;
 			}

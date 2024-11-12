@@ -22,8 +22,8 @@
 		}
 	}
 	function setCurrentBtn(index) {
-		BtnList[index] = true;
 		BtnList[currentBtn] = false;
+		BtnList[index] = true;
 		currentBtn = index;
 	}
 
@@ -51,6 +51,7 @@
 			Light <ZIcon option="sun" />
 		</button>
 		<button
+			type="button"
 			class="svg Dark"
 			class:selected={BtnList[1]}
 			onclick={() => {
@@ -61,6 +62,7 @@
 			Dark <ZIcon option="moon" />
 		</button>
 		<button
+			type="button"
 			class="svg Auto"
 			class:selected={BtnList[2]}
 			onclick={() => {

@@ -45,7 +45,7 @@
 	}
 	function cleanInput() {
 		input = '';
-		widther = false;
+		// widther = false;
 	}
 	function topFly(node, { delay = 0, duration = 200 }) {
 		return {
@@ -54,6 +54,7 @@
 			easing: cubicOut,
 			css(t, u) {
 				return `
+					overflow: hidden;
 					transform: scaleX(${t});
 					transform-origin: left;
 				`;
@@ -171,6 +172,7 @@
 			}
 		}
 		div.sibar {
+			min-width: max-content;
 			max-height: calc(100vh - 8rem);
 			overflow-y: auto;
 			padding-top: 1rem;
