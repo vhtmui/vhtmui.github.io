@@ -2,9 +2,9 @@ import { readFile, readdir } from 'node:fs/promises';
 import * as path from 'node:path';
 
 /** @type {import('./$types').LayoutServerLoad} */
-export async function load(event) {
+export async function load({cookies}) {
 	// get theme cookies setted to html atrribute
-	const t = event.cookies.get('theme');
+	const t = cookies.get('theme');
 
 	// get dir array, pass to `ZSbarContainer.svelte`
 	const baseDir = 'src/routes';

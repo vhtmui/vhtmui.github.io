@@ -172,7 +172,7 @@
 <div class="topContainer" class:hideHead>
 	<div class="topInnerContainer">
 		<ZHeader>
-			{#snippet sibarBtn()}
+			{#snippet A()}
 				<ZBlurBtn
 					class="sibarBtn"
 					style={BlurBtnSytle}
@@ -188,12 +188,16 @@
 					<ZIcon option={menuIcon} />
 				</ZBlurBtn>
 			{/snippet}
-			<ZBlurBtn>
-				<a href="/">
-					<ZIcon option={'home'} />
-				</a>
-			</ZBlurBtn>
-			<ZThemeBtn initTheme={data.theme} />
+			{#snippet B()}
+				<ZBlurBtn>
+					<a href="/">
+						<ZIcon option={'home'} />
+					</a>
+				</ZBlurBtn>
+			{/snippet}
+			{#snippet C()}
+				<ZThemeBtn initTheme={data.theme} />
+			{/snippet}
 		</ZHeader>
 	</div>
 </div>
