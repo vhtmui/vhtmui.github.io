@@ -14,6 +14,7 @@
 	import { navigating } from '$app/stores';
 	import { slide } from 'svelte/transition';
 	import { afterNavigate } from '$app/navigation';
+	import ZHeader from '$lib/ZHeader/ZHeader.svelte';
 
 	let { data, children } = $props();
 
@@ -166,40 +167,34 @@
 	<title>MyWeb2</title>
 </svelte:head>
 <!-- #endregion -->
-
 <!-- #region Content
 -->
 <div class="topContainer" class:hideHead>
 	<div class="topInnerContainer">
-		<div class="topLeftHeader">
-			<ZBlurBtn
-				class="sibarBtn"
-				style={BlurBtnSytle}
-				onclick={() => {
-					display
-						? (BlurBtnSytle =
-								'transform: rotateY(180deg); transition: transform 300ms ease-out 70ms;')
-						: (BlurBtnSytle =
-								'transform: rotateY(0deg); transition: transform 300ms ease-out 70ms;');
-					display = !display;
-				}}
-			>
-				<ZIcon option={menuIcon} />
-			</ZBlurBtn>
+		<ZHeader>
+			{#snippet sibarBtn()}
+				<ZBlurBtn
+					class="sibarBtn"
+					style={BlurBtnSytle}
+					onclick={() => {
+						display
+							? (BlurBtnSytle =
+									'transform: rotateY(180deg); transition: transform 300ms ease-out 70ms;')
+							: (BlurBtnSytle =
+									'transform: rotateY(0deg); transition: transform 300ms ease-out 70ms;');
+						display = !display;
+					}}
+				>
+					<ZIcon option={menuIcon} />
+				</ZBlurBtn>
+			{/snippet}
 			<ZBlurBtn>
 				<a href="/">
 					<ZIcon option={'home'} />
 				</a>
 			</ZBlurBtn>
-		</div>
-		<header class="top">
-			<nav class="top">
-				<ul></ul>
-			</nav>
-			<div class="toggleThme">
-				<ZThemeBtn initTheme={data.theme} />
-			</div>
-		</header>
+			<ZThemeBtn initTheme={data.theme} />
+		</ZHeader>
 	</div>
 </div>
 <main>
@@ -301,8 +296,9 @@
 			background-color: var(--header-nav-bg-color);
 			position: sticky;
 			top: 0;
+			z-index: 20;
 			transition: top 100ms linear;
-			pointer-events: none;
+			/* pointer-events: none; */
 			&.hideHead {
 				top: calc(0rem - var(--header-block-height));
 				transition: top 100ms linear;
@@ -328,44 +324,13 @@
 					& * {
 						pointer-events: auto;
 					}
-					& nav.top {
-						margin-right: auto;
-						display: flex;
-						overflow: auto;
-						& ul {
-							margin: 0;
-							padding: 0;
-							display: flex;
-							list-style: none;
-						}
-						& a {
-							border-radius: 0.25em;
-							display: inline-block;
-							box-sizing: border-box;
-							padding: 0.3em 0.5em;
-							text-decoration: none;
-							color: inherit;
-							&:hover {
-								background-color: var(--header-block-hover-bg-color);
-								color: var(--header-text-hover-color);
-							}
-							&.active {
-								background-color: var(--header-block-hover-bg-color);
-								color: var(--header-text-hover-color);
-							}
-						}
-					}
-				}
-				& .topLeftHeader {
-					display: flex;
-					align-items: center;
-					& * {
-						pointer-events: auto;
-					}
 				}
 			}
 		}
 		main {
+			position: relative;
+			top: 0;
+			z-index: 10;
 			box-sizing: content-box !important;
 			margin-top: 0;
 			min-height: 100vh;

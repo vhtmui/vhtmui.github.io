@@ -82,7 +82,7 @@
 		position: sticky;
 		top: calc(var(--header-block-height) + 5rem);
 		overflow-y: auto;
-		height: 70vh;
+		max-height: 70vh;
 		-webkit-mask-image: linear-gradient(180deg, #0000, #000 3% 97%, #0000);
 		mask-image: linear-gradient(180deg, #0000, #000 3% 97%, #0000);
 		& a.tocItem {
