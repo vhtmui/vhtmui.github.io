@@ -4,7 +4,7 @@
 
 	import { get_childArray, getAll_propertyNames, buildTree } from './Znav';
 
-	import { cubicOut, quadOut } from 'svelte/easing';
+	import { quadOut } from 'svelte/easing';
 
 	/**
 	 * @typedef {Object} Props
@@ -51,7 +51,7 @@
 		return {
 			delay,
 			duration,
-			easing: cubicOut,
+			easing: quadOut,
 			css(t, u) {
 				return `
 					overflow: hidden;
@@ -172,7 +172,7 @@
 			}
 		}
 		div.sibar {
-			min-width: max-content;
+			min-width: 5rem;
 			max-height: calc(100vh - 8rem);
 			overflow-y: auto;
 			padding-top: 1rem;

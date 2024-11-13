@@ -1,7 +1,7 @@
 <script>
 	import ZSidebar from './ZSidebar.svelte';
 	import ZIcon from '$lib/ZIcon/ZIcon.svelte';
-	
+
 	import { getAll_propertyNames, get_childArray } from './Znav';
 
 	import { slide } from 'svelte/transition';
@@ -74,13 +74,16 @@
 	// Filte the sidebar
 	$effect(() => {
 		if (filter.length !== 0) {
-			const pattern = RegExp(filter.replace(/\[|\.|\*|\+|\?|\^|\$|\{|\}|\(|\)|\||\\|\]/g, '\\$&'),'i');
+			const pattern = RegExp(
+				filter.replace(/\[|\.|\*|\+|\?|\^|\$|\{|\}|\(|\)|\||\\|\]/g, '\\$&'),
+				'i'
+			);
 			if (allChildNode.match(pattern) || tree._title.match(pattern)) {
 				visable = true;
 			} else {
 				visable = false;
 			}
-			const match =pattern.exec(tree._title);
+			const match = pattern.exec(tree._title);
 			title = tree._title.replace(pattern, `<span class="highlightClass">${match}</span>`);
 		} else {
 			visable = true;
@@ -126,7 +129,7 @@
 
 <div id="Sidebar">
 	{#if tree && visable}
-		<div transition:slide|global={{ easing: quadOut, duration: 300, delay: 70 }} class="tree-head">
+		<div transition:slide|global={{ easing: quadOut, duration: 300 }} class="tree-head">
 			{#if child_tree}
 				<button class:IconUp onclick={toggle_display}><ZIcon {option} /></button>
 				<a class="sidebar" class:selected_item href={nowLink}>{@html title}</a>

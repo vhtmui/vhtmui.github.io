@@ -81,7 +81,6 @@
 		margin-top: 5rem;
 		position: sticky;
 		top: calc(var(--header-block-height) + 5rem);
-		border-left: 1px solid #828282;
 		overflow-y: auto;
 		height: 70vh;
 		-webkit-mask-image: linear-gradient(180deg, #0000, #000 3% 97%, #0000);
@@ -91,6 +90,7 @@
 			padding-top: 0.5rem;
 			padding-bottom: 0.5rem;
 			padding-right: 1rem;
+			border-left: 1px solid;
 			color: var(--tocItem-text-color);
 			text-decoration: none;
 			&:hover {

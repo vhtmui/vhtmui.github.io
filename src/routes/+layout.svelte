@@ -10,7 +10,7 @@
 	import { get_childArray } from '$lib/ZSibar/Znav';
 
 	import { onMount } from 'svelte';
-	import { cubicOut, quadOut, quintOut } from 'svelte/easing';
+	import { quadOut } from 'svelte/easing';
 	import { navigating } from '$app/stores';
 	import { slide } from 'svelte/transition';
 	import { afterNavigate } from '$app/navigation';
@@ -26,6 +26,8 @@
 	 * @type {boolean} - indicate sidebar's display behavior
 	 */
 	let display = $state(true);
+
+	let displayToc = $state(true);
 
 	/**
 	 * @type {string} - css string of sidebar menu
@@ -55,20 +57,23 @@
 	/**
 	 * @type {string} - the `display` attribute of topic list element's style
 	 */
-	let tocDisplay = $state();
+	let tocDisplayAttriute = $state();
 
 	/**
 	 * @type {number} - bind to the `clientWidth` of `div.sidebar-container`
 	 */
 	let SibarWidth = $state();
 
+	/**
+	 * @type {HTMLDivElement} - bind to the `div.mobilesidebar-container`
+	 */
 	let mobileSibar = $state();
 
 	function flexSlide(node, { delay = 0, duration = 400 }) {
 		return {
 			delay,
 			duration,
-			easing: cubicOut,
+			easing: quadOut,
 			css(t, u) {
 				const flex = window.getComputedStyle(node).flexGrow;
 				const padding_r = window.getComputedStyle(node).paddingRight.slice(0, -2);
@@ -100,15 +105,13 @@
 		}, 100);
 	}
 
-	function clickOutsideMobileSibarHandler() {
-		if (window.getComputedStyle(mobileSibar).display !== 'none') {
-			function addHandler(event) {
-				if (!mobileSibar.contains(event.target)) {
-					display = false;
-					document.removeEventListener('click', addHandler);
-				}
-			}
-			document.addEventListener('click', addHandler);
+	/**
+	 * on mobile terminal, undisplay the sidebar while click outside
+	 * @param event
+	 */
+	function clickOutsideMobileSibarHandler(event) {
+		if (!mobileSibar?.contains(event.target)) {
+			display = true;
 		}
 	}
 
@@ -123,13 +126,12 @@
 		 * doing things while resizing
 		 */
 		let timeoutId2 = null;
-		tocDisplay = window.getComputedStyle(tocBlock).display === 'none' ? false : true;
+		tocDisplayAttriute = window.getComputedStyle(tocBlock).display === 'none' ? false : true;
 		addEventListener('resize', () => {
 			timeoutId2 && clearTimeout(timeoutId2);
 			timeoutId2 = setTimeout(() => {
 				// destroy toclist component while its parent container display none
-				tocDisplay = window.getComputedStyle(tocBlock).display === 'none' ? false : true;
-				console.log('toc change!');
+				tocDisplayAttriute = window.getComputedStyle(tocBlock).display === 'none' ? false : true;
 			}, 100);
 		});
 	});
@@ -148,8 +150,8 @@
 		/**
 		 * Set theme on start, no need to wait domcontentload
 		 */
-		const match = document.cookie.match('(?:^|;)\\s*theme\\s*=\\s*([^;]+)');
-		const localTheme = match ? match[1] : null;
+		const matchy = document.cookie.match('(?:^|;)\\s*theme\\s*=\\s*([^;]+)');
+		const localTheme = matchy ? matchy[1] : null;
 		if (localTheme === 'Dark' || localTheme === 'Light') {
 			document.documentElement.setAttribute('data-theme', localTheme);
 		} else {
@@ -180,12 +182,11 @@
 						: (BlurBtnSytle =
 								'transform: rotateY(0deg); transition: transform 300ms ease-out 70ms;');
 					display = !display;
-					clickOutsideMobileSibarHandler();
 				}}
 			>
 				<ZIcon option={menuIcon} />
 			</ZBlurBtn>
-			<ZBlurBtn style="margin-left: 3rem">
+			<ZBlurBtn>
 				<a href="/">
 					<ZIcon option={'home'} />
 				</a>
@@ -224,27 +225,37 @@
 			bind:clientWidth={SibarWidth}
 		>
 			<div class="sibar-innercontainer" style="width: {SibarWidth}px;">
-				<ZSbarContainer treeArray={data.dir} signal="expandAll" />
+				<ZSbarContainer treeArray={data.directory} signal="expandAll" />
 			</div>
 		</div>
+	{/if}
+	{#if !display}
 		<div class="mobilesidebar-container">
 			<div
-				bind:this={mobileSibar1}
+				bind:this={mobileSibar}
 				class="sibar-innercontainer"
 				transition:slide|global={{ axis: 'x' }}
+				onintroend={() => {
+					addEventListener('click', clickOutsideMobileSibarHandler);
+				}}
+				onoutroend={() => {
+					removeEventListener('click', clickOutsideMobileSibarHandler);
+				}}
 			>
-				<ZSbarContainer treeArray={data.dir} signal="expandAll" />
+				<ZSbarContainer treeArray={data.directory} signal="expandAll" />
 			</div>
 		</div>
 	{/if}
 	<div class="content">
 		{@render children?.()}
 	</div>
-	<div class="toc" bind:this={tocBlock}>
-		{#if tocDisplay && headings && headings?.length}
-			<ZTocList {headings} indent="0.5" />
-		{/if}
-	</div>
+	{#if displayToc}
+		<div class="toc" bind:this={tocBlock}>
+			{#if tocDisplayAttriute && headings && headings?.length}
+				<ZTocList {headings} indent="0.5" />
+			{/if}
+		</div>
+	{/if}
 </main>
 
 <!-- #endregion -->
@@ -351,9 +362,6 @@
 					& * {
 						pointer-events: auto;
 					}
-					& .sibarBtn {
-						position: fixed;
-					}
 				}
 			}
 		}
@@ -393,7 +401,6 @@
 				}
 			}
 			& div.toc {
-				padding-left: 3%;
 				display: none;
 			}
 			& h1,
@@ -423,7 +430,7 @@
 				padding: 0.5rem 2rem 0 2rem;
 				margin: auto;
 				& div.sidebar-container {
-					flex: 1;
+					flex: 1.3;
 					padding-right: 1%;
 					width: 25%;
 					display: block;
@@ -454,8 +461,9 @@
 				padding: 0.5rem 2rem 0 4rem;
 				margin: auto;
 				& div.sidebar-container {
-					flex: 1;
+					flex: 1.3;
 					display: block;
+					max-width: 20%;
 					& .sibar-innercontainer {
 						position: fixed;
 						top: var(--header-block-height);
@@ -470,7 +478,7 @@
 				& div.content {
 					flex: 3;
 					width: 60%;
-					padding: 0 2rem 0 1rem;
+					padding: 0 3rem 0 3rem;
 				}
 				& div.toc {
 					flex: 1;
