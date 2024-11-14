@@ -30,6 +30,10 @@
 	 */
 	let cfg;
 
+	let pointerEvents = $state('auto');
+
+	let actived = $state(false);
+
 	/**
 	 * To save configs
 	 */
@@ -78,26 +82,40 @@
 		<div
 			class="headItem"
 			style="left: {snippet.start}px;"
+			style:pointer-events={pointerEvents}
+			class:actived
 			bind:this={snippet.ele}
 			bind:clientWidth={snippet.length}
 			onpointerdown={(e) => {
 				e.preventDefault();
-				function seek(e) {
-					const maxWidth = document.body.clientWidth;
-					const length = snippet.length;
-					snippet.start = e.clientX - snippet.length / 2;
-					if (snippet.start < 0) snippet.start = 0;
-					if (snippet.start > maxWidth - length) snippet.start = maxWidth - length;
-				}
-				window.addEventListener('pointermove', seek);
-				window.addEventListener(
-					'pointerup',
-					() => {
-						window.removeEventListener('pointermove', seek);
-						saveCfg();
-					},
-					{ once: true }
-				);
+				if (e.button !== 0) return;
+
+				let timer = setTimeout(() => {
+					pointerEvents = 'none';
+					actived = true;
+					function seek(e) {
+						const maxWidth = document.body.clientWidth;
+						const length = snippet.length;
+						snippet.start = e.clientX - snippet.length / 2;
+						if (snippet.start < 0) snippet.start = 0;
+						if (snippet.start > maxWidth - length) snippet.start = maxWidth - length;
+					}
+					window.addEventListener('pointermove', seek);
+					window.addEventListener(
+						'pointerup',
+						(e) => {
+							actived = false;
+							e.preventDefault();
+							pointerEvents = 'auto';
+							window.removeEventListener('pointermove', seek);
+							saveCfg();
+						},
+						{ once: true }
+					);
+				}, 200);
+
+				window.addEventListener('pointerup', () => clearTimeout(timer));
+				window.addEventListener('pointermove', () => clearTimeout(timer));
 			}}
 		>
 			{@render snippet.fn()}
@@ -113,6 +131,9 @@
 		height: 100%;
 		.headItem {
 			position: absolute;
+		}
+		.actived {
+			transform: scale(1.5);
 		}
 	}
 </style>
