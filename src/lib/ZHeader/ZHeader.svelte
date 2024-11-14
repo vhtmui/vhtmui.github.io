@@ -6,9 +6,15 @@
 
 	let fns = Object.values(others);
 
+	/**
+	 * An array of snippets containing properties to configure the snippet layout.
+	 * @type {Array<Object>}
+	 * @property {function} fn - Function passed from caller.
+	 * @property {HTMLDivElement} ele - Varriable bind to the <div>.
+	 * @property {number} index - The index of the code snippet.
+	 * @property {number} start - The starting position of the code snippet.
+	 */
 	let snippets = $state(new Map());
-
-	
 
 	/**
 	 * @type
@@ -24,41 +30,46 @@
 	 */
 	let cfg;
 
+	/**
+	 * To save configs
+	 */
 	function saveCfg() {
 		cfg = snippets.map((sn) => {
 			return {
 				index: sn.index,
-				start: sn.position.start
+				start: sn.start
 			};
 		});
 		localStorage.setItem('hcfg', JSON.stringify(cfg));
 	}
 
+	onMount(() => {
+		// Get config
+		try {
+			localCfg = JSON.parse(localStorage.getItem('hcfg'));
+		} catch {
+			localCfg = null;
+		}
+	});
 	$effect(() => {
-		// update position or init with localStorage
+		// Build `snippets` data structure
 		snippets = fns.map((fn, index) => ({
 			fn: fn,
 			ele: null,
 			index: index,
-			position: {
-				start: localCfg ? localCfg[index].start : 0,
-				length: 0
-			}
+			start: localCfg ? localCfg[index].start : 0,
+			length: 0
 		}));
 	});
-	onMount(() => {
-		// get config
-		localCfg = JSON.parse(localStorage.getItem('hcfg'));
-		// if none init with default
+	$effect(() => {
+		// Init with default config if local config is null
 		if (!localCfg) {
 			for (let i = 1; i < snippets.length; i++) {
-				snippets[i].position.start =
-					snippets[i - 1]?.position.start + snippets[i - 1]?.position.length;
+				snippets[i].start = snippets[i - 1]?.start + snippets[i - 1]?.length;
 			}
 			saveCfg();
 		}
 	});
-	$inspect(localCfg);
 </script>
 
 <div id="rootHead">
@@ -66,18 +77,19 @@
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div
 			class="headItem"
-			style="left: {snippet.position.start}px;"
+			style="left: {snippet.start}px;"
 			bind:this={snippet.ele}
-			bind:clientWidth={snippet.position.length}
+			bind:clientWidth={snippet.length}
 			onpointerdown={(e) => {
 				e.preventDefault();
-
 				function seek(e) {
-					snippet.position.start = e.clientX - snippet.position.length / 2;
+					const maxWidth = document.body.clientWidth;
+					const length = snippet.length;
+					snippet.start = e.clientX - snippet.length / 2;
+					if (snippet.start < 0) snippet.start = 0;
+					if (snippet.start > maxWidth - length) snippet.start = maxWidth - length;
 				}
-
 				window.addEventListener('pointermove', seek);
-
 				window.addEventListener(
 					'pointerup',
 					() => {
