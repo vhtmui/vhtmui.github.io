@@ -5,7 +5,7 @@
 
 	let { initTheme } = $props();
 
-	let BtnList = $state([false, true, false]);
+	let BtnList = $state([false, false, false]);
 	let currentBtn = $state();
 
 	function setTheme(theme) {
@@ -29,11 +29,11 @@
 
 	// init theme button
 	if (initTheme === 'Light') {
-		BtnList[0] = true;
+		setCurrentBtn(0);
 	} else if (initTheme === 'Dark') {
-		BtnList[1] = true;
+		setCurrentBtn(1);
 	} else {
-		BtnList[2] = true;
+		setCurrentBtn(2);
 	}
 	$inspect(initTheme)
 </script>
