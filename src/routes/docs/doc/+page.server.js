@@ -4,8 +4,7 @@ export async function load({ parent, cookies }) {
 	// get content
 	const { mdContent } = await parent();
 
-	const h1 = await readFile('./src/routes/docs/[doc]/a.txt','utf8');
-	const c = cookies.get('theme');
+	const h1 = await readFile('./src/routes/docs/doc/a.txt','utf8');
 
-	return { mdContent ,h1,c };
+	return { mdContent ,h1};
 }

@@ -151,8 +151,7 @@
 		/**
 		 * Set theme on start, no need to wait domcontentload
 		 */
-		const matchy = document.cookie.match('(?:^|;)\\s*theme\\s*=\\s*([^;]+)');
-		const localTheme = matchy ? matchy[1] : null;
+		const localTheme = localStorage.getItem('theme');
 		if (localTheme === 'Dark' || localTheme === 'Light') {
 			document.documentElement.setAttribute('data-theme', localTheme);
 		} else {
@@ -196,7 +195,7 @@
 				</ZBlurBtn>
 			{/snippet}
 			{#snippet C()}
-				<ZThemeBtn initTheme={data.theme} />
+				<ZThemeBtn />
 			{/snippet}
 		</ZHeader>
 	</div>

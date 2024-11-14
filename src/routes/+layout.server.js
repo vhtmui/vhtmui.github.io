@@ -2,10 +2,7 @@ import { readFile, readdir } from 'node:fs/promises';
 import * as path from 'node:path';
 
 /** @type {import('./$types').LayoutServerLoad} */
-export async function load({cookies}) {
-	// get theme cookies setted to html atrribute
-	const t = cookies.get('theme');
-
+export async function load() {
 	// get dir array, pass to `ZSbarContainer.svelte`
 	const baseDir = 'src/routes';
 	const items = await readdir(baseDir, { recursive: true, withFileTypes: true });
@@ -15,5 +12,5 @@ export async function load({cookies}) {
 
 	const mdContent = await readFile('docs/PowerShell.md', 'utf-8');
 
-	return { theme: t, directory, mdContent };
+	return { directory, mdContent };
 }
