@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
-	import { SvelteMap } from 'svelte/reactivity';
+	import { tweened } from 'svelte/motion';
 
 	let { children, ...others } = $props();
 
@@ -30,10 +30,6 @@
 	 */
 	let cfg;
 
-	let pointerEvents = $state('auto');
-
-	let actived = $state(false);
-
 	/**
 	 * To save configs
 	 */
@@ -62,7 +58,9 @@
 			ele: null,
 			index: index,
 			start: localCfg ? localCfg[index].start : 0,
-			length: 0
+			length: 0,
+			pointerEvents: 'auto',
+			actived: false
 		}));
 	});
 	$effect(() => {
@@ -82,8 +80,8 @@
 		<div
 			class="headItem"
 			style="left: {snippet.start}px;"
-			style:pointer-events={pointerEvents}
-			class:actived
+			style:pointer-events={snippet.pointerEvents}
+			class:actived={snippet.actived}
 			bind:this={snippet.ele}
 			bind:clientWidth={snippet.length}
 			onpointerdown={(e) => {
@@ -91,8 +89,8 @@
 				if (e.button !== 0) return;
 
 				let timer = setTimeout(() => {
-					pointerEvents = 'none';
-					actived = true;
+					snippet.pointerEvents = 'none';
+					snippet.actived = true;
 					function seek(e) {
 						const maxWidth = document.body.clientWidth;
 						const length = snippet.length;
@@ -104,15 +102,15 @@
 					window.addEventListener(
 						'pointerup',
 						(e) => {
-							actived = false;
+							snippet.actived = false;
 							e.preventDefault();
-							pointerEvents = 'auto';
+							snippet.pointerEvents = 'auto';
 							window.removeEventListener('pointermove', seek);
 							saveCfg();
 						},
 						{ once: true }
 					);
-				}, 200);
+				}, 150);
 
 				window.addEventListener('pointerup', () => clearTimeout(timer));
 				window.addEventListener('pointermove', () => clearTimeout(timer));
@@ -133,7 +131,9 @@
 			position: absolute;
 		}
 		.actived {
-			transform: scale(1.5);
+			transform: scale(0.98);
+			border-radius: 0.7rem;
+			box-shadow: 0px 0px 4px var(--header-block-movable-color);
 		}
 	}
 </style>

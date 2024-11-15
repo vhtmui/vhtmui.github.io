@@ -5,6 +5,7 @@
 	--header-text-hover-color: #0069c2;
 	--header-text-active-color: #0057a3;
 	--header-block-hover-bg-color: #8cb4ff70;
+	--header-block-movable-color: #1a68c3;
 	--header-btn-bg-color: rgb(255, 255, 255, 50%);
 	--header-btn-theme-bg-color: #ffc684;
 	--main-bg-color: rgb(255, 255, 255);
@@ -33,6 +34,7 @@
 	--header-text-hover-color: #ffa06f;
 	--header-text-active-color: #ffa06f;
 	--header-block-hover-bg-color: #ff73732e;
+	--header-block-movable-color: #c3451a;
 	--header-btn-bg-color: rgb(27, 27, 27, 50%);
 	--header-btn-theme-bg-color: #ffc684;
 	--main-bg-color: #1b1b1b;
