@@ -11,8 +11,10 @@
 	 * @type {Array<Object>}
 	 * @property {function} fn - Function passed from caller.
 	 * @property {HTMLDivElement} ele - Varriable bind to the <div>.
-	 * @property {number} index - The index of the code snippet.
 	 * @property {number} start - The starting position of the code snippet.
+	 * @property {number} lenght - Bind to the element's clientLength.
+	 * @property {string} pointerEvents - Indicate the `pointer-events` attribute of the container of each snippet.
+	 * @property {boolean} actived - The class.
 	 */
 	let snippets = $state(new Map());
 
@@ -38,7 +40,7 @@
 		return {
 			fn: fn,
 			ele: null,
-			start: 0,
+			start: spring(0),
 			length: 0,
 			pointerEvents: 'auto',
 			actived: false
