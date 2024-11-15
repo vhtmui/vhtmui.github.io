@@ -77,13 +77,11 @@
 			easing: quadOut,
 			css(t, u) {
 				const flex = window.getComputedStyle(node).flexGrow;
-				const padding_r = window.getComputedStyle(node).paddingRight.slice(0, -2);
 
 				return `
 					overflow: hidden;
 					min-width: 0;
-					flex: ${Math.round(t * 100 * flex) / 100};
-					padding:${padding_r * t};
+					flex: ${t * flex};
 				`;
 			}
 		};
@@ -176,6 +174,7 @@
 					class="sibarBtn"
 					style={BlurBtnSytle}
 					onclick={() => {
+
 						display
 							? (BlurBtnSytle =
 									'transform: rotateY(180deg); transition: transform 300ms ease-out 70ms;')
@@ -227,7 +226,7 @@
 			</div>
 		</div>
 	{/if}
-	{#if !display}
+	{#if !display && window.innerWidth <= 768}
 		<div class="mobilesidebar-container">
 			<div
 				bind:this={mobileSibar}
