@@ -17,63 +17,51 @@
 	let snippets = $state(new Map());
 
 	/**
-	 * @type {string}
+	 * An array of configurations derived from the original snippets array,
+	 * contains `start` position of each element.
+	 * @type {Array<number>}
 	 */
-	let localCfg = $state();
-
-	/**
-	 * An array of configuration objects derived from the original snippets array,
-	 * each containing the index and start position of a code snippet.
-	 * @type {Array<Object>}
-	 * @property {number} index - The index of the code snippet.
-	 * @property {number} start - The starting position of the code snippet.
-	 */
-	let cfg;
+	let cfg = $state(Array(Object.keys(others).length));
 
 	/**
 	 * To save configs
 	 */
 	function saveCfg() {
 		cfg = snippets.map((sn) => {
-			return {
-				index: sn.index,
-				start: sn.$start
-			};
+			return sn.start;
 		});
 		localStorage.setItem('hcfg', JSON.stringify(cfg));
 	}
 
-	onMount(() => {
-		// Get config
-		try {
-			localCfg = JSON.parse(localStorage.getItem('hcfg'));
-		} catch {
-			localCfg = null;
-		}
-	});
-	$effect(() => {
-		// Build `snippets` data structure
-		snippets = fns.map((fn, index) => ({
+	// Build `snippets` data structure
+	snippets = fns.map((fn) => {
+		return {
 			fn: fn,
 			ele: null,
-			index: index,
-			start: localCfg ? spring(localCfg[index].start) : spring(0),
+			start: 0,
 			length: 0,
 			pointerEvents: 'auto',
 			actived: false
-		}));
+		};
 	});
-	$effect(() => {
+
+	onMount(() => {
+		// Get config
 		// Init with default config if local config is null
-		if (!localCfg) {
-			for (let i = 1; i < snippets.length; i++) {
-				snippets[i].$start = snippets[i - 1]?.$start + snippets[i - 1]?.length;
+		if (localStorage.getItem('hcfg')) {
+			 let localCfg = JSON.parse(localStorage.getItem('hcfg'));
+			for (let index = 0; index < Object.keys(others).length; index++) {
+				snippets[index].start = localCfg[index];
+			}
+		} else {
+			let initLength = 0;
+			for (let i = 0; i < Object.keys(others).length; i++) {
+				i === 0 ? (initLength = 0) : (initLength += snippets[i - 1].length);
+				snippets[i].start = initLength;
 			}
 			saveCfg();
 		}
 	});
-	let a = spring(0);
-	$inspect(a);
 </script>
 
 <div id="rootHead">
@@ -81,7 +69,7 @@
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div
 			class="headItem"
-			style="left: {snippet.$start}px;"
+			style="left: {snippet.start}px;"
 			style:pointer-events={snippet.pointerEvents}
 			class:actived={snippet.actived}
 			bind:this={snippet.ele}
@@ -90,16 +78,16 @@
 				if (e.button !== 0) return;
 				e.preventDefault();
 
-				const gap = snippet.$start - e.clientX;
+				const gap = snippet.start - e.clientX;
 				const maxWidth = document.body.clientWidth;
 				const length = snippet.length;
 				function seek(e) {
 					// Prevent actions.
 					snippet.pointerEvents = 'none';
 					snippet.actived = true;
-					snippet.$start = e.clientX + gap;
-					if (snippet.$start < 0) snippet.$start = 0;
-					if (snippet.$start > maxWidth - length) snippet.$start = maxWidth - length;
+					snippet.start = e.clientX + gap;
+					if (snippet.start < 0) snippet.start = 0;
+					if (snippet.start > maxWidth - length) snippet.start = maxWidth - length;
 				}
 				window.addEventListener('pointermove', seek);
 				window.addEventListener(
