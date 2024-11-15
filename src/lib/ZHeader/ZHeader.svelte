@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
-	import { tweened } from 'svelte/motion';
+	import { spring } from 'svelte/motion';
 
 	let { children, ...others } = $props();
 
@@ -17,7 +17,7 @@
 	let snippets = $state(new Map());
 
 	/**
-	 * @type
+	 * @type {string}
 	 */
 	let localCfg = $state();
 
@@ -37,7 +37,7 @@
 		cfg = snippets.map((sn) => {
 			return {
 				index: sn.index,
-				start: sn.start
+				start: sn.$start
 			};
 		});
 		localStorage.setItem('hcfg', JSON.stringify(cfg));
@@ -57,7 +57,7 @@
 			fn: fn,
 			ele: null,
 			index: index,
-			start: localCfg ? localCfg[index].start : 0,
+			start: localCfg ? spring(localCfg[index].start) : spring(0),
 			length: 0,
 			pointerEvents: 'auto',
 			actived: false
@@ -67,11 +67,13 @@
 		// Init with default config if local config is null
 		if (!localCfg) {
 			for (let i = 1; i < snippets.length; i++) {
-				snippets[i].start = snippets[i - 1]?.start + snippets[i - 1]?.length;
+				snippets[i].$start = snippets[i - 1]?.$start + snippets[i - 1]?.length;
 			}
 			saveCfg();
 		}
 	});
+	let a = spring(0);
+	$inspect(a);
 </script>
 
 <div id="rootHead">
@@ -79,41 +81,38 @@
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div
 			class="headItem"
-			style="left: {snippet.start}px;"
+			style="left: {snippet.$start}px;"
 			style:pointer-events={snippet.pointerEvents}
 			class:actived={snippet.actived}
 			bind:this={snippet.ele}
 			bind:clientWidth={snippet.length}
 			onpointerdown={(e) => {
-				e.preventDefault();
 				if (e.button !== 0) return;
+				e.preventDefault();
 
-				let timer = setTimeout(() => {
+				const gap = snippet.$start - e.clientX;
+				const maxWidth = document.body.clientWidth;
+				const length = snippet.length;
+				function seek(e) {
+					// Prevent actions.
 					snippet.pointerEvents = 'none';
 					snippet.actived = true;
-					function seek(e) {
-						const maxWidth = document.body.clientWidth;
-						const length = snippet.length;
-						snippet.start = e.clientX - snippet.length / 2;
-						if (snippet.start < 0) snippet.start = 0;
-						if (snippet.start > maxWidth - length) snippet.start = maxWidth - length;
-					}
-					window.addEventListener('pointermove', seek);
-					window.addEventListener(
-						'pointerup',
-						(e) => {
-							snippet.actived = false;
-							e.preventDefault();
-							snippet.pointerEvents = 'auto';
-							window.removeEventListener('pointermove', seek);
-							saveCfg();
-						},
-						{ once: true }
-					);
-				}, 150);
-
-				window.addEventListener('pointerup', () => clearTimeout(timer));
-				window.addEventListener('pointermove', () => clearTimeout(timer));
+					snippet.$start = e.clientX + gap;
+					if (snippet.$start < 0) snippet.$start = 0;
+					if (snippet.$start > maxWidth - length) snippet.$start = maxWidth - length;
+				}
+				window.addEventListener('pointermove', seek);
+				window.addEventListener(
+					'pointerup',
+					(e) => {
+						snippet.actived = false;
+						e.preventDefault();
+						snippet.pointerEvents = 'auto';
+						window.removeEventListener('pointermove', seek);
+						saveCfg();
+					},
+					{ once: true }
+				);
 			}}
 		>
 			{@render snippet.fn()}
@@ -128,12 +127,21 @@
 		width: 100%;
 		height: 100%;
 		.headItem {
+			transition:
+				transform ease-out 200ms,
+				opacity ease-out 200ms;
+			transform: none;
+			opacity: 1;
 			position: absolute;
 		}
 		.actived {
-			transform: scale(0.98);
-			border-radius: 0.7rem;
-			box-shadow: 0px 0px 4px var(--header-block-movable-color);
+			transition:
+				transform ease-out 200ms,
+				opacity ease-out 200ms;
+			z-index: 99;
+			transform: scale(0.92);
+			opacity: 0.7;
+			border-bottom: 2px solid var(--header-block-movable-color);
 		}
 	}
 </style>

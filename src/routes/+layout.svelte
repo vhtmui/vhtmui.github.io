@@ -298,7 +298,7 @@
 			color: var(--header-text-color);
 			background-color: var(--header-nav-bg-color);
 			position: sticky;
-			top: 0;
+			top: 1px;
 			z-index: 20;
 			transition: top 100ms linear;
 			/* pointer-events: none; */
