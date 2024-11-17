@@ -44,7 +44,7 @@
 
 	/**
 	 * To save configs
-	 * */ 
+	 * */
 	function saveCfg() {
 		cfg = snippets.map((sn) => {
 			return get(sn.start);
@@ -73,7 +73,12 @@
 
 	onMount(() => {
 		// Init with default config if local config is null
-		if (localStorage.hcfg) {
+
+		if (
+			localStorage.hcfg &&
+			Array.isArray(JSON.parse(localStorage.hcfg)) &&
+			JSON.parse(localStorage.hcfg).every((item) => 0 <= item && item <= 1)
+		) {
 			let localCfg = JSON.parse(localStorage.hcfg);
 			for (let index = 0; index < Object.keys(others).length; index++) {
 				snippets[index].start.set(localCfg[index]);
