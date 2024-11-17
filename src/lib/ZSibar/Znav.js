@@ -2,7 +2,7 @@
  * @typedef {Object} Tree
  * @property {string} _link - The link for the tree.
  * @property {string} _title - The title for the tree.
- * @property {Tree} [children] - Optional children nodes. Each child must also be a Tree.
+ * @property {Tree} [*] - Optional children nodes. Each child must also be a Tree.
  */
 
 /**

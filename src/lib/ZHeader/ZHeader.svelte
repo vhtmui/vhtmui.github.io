@@ -9,16 +9,19 @@
 	 */
 	let { children, ...others } = $props();
 
+	/**
+	 * @type {function} - Expect only snippet function.
+	 */
 	let fns = Object.values(others);
 
 	/**
-	 * An array of snippets containing properties to configure the snippet layout.
+	 * Used to indicate the state of the snippets and calculate the layout of the snippets
 	 * @typedef {Object} Snippet
 	 * @property {function} fn - Function passed from caller.
 	 * @property {HTMLDivElement} ele - Varriable bind to the <div>.
-	 * @property {number} start - The starting position of the code snippet.
-	 * @property {number} lenght - Bind to the element's clientLength.
-	 * @property {string} pointerEvents - Indicate the `pointer-events` attribute of the container of each snippet.
+	 * @property {spring<number>} start - The starting position of the <div> block, expressed as a Percentage.
+	 * @property {number} width - Bind to the element's clientLength.
+	 * @property {string} pointerEvents - Indicate the `pointer-events` attribute.
 	 * @property {boolean} actived - The class.
 	 */
 
@@ -34,9 +37,14 @@
 	 */
 	let cfg = $state(Array(Object.keys(others).length));
 
+	/**
+	 * @type {Array<number>} - An array subscribe the `snippets.start`.
+	 */
 	let starts = $state(Array(Object.keys(others).length));
 
-	// To save configs
+	/**
+	 * To save configs
+	 * */ 
 	function saveCfg() {
 		cfg = snippets.map((sn) => {
 			return get(sn.start);
@@ -49,13 +57,14 @@
 		return {
 			fn: fn,
 			ele: null,
-			start: spring(0, { stiffness: 0.2, damping: 0.35, precision: 0.001 }),
+			start: spring(0, { stiffness: 0.2, damping: 0.6, precision: 0.001 }),
 			width: 0,
 			pointerEvents: 'auto',
 			actived: false
 		};
 	});
 
+	// Subscription.
 	for (let i = 0; i < starts.length; i++) {
 		snippets[i].start.subscribe((value) => {
 			starts[i] = value;
@@ -64,8 +73,8 @@
 
 	onMount(() => {
 		// Init with default config if local config is null
-		if (localStorage.getItem('hcfg')) {
-			let localCfg = JSON.parse(localStorage.getItem('hcfg'));
+		if (localStorage.hcfg) {
+			let localCfg = JSON.parse(localStorage.hcfg);
 			for (let index = 0; index < Object.keys(others).length; index++) {
 				snippets[index].start.set(localCfg[index]);
 			}
@@ -121,29 +130,111 @@
 						snippet.pointerEvents = 'auto';
 						window.removeEventListener('pointermove', seek);
 
+						let onTheLeft = Array();
+						let onTheRight = Array();
+
+						// Save config after motion end.
 						const duration = 0.5;
+
+						// Current target's start position in Percentage.
+						let st = (e3.clientX - gap) / bodyWidth;
+						if (st < 0) st = 0;
+						if (st > (bodyWidth - eleWidth) / bodyWidth) st = (bodyWidth - eleWidth) / bodyWidth;
+						const midLine = st * bodyWidth + snippet.width / 2;
+
+						// Divide right and left.
 						for (let j = 0; j < starts.length; j++) {
 							if (j === i) continue;
-							const st = get(snippet.start);
+
 							const st2 = get(snippets[j].start);
 
-							const midLine = st * bodyWidth + snippet.width / 2;
 							const midLine2 = st2 * bodyWidth + snippets[j].width / 2;
 
-							if (
-								st * bodyWidth < st2 * bodyWidth + snippets[j].width &&
-								st * bodyWidth + snippet.width > st2 * bodyWidth
-							) {
-								if (midLine >= midLine2) {
-									// move left
-									snippets[j].start.set(st - snippets[j].width / bodyWidth, { soft: duration });
-								} else {
-									// move right
-									snippets[j].start.set(st + snippet.width / bodyWidth, { soft: duration });
+							midLine >= midLine2 ? onTheLeft.push(snippets[j]) : onTheRight.push(snippets[j]);
+						}
+						onTheLeft.sort((a, b) => get(a.start) - get(b.start));
+						onTheRight.sort((a, b) => get(b.start) - get(a.start));
+
+						// Find the blocks that needs to be moved left or right.
+						let leftStart = st; // In Percentage.
+						let leftest;
+						for (let i = onTheLeft.length - 1; i >= 0; i--) {
+							const end = get(onTheLeft[i].start) + onTheLeft[i].width / bodyWidth;
+							if (end > leftStart) {
+								leftStart -= onTheLeft[i].width / bodyWidth;
+								leftest = i;
+							} else break;
+						}
+						let rightEnd = st + snippet.width / bodyWidth; // In Percentage.
+						let rightest;
+						for (let i = onTheRight.length - 1; i >= 0; i--) {
+							const start = get(onTheRight[i].start);
+							if (start < rightEnd) {
+								rightEnd += onTheRight[i].width / bodyWidth;
+								rightest = i;
+							} else break;
+						}
+
+						// Move block and handle out-of-bounds scenes.
+						// 1. Not out of bound.
+						if (leftStart >= 0 && rightEnd <= 1) {
+							// If not null
+							if (leftest < onTheLeft.length) {
+								onTheLeft.push(snippet);
+								for (let i = leftest; i < onTheLeft.length; i++) {
+									onTheLeft[i].start.set(leftStart);
+									leftStart += onTheLeft[i].width / bodyWidth;
 								}
 							}
-							console.log(get(snippets[j].start));
+							if (rightest < onTheRight.length) {
+								onTheRight.push(snippet);
+								for (let i = rightest; i < onTheRight.length; i++) {
+									onTheRight[i].start.set(rightEnd - onTheRight[i].width / bodyWidth);
+									rightEnd -= onTheRight[i].width / bodyWidth;
+								}
+							}
 						}
+						// 2. Out of right bound.
+						else if (leftStart >= 0 && rightEnd > 1) {
+							const rightGap = rightEnd - 1;
+							rightEnd = 1;
+							if (rightest < onTheRight.length) {
+								onTheRight.push(snippet);
+								for (let i = rightest; i < onTheRight.length; i++) {
+									onTheRight[i].start.set(rightEnd - onTheRight[i].width / bodyWidth);
+									rightEnd -= onTheRight[i].width / bodyWidth;
+								}
+							}
+							leftStart -= rightGap;
+							if (leftest < onTheLeft.length) {
+								onTheLeft.push(snippet);
+								for (let i = leftest; i < onTheLeft.length; i++) {
+									onTheLeft[i].start.set(leftStart);
+									leftStart += onTheLeft[i].width / bodyWidth;
+								}
+							}
+						}
+						// 3. Out of left bound or both bounds.
+						else {
+							const leftGap = leftStart - 0;
+							leftStart = 0;
+							if (leftest < onTheLeft.length) {
+								onTheLeft.push(snippet);
+								for (let i = leftest; i < onTheLeft.length; i++) {
+									onTheLeft[i].start.set(leftStart);
+									leftStart += onTheLeft[i].width / bodyWidth;
+								}
+							}
+							rightEnd += leftGap;
+							if (rightest < onTheRight.length) {
+								onTheRight.push(snippet);
+								for (let i = rightest; i < onTheRight.length; i++) {
+									onTheRight[i].start.set(rightEnd - onTheRight[i].width / bodyWidth);
+									rightEnd -= onTheRight[i].width / bodyWidth;
+								}
+							}
+						}
+
 						setTimeout(() => {
 							saveCfg();
 						}, duration * 1001);
@@ -163,18 +254,15 @@
 		flex-direction: row;
 		width: 100%;
 		height: 100%;
+		--transition: transform ease-out 200ms, opacity ease-out 200ms;
 		.headItem {
-			transition:
-				transform ease-out 200ms,
-				opacity ease-out 200ms;
+			transition: var(--transition);
 			transform: none;
 			opacity: 1;
 			position: absolute;
 		}
 		.actived {
-			transition:
-				transform ease-out 200ms,
-				opacity ease-out 200ms;
+			transition: var(--transition);
 			z-index: 99;
 			transform: scale(0.92);
 			opacity: 0.7;

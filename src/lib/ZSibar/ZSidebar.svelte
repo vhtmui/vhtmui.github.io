@@ -10,7 +10,7 @@
 
 	/**
 	 * @typedef {Object} Props
-	 * @property {Tree} tree
+	 * @property {import('./Znav').Tree} tree
 	 * @property {string} [preLink]
 	 * @property {boolean} [selected_item]
 	 * @property {string} [signal]
