@@ -33,7 +33,10 @@ export const paths = {
 <path d="M8 24H42" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M8 37H40" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M36.3433 29.6569L42.0001 24L36.3433 18.3431" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-<`
+<`,
+	layout: `<path d="M2 5C2 3.34315 3.34315 2 5 2H19C20.6569 2 22 3.34315 22 5V8L9 8H2V5Z" fill="#000000"/>
+<path d="M2 10V19C2 20.6569 3.34315 22 5 22H8V10L2 10Z" fill="#000000"/>
+<path d="M10 22H19C20.6569 22 22 20.6569 22 19V10L10 10V22Z" fill="#000000"/>`
 };
 
 export const viewBoxs = {
@@ -47,5 +50,6 @@ export const viewBoxs = {
 	x: `0 0 1024 1024`,
 	monitor: `0 0 256 256`,
 	menu_fold: `0 0 48 48`,
-	menu_unfold: `0 0 48 48`
+	menu_unfold: `0 0 48 48`,
+	layout: `0 0 24 24`
 };

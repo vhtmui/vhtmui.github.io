@@ -16,8 +16,6 @@
 	import { slide } from 'svelte/transition';
 	import { afterNavigate } from '$app/navigation';
 
-	import gsap from 'gsap';
-
 	let { data, children } = $props();
 
 	/**
@@ -71,6 +69,9 @@
 	 * @type {HTMLDivElement} - bind to the `div.mobilesidebar-container`
 	 */
 	let mobileSibar = $state();
+
+	let fill = 'var(--all-svg-color)';
+	let stroke = 'var(--all-svg-color)';
 
 	function flexSlide(node, { delay = 0, duration = 400 }) {
 		return {
@@ -140,9 +141,6 @@
 		// get head elements passed to <ZTocList>.
 		headings = document.querySelectorAll(titles);
 	});
-
-	let a = $state();
-	$inspect(a);
 </script>
 
 <!-- #endregion -->
@@ -177,23 +175,18 @@
 			{#snippet A()}
 				<ZBlurBtn
 					class="sibarBtn"
-					style={BlurBtnSytle}
+					style={'transform: rotateY(0deg);'}
 					onclick={() => {
-						display
-							? (BlurBtnSytle =
-									'transform: rotateY(180deg); transition: transform 300ms ease-out 70ms;')
-							: (BlurBtnSytle =
-									'transform: rotateY(0deg); transition: transform 300ms ease-out 70ms;');
 						display = !display;
 					}}
 				>
-					<ZIcon option={'menu_fold'} />
+					<ZIcon option={'layout'} {fill} {stroke} />
 				</ZBlurBtn>
 			{/snippet}
 			{#snippet B()}
 				<ZBlurBtn>
 					<a href="/">
-						<ZIcon option={'home'} />
+						<ZIcon option={'home'} {fill} {stroke} />
 					</a>
 				</ZBlurBtn>
 			{/snippet}
@@ -201,9 +194,15 @@
 				<ZThemeBtn />
 			{/snippet}
 			{#snippet D()}
-				<ZBlurBtn>
-					<ZIcon option={'menu_fold'} />
-				</ZBlurBtn>
+				{#if tocDisplayAttriute}
+					<ZBlurBtn
+						onclick={() => {
+							displayToc = !display;
+						}}
+					>
+						<ZIcon option={'layout'} {fill} {stroke} />
+					</ZBlurBtn>
+				{/if}
 			{/snippet}
 		</ZHeader>
 	</div>
@@ -213,9 +212,7 @@
 		<div
 			class="sidebar-container"
 			onoutroend={() => {
-				/**
-				 * prevent scrolled event listener while animation displaying.
-				 */
+				// prevent scrolled event listener while animation displaying.
 				addEventListener('scroll', hideHeader);
 			}}
 			onintroend={() => {
@@ -253,13 +250,6 @@
 		</div>
 	{/if}
 	<div class="content">
-		<ZBlurBtn
-			onclick={() => {
-				gsap.fromTo('#rightMenu', { translateX: 100 }, { translateX: 0 });
-			}}
-		>
-			<ZIcon id={'rightMenu'} option={'menu_fold'} />
-		</ZBlurBtn>
 		{@render children?.()}
 	</div>
 	{#if displayToc}

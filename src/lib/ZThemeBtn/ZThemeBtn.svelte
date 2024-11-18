@@ -3,16 +3,20 @@
 
 	import { onMount } from 'svelte';
 
-	let initTheme = $state('Dark');
 	let BtnList = $state([false, false, false]);
-	let currentBtn = $state();
+
+	let currentBtn;
+
+	// Set svg color.
+	let fill = 'var(--all-svg-color)';
+	let stroke = 'var(--all-svg-color)';
 
 	function setTheme(theme) {
 		if (theme === 'Dark' || theme === 'Light') {
 			document.documentElement.setAttribute('data-theme', theme);
-			localStorage.setItem('theme',theme);
+			localStorage.setItem('theme', theme);
 		} else if (theme === 'Auto') {
-			localStorage.setItem('theme','Auto');
+			localStorage.setItem('theme', 'Auto');
 			if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
 				document.documentElement.setAttribute('data-theme', 'Dark');
 			} else {
@@ -27,7 +31,7 @@
 	}
 
 	onMount(() => {
-		initTheme = localStorage.getItem('theme');
+		const initTheme = localStorage.getItem('theme');
 		// init theme button
 		if (initTheme === 'Light') {
 			setCurrentBtn(0);
@@ -38,6 +42,7 @@
 		}
 	});
 </script>
+
 <div class="themeBlock">
 	<div class="theme btnContainer">
 		<button
@@ -49,7 +54,7 @@
 				setCurrentBtn(0);
 			}}
 		>
-			Light <ZIcon option="sun" />
+			Light <ZIcon option="sun" {fill} {stroke} />
 		</button>
 		<button
 			type="button"
@@ -60,7 +65,7 @@
 				setCurrentBtn(1);
 			}}
 		>
-			Dark <ZIcon option="moon" />
+			Dark <ZIcon option="moon" {fill} {stroke} />
 		</button>
 		<button
 			type="button"
@@ -71,7 +76,7 @@
 				setCurrentBtn(2);
 			}}
 		>
-			Auto <ZIcon option="monitor" />
+			Auto <ZIcon option="monitor" {fill} {stroke} />
 		</button>
 	</div>
 </div>
@@ -86,12 +91,6 @@
 		&:hover {
 			cursor: pointer;
 			background-color: transparent;
-		}
-		& svg {
-			vertical-align: middle;
-			& path {
-				fill: var(--all-svg-color);
-			}
 		}
 		& div.btnContainer {
 			display: flex;

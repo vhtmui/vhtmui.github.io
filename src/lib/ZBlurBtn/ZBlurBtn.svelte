@@ -49,12 +49,5 @@
 			align-items: center;
 			justify-content: center;
 		}
-		& svg {
-			vertical-align: middle;
-			& * {
-				fill: var(--all-svg-color);
-				stroke: var(--all-svg-color);
-			}
-		}
 	}
 </style>
