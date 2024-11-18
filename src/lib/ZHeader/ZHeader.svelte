@@ -45,11 +45,13 @@
 	/**
 	 * To save configs
 	 * */
-	function saveCfg() {
-		cfg = snippets.map((sn) => {
-			return get(sn.start);
-		});
-		localStorage.setItem('hcfg', JSON.stringify(cfg));
+	function saveCfg(timeOut = 501) {
+		setTimeout(() => {
+			cfg = snippets.map((sn) => {
+				return get(sn.start);
+			});
+			localStorage.setItem('hcfg', JSON.stringify(cfg));
+		}, timeOut);
 	}
 
 	// Build `snippets` data structure
@@ -73,10 +75,15 @@
 
 	onMount(() => {
 		// Init with default config if local config is null
-
+		let isJson = true;
+		try {
+			Array.isArray(JSON.parse(localStorage.hcfg));
+		} catch {
+			isJson = false;
+		}
 		if (
 			localStorage.hcfg &&
-			Array.isArray(JSON.parse(localStorage.hcfg)) &&
+			isJson &&
 			JSON.parse(localStorage.hcfg).every((item) => 0 <= item && item <= 1)
 		) {
 			let localCfg = JSON.parse(localStorage.hcfg);
@@ -84,6 +91,7 @@
 				snippets[index].start.set(localCfg[index]);
 			}
 		} else {
+			console.log('enter');
 			let initLength = 0;
 			let w = document.body.clientWidth;
 			for (let i = 0; i < Object.keys(others).length; i++) {
@@ -165,7 +173,7 @@
 						let leftest;
 						for (let i = onTheLeft.length - 1; i >= 0; i--) {
 							const end = get(onTheLeft[i].start) + onTheLeft[i].width / bodyWidth;
-							if (end > leftStart) {
+							if (end >= leftStart) {
 								leftStart -= onTheLeft[i].width / bodyWidth;
 								leftest = i;
 							} else break;
@@ -174,7 +182,7 @@
 						let rightest;
 						for (let i = onTheRight.length - 1; i >= 0; i--) {
 							const start = get(onTheRight[i].start);
-							if (start < rightEnd) {
+							if (start <= rightEnd) {
 								rightEnd += onTheRight[i].width / bodyWidth;
 								rightest = i;
 							} else break;
@@ -221,7 +229,7 @@
 						}
 						// 3. Out of left bound or both bounds.
 						else {
-							const leftGap = leftStart - 0;
+							const leftGap = 0 - leftStart ;
 							leftStart = 0;
 							if (leftest < onTheLeft.length) {
 								onTheLeft.push(snippet);
@@ -232,7 +240,6 @@
 							}
 							rightEnd += leftGap;
 							if (rightest < onTheRight.length) {
-								onTheRight.push(snippet);
 								for (let i = rightest; i < onTheRight.length; i++) {
 									onTheRight[i].start.set(rightEnd - onTheRight[i].width / bodyWidth);
 									rightEnd -= onTheRight[i].width / bodyWidth;
@@ -240,9 +247,7 @@
 							}
 						}
 
-						setTimeout(() => {
-							saveCfg();
-						}, duration * 1001);
+						saveCfg(duration * 1001);
 					},
 					{ once: true }
 				);
