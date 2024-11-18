@@ -13,7 +13,7 @@
 	import { onMount } from 'svelte';
 	import { quadOut } from 'svelte/easing';
 	import { navigating } from '$app/stores';
-	import { slide } from 'svelte/transition';
+	import { blur, fade, slide } from 'svelte/transition';
 	import { afterNavigate } from '$app/navigation';
 
 	let { data, children } = $props();
@@ -73,18 +73,21 @@
 	let fill = 'var(--all-svg-color)';
 	let stroke = 'var(--all-svg-color)';
 
-	function flexSlide(node, { delay = 0, duration = 400 }) {
+	function slideWidthPadding(node, { delay = 0, duration = 400, axis }) {
+		const width = window.getComputedStyle(node).width;
+		const padding = window.getComputedStyle(node).padding.split(' ').map(Number);
 		return {
 			delay,
 			duration,
+			axis,
 			easing: quadOut,
 			css(t, u) {
-				const flex = window.getComputedStyle(node).flexGrow;
-
 				return `
+					position: sticky;
 					overflow: hidden;
 					min-width: 0;
-					flex: ${t * flex};
+					padding: ${padding[0] * t} ${padding[1] * t} ${padding[2] * t} ${padding[3] * t};
+					width:${parseInt(width.replace('px', '')) * t}px;
 				`;
 			}
 		};
@@ -196,8 +199,9 @@
 			{#snippet D()}
 				{#if tocDisplayAttriute}
 					<ZBlurBtn
+						style={'transform: rotateY(180deg);'}
 						onclick={() => {
-							displayToc = !display;
+							displayToc = !displayToc;
 						}}
 					>
 						<ZIcon option={'layout'} {fill} {stroke} />
@@ -224,7 +228,7 @@
 			onintrostart={() => {
 				removeEventListener('scroll', hideHeader);
 			}}
-			transition:flexSlide={{ duration: 300 }}
+			transition:slide={{ duration: 300, axis: 'x' }}
 			bind:clientWidth={SibarWidth}
 		>
 			<div class="sibar-innercontainer" style="width: {SibarWidth}px;">
@@ -255,7 +259,12 @@
 	{#if displayToc}
 		<div class="toc" bind:this={tocBlock}>
 			{#if tocDisplayAttriute && headings && headings?.length}
-				<ZTocList {headings} indent="0.5" />
+				<div
+					class="tocContainer"
+					transition:slideWidthPadding|global={{ duration: 300, axis: 'x' }}
+				>
+					<ZTocList {headings} indent="0.5" />
+				</div>
 			{/if}
 		</div>
 	{/if}
@@ -360,6 +369,7 @@
 			}
 			& div.sidebar-container {
 				display: none;
+				padding: 1rem 0 0 0;
 			}
 			& div.mobilesidebar-container {
 				display: block;
@@ -403,14 +413,11 @@
 				padding: 0.5rem 2rem 0 2rem;
 				margin: auto;
 				& div.sidebar-container {
-					flex: 1.3;
-					padding-right: 1%;
 					width: 25%;
 					display: block;
 					& .sibar-innercontainer {
-						width: calc((100% - 6rem) * 0.25 - 1%);
 						position: fixed;
-						top: var(--header-block-height);
+						top: calc(var(--header-block-height) + 3rem);
 						background-color: transparent;
 						backdrop-filter: none;
 						min-width: initial;
@@ -434,12 +441,11 @@
 				padding: 0.5rem 2rem 0 4rem;
 				margin: auto;
 				& div.sidebar-container {
-					flex: 1.3;
+					width: 20%;
 					display: block;
-					max-width: 20%;
 					& .sibar-innercontainer {
 						position: fixed;
-						top: var(--header-block-height);
+						top: calc(var(--header-block-height) + 3rem);
 						background-color: transparent;
 						backdrop-filter: none;
 						min-width: initial;
@@ -449,13 +455,20 @@
 					display: none;
 				}
 				& div.content {
-					flex: 3;
+					flex: 1;
 					width: 60%;
 					padding: 0 3rem 0 3rem;
 				}
 				& div.toc {
-					flex: 1;
 					display: block;
+					max-width: 20%;
+					min-width: 0;
+					padding-right: 4rem;
+					.tocContainer {
+						margin-top: 5rem;
+						position: sticky;
+						top: calc(var(--header-block-height) + 5rem);
+					}
 				}
 			}
 		}

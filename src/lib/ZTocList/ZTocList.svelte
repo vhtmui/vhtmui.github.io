@@ -62,7 +62,7 @@
 
 <svelte:window bind:scrollY={Y} />
 
-<div class="toc-container" bind:this={tocContainer}>
+<div class="ZToc" bind:this={tocContainer}>
 	{#if headings}
 		{#each headings as head, i}
 			<a
@@ -76,12 +76,10 @@
 </div>
 
 <style>
-	div.toc-container :global {
+	div.ZToc :global {
 		font-size: 0.8rem;
-		margin-top: 5rem;
-		position: sticky;
-		top: calc(var(--header-block-height) + 5rem);
 		overflow-y: auto;
+		/* margin-top: 4rem; */
 		max-height: 70vh;
 		-webkit-mask-image: linear-gradient(180deg, #0000, #000 3% 97%, #0000);
 		mask-image: linear-gradient(180deg, #0000, #000 3% 97%, #0000);

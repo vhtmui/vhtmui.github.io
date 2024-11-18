@@ -91,8 +91,6 @@
 <style>
 	div.sidebar.right :global {
 		width: 100%;
-		padding-top: 1rem;
-		padding-right: 1vw;
 		div.sidebar-heard {
 			padding-bottom: 2rem;
 			display: flex;
