@@ -6,6 +6,7 @@
 	import ZSbarContainer from '$lib/ZSibar/ZSbarContainer.svelte';
 	import ZTocList from '$lib/ZTocList/ZTocList.svelte';
 	import ZThemeBtn from '$lib/ZThemeBtn/ZThemeBtn.svelte';
+	import ZHeader from '$lib/ZHeader/ZHeader.svelte';
 
 	import { get_childArray } from '$lib/ZSibar/Znav';
 
@@ -14,7 +15,8 @@
 	import { navigating } from '$app/stores';
 	import { slide } from 'svelte/transition';
 	import { afterNavigate } from '$app/navigation';
-	import ZHeader from '$lib/ZHeader/ZHeader.svelte';
+
+	import gsap from 'gsap';
 
 	let { data, children } = $props();
 
@@ -138,6 +140,9 @@
 		// get head elements passed to <ZTocList>.
 		headings = document.querySelectorAll(titles);
 	});
+
+	let a = $state();
+	$inspect(a);
 </script>
 
 <!-- #endregion -->
@@ -174,7 +179,6 @@
 					class="sibarBtn"
 					style={BlurBtnSytle}
 					onclick={() => {
-
 						display
 							? (BlurBtnSytle =
 									'transform: rotateY(180deg); transition: transform 300ms ease-out 70ms;')
@@ -183,7 +187,7 @@
 						display = !display;
 					}}
 				>
-					<ZIcon option={menuIcon} />
+					<ZIcon option={'menu_fold'} />
 				</ZBlurBtn>
 			{/snippet}
 			{#snippet B()}
@@ -195,6 +199,11 @@
 			{/snippet}
 			{#snippet C()}
 				<ZThemeBtn />
+			{/snippet}
+			{#snippet D()}
+				<ZBlurBtn>
+					<ZIcon option={'menu_fold'} />
+				</ZBlurBtn>
 			{/snippet}
 		</ZHeader>
 	</div>
@@ -244,6 +253,13 @@
 		</div>
 	{/if}
 	<div class="content">
+		<ZBlurBtn
+			onclick={() => {
+				gsap.fromTo('#rightMenu', { translateX: 100 }, { translateX: 0 });
+			}}
+		>
+			<ZIcon id={'rightMenu'} option={'menu_fold'} />
+		</ZBlurBtn>
 		{@render children?.()}
 	</div>
 	{#if displayToc}
