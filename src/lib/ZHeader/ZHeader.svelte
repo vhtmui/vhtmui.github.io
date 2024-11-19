@@ -134,6 +134,109 @@
 						snippet.start.set((bodyWidth - eleWidth) / bodyWidth);
 				}
 				window.addEventListener('pointermove', seek);
+
+				function adjust(baseLine) {
+					let onTheLeft = Array();
+					let onTheRight = Array();
+
+					let st = (baseLine - gap) / bodyWidth;
+					if (st < 0) st = 0;
+					if (st > (bodyWidth - eleWidth) / bodyWidth) st = (bodyWidth - eleWidth) / bodyWidth;
+					const midLine = st * bodyWidth + snippet.width / 2;
+
+					// Divide right and left.
+					for (let j = 0; j < starts.length; j++) {
+						if (j === i) continue;
+
+						const st2 = get(snippets[j].start);
+
+						const midLine2 = st2 * bodyWidth + snippets[j].width / 2;
+
+						midLine >= midLine2 ? onTheLeft.push(snippets[j]) : onTheRight.push(snippets[j]);
+					}
+					onTheLeft.sort((a, b) => get(a.start) - get(b.start));
+					onTheRight.sort((a, b) => get(b.start) - get(a.start));
+
+					// Find the blocks that needs to be moved left or right.
+					let leftStart = st; // In Percentage.
+					let leftest;
+					for (let i = onTheLeft.length - 1; i >= 0; i--) {
+						const end = get(onTheLeft[i].start) + onTheLeft[i].width / bodyWidth;
+						if (end >= leftStart) {
+							leftStart -= onTheLeft[i].width / bodyWidth;
+							leftest = i;
+						} else break;
+					}
+					let rightEnd = st + snippet.width / bodyWidth; // In Percentage.
+					let rightest;
+					for (let i = onTheRight.length - 1; i >= 0; i--) {
+						const start = get(onTheRight[i].start);
+						if (start <= rightEnd) {
+							rightEnd += onTheRight[i].width / bodyWidth;
+							rightest = i;
+						} else break;
+					}
+
+					// Move block and handle out-of-bounds scenes.
+					// 1. Not out of bound.
+					if (leftStart >= 0 && rightEnd <= 1) {
+						// If not null
+						if (leftest < onTheLeft.length) {
+							onTheLeft.push(snippet);
+							for (let i = leftest; i < onTheLeft.length; i++) {
+								onTheLeft[i].start.set(leftStart);
+								leftStart += onTheLeft[i].width / bodyWidth;
+							}
+						}
+						if (rightest < onTheRight.length) {
+							onTheRight.push(snippet);
+							for (let i = rightest; i < onTheRight.length; i++) {
+								onTheRight[i].start.set(rightEnd - onTheRight[i].width / bodyWidth);
+								rightEnd -= onTheRight[i].width / bodyWidth;
+							}
+						}
+					}
+					// 2. Out of right bound.
+					else if (leftStart >= 0 && rightEnd > 1) {
+						const rightGap = rightEnd - 1;
+						rightEnd = 1;
+						if (rightest < onTheRight.length) {
+							onTheRight.push(snippet);
+							for (let i = rightest; i < onTheRight.length; i++) {
+								onTheRight[i].start.set(rightEnd - onTheRight[i].width / bodyWidth);
+								rightEnd -= onTheRight[i].width / bodyWidth;
+							}
+						}
+						leftStart -= rightGap;
+						if (leftest < onTheLeft.length) {
+							onTheLeft.push(snippet);
+							for (let i = leftest; i < onTheLeft.length; i++) {
+								onTheLeft[i].start.set(leftStart);
+								leftStart += onTheLeft[i].width / bodyWidth;
+							}
+						}
+					}
+					// 3. Out of left bound or both bounds.
+					else {
+						const leftGap = 0 - leftStart;
+						leftStart = 0;
+						if (leftest < onTheLeft.length) {
+							onTheLeft.push(snippet);
+							for (let i = leftest; i < onTheLeft.length; i++) {
+								onTheLeft[i].start.set(leftStart);
+								leftStart += onTheLeft[i].width / bodyWidth;
+							}
+						}
+						rightEnd += leftGap;
+						if (rightest < onTheRight.length) {
+							for (let i = rightest; i < onTheRight.length; i++) {
+								onTheRight[i].start.set(rightEnd - onTheRight[i].width / bodyWidth);
+								rightEnd -= onTheRight[i].width / bodyWidth;
+							}
+						}
+					}
+				}
+
 				// Tie up loose ends while pointerup.
 				window.addEventListener(
 					'pointerup',
@@ -143,110 +246,11 @@
 						snippet.pointerEvents = 'auto';
 						window.removeEventListener('pointermove', seek);
 
-						let onTheLeft = Array();
-						let onTheRight = Array();
-
 						// Save config after motion end.
 						const duration = 0.5;
 
+						adjust(e3.clientX);
 						// Current target's start position in Percentage.
-						let st = (e3.clientX - gap) / bodyWidth;
-						if (st < 0) st = 0;
-						if (st > (bodyWidth - eleWidth) / bodyWidth) st = (bodyWidth - eleWidth) / bodyWidth;
-						const midLine = st * bodyWidth + snippet.width / 2;
-
-						// Divide right and left.
-						for (let j = 0; j < starts.length; j++) {
-							if (j === i) continue;
-
-							const st2 = get(snippets[j].start);
-
-							const midLine2 = st2 * bodyWidth + snippets[j].width / 2;
-
-							midLine >= midLine2 ? onTheLeft.push(snippets[j]) : onTheRight.push(snippets[j]);
-						}
-						onTheLeft.sort((a, b) => get(a.start) - get(b.start));
-						onTheRight.sort((a, b) => get(b.start) - get(a.start));
-
-						// Find the blocks that needs to be moved left or right.
-						let leftStart = st; // In Percentage.
-						let leftest;
-						for (let i = onTheLeft.length - 1; i >= 0; i--) {
-							const end = get(onTheLeft[i].start) + onTheLeft[i].width / bodyWidth;
-							if (end >= leftStart) {
-								leftStart -= onTheLeft[i].width / bodyWidth;
-								leftest = i;
-							} else break;
-						}
-						let rightEnd = st + snippet.width / bodyWidth; // In Percentage.
-						let rightest;
-						for (let i = onTheRight.length - 1; i >= 0; i--) {
-							const start = get(onTheRight[i].start);
-							if (start <= rightEnd) {
-								rightEnd += onTheRight[i].width / bodyWidth;
-								rightest = i;
-							} else break;
-						}
-
-						// Move block and handle out-of-bounds scenes.
-						// 1. Not out of bound.
-						if (leftStart >= 0 && rightEnd <= 1) {
-							// If not null
-							if (leftest < onTheLeft.length) {
-								onTheLeft.push(snippet);
-								for (let i = leftest; i < onTheLeft.length; i++) {
-									onTheLeft[i].start.set(leftStart);
-									leftStart += onTheLeft[i].width / bodyWidth;
-								}
-							}
-							if (rightest < onTheRight.length) {
-								onTheRight.push(snippet);
-								for (let i = rightest; i < onTheRight.length; i++) {
-									onTheRight[i].start.set(rightEnd - onTheRight[i].width / bodyWidth);
-									rightEnd -= onTheRight[i].width / bodyWidth;
-								}
-							}
-						}
-						// 2. Out of right bound.
-						else if (leftStart >= 0 && rightEnd > 1) {
-							const rightGap = rightEnd - 1;
-							rightEnd = 1;
-							if (rightest < onTheRight.length) {
-								onTheRight.push(snippet);
-								for (let i = rightest; i < onTheRight.length; i++) {
-									onTheRight[i].start.set(rightEnd - onTheRight[i].width / bodyWidth);
-									rightEnd -= onTheRight[i].width / bodyWidth;
-								}
-							}
-							leftStart -= rightGap;
-							if (leftest < onTheLeft.length) {
-								onTheLeft.push(snippet);
-								for (let i = leftest; i < onTheLeft.length; i++) {
-									onTheLeft[i].start.set(leftStart);
-									leftStart += onTheLeft[i].width / bodyWidth;
-								}
-							}
-						}
-						// 3. Out of left bound or both bounds.
-						else {
-							const leftGap = 0 - leftStart ;
-							leftStart = 0;
-							if (leftest < onTheLeft.length) {
-								onTheLeft.push(snippet);
-								for (let i = leftest; i < onTheLeft.length; i++) {
-									onTheLeft[i].start.set(leftStart);
-									leftStart += onTheLeft[i].width / bodyWidth;
-								}
-							}
-							rightEnd += leftGap;
-							if (rightest < onTheRight.length) {
-								for (let i = rightest; i < onTheRight.length; i++) {
-									onTheRight[i].start.set(rightEnd - onTheRight[i].width / bodyWidth);
-									rightEnd -= onTheRight[i].width / bodyWidth;
-								}
-							}
-						}
-
 						saveCfg(duration * 1001);
 					},
 					{ once: true }

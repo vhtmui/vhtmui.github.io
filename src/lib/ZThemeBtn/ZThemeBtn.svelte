@@ -1,4 +1,5 @@
 <script>
+	import ZBlurBtn from '$lib/ZBlurBtn/ZBlurBtn.svelte';
 	import ZIcon from '../ZIcon/ZIcon.svelte';
 
 	import { onMount } from 'svelte';
@@ -10,6 +11,8 @@
 	// Set svg color.
 	let fill = 'var(--all-svg-color)';
 	let stroke = 'var(--all-svg-color)';
+
+	let width = '5rem';
 
 	function setTheme(theme) {
 		if (theme === 'Dark' || theme === 'Light') {
@@ -44,40 +47,44 @@
 </script>
 
 <div class="themeBlock">
-	<div class="theme btnContainer">
-		<button
-			type="button"
-			class="svg Light"
-			class:selected={BtnList[0]}
-			onclick={() => {
-				setTheme('Light');
-				setCurrentBtn(0);
-			}}
-		>
-			Light <ZIcon option="sun" {fill} {stroke} />
-		</button>
-		<button
-			type="button"
-			class="svg Dark"
-			class:selected={BtnList[1]}
-			onclick={() => {
-				setTheme('Dark');
-				setCurrentBtn(1);
-			}}
-		>
-			Dark <ZIcon option="moon" {fill} {stroke} />
-		</button>
-		<button
-			type="button"
-			class="svg Auto"
-			class:selected={BtnList[2]}
-			onclick={() => {
-				setTheme('Auto');
-				setCurrentBtn(2);
-			}}
-		>
-			Auto <ZIcon option="monitor" {fill} {stroke} />
-		</button>
+	<div class="theme-btnContainer">
+		<div class="btnBlock {BtnList[0] ? 'selected' : ''}">
+			<ZBlurBtn
+				type="button"
+				{width}
+				onclick={() => {
+					setTheme('Light');
+					setCurrentBtn(0);
+				}}
+			>
+				Light
+				<ZIcon option="sun" {fill} />
+			</ZBlurBtn>
+		</div>
+		<div class="btnBlock {BtnList[1] ? 'selected' : ''}">
+			<ZBlurBtn
+				{width}
+				type="button"
+				onclick={() => {
+					setTheme('Dark');
+					setCurrentBtn(1);
+				}}
+				>Dark
+				<ZIcon option="moon" {fill} />
+			</ZBlurBtn>
+		</div>
+		<div class="btnBlock {BtnList[2] ? 'selected' : ''}">
+			<ZBlurBtn
+				{width}
+				type="button"
+				onclick={() => {
+					setTheme('Auto');
+					setCurrentBtn(2);
+				}}
+				>Auto
+				<ZIcon option="monitor" {fill} />
+			</ZBlurBtn>
+		</div>
 	</div>
 </div>
 
@@ -88,69 +95,43 @@
 		width: 5rem;
 		height: var(--header-block-height);
 		justify-content: center;
-		&:hover {
-			cursor: pointer;
-			background-color: transparent;
-		}
-		& div.btnContainer {
+		& .theme-btnContainer {
 			display: flex;
 			flex-direction: column;
 			position: relative;
-			box-sizing: content-box;
+			box-sizing: border-box;
 			width: 100%;
 			height: 100%;
-			background-color: var(--header-btn-bg-color);
-			backdrop-filter: blur(10px);
 			border-radius: 0.7rem;
-			& button.svg {
-				color: unset;
-				font-family: 'Intel', 'Microsoft YaHei', Arial, sans-serif;
-				display: block;
+			.btnBlock {
 				visibility: hidden;
 				position: absolute;
 				top: 0;
-				box-sizing: content-box;
-				width: 100%;
-				margin: 0;
-				padding: 0;
-				line-height: var(--header-block-height);
-				border: 0px solid;
-				border-radius: 0;
-				outline: none;
-				background-color: transparent;
-				opacity: 0;
-				transition: all cubic-bezier(0.165, 0.84, 0.44, 1) 300ms 70ms;
-				&:hover {
-					cursor: pointer;
-					color: var(--header-text-hover-color);
-					& path {
-						fill: var(--header-text-hover-color);
-						stroke: var(--header-text-hover-color);
+				transition: top cubic-bezier(0.165, 0.84, 0.44, 1) 300ms 70ms;
+				button {
+					color: var(--header-text-color);
+					&:hover {
+						color: var(--header-text-hover-color);
+					}
+					&:active {
+						transition: none;
 					}
 				}
-				&:active {
-					transition: none;
-				}
 				&.selected {
-					opacity: 1;
 					visibility: visible;
+					z-index: 10;
 				}
 			}
 			&:hover {
 				height: 300%;
-				& button.svg {
-					opacity: 1;
-					transition: all cubic-bezier(0.165, 0.84, 0.44, 1) 300ms 70ms;
+				.btnBlock {
+					transition: top cubic-bezier(0.165, 0.84, 0.44, 1) 300ms 70ms;
 					visibility: visible;
-					border: none;
-					--ThemeBtn-border: 1px solid var(--header-border-color);
 					&:nth-child(1 of :not(.selected)) {
 						top: var(--header-block-height);
-						border-top: var(--ThemeBtn-border);
 					}
 					&:nth-child(2 of :not(.selected)) {
 						top: calc(2 * var(--header-block-height));
-						border-top: var(--ThemeBtn-border);
 					}
 				}
 			}

@@ -13,7 +13,7 @@
 	import { onMount } from 'svelte';
 	import { quadOut } from 'svelte/easing';
 	import { navigating } from '$app/stores';
-	import { blur, fade, slide } from 'svelte/transition';
+	import { slide } from 'svelte/transition';
 	import { afterNavigate } from '$app/navigation';
 
 	let { data, children } = $props();
@@ -24,10 +24,13 @@
 	let menuIcon = $state('menu_fold');
 
 	/**
-	 * @type {boolean} - indicate sidebar's display behavior
+	 * @type {boolean} - indicate sidebar's display.
 	 */
 	let display = $state(true);
 
+	/**
+	 * @type {boolean} - Indicate right sidebar's display.
+	 */
 	let displayToc = $state(true);
 
 	/**
@@ -70,6 +73,7 @@
 	 */
 	let mobileSibar = $state();
 
+	// Indicate the svg color.
 	let fill = 'var(--all-svg-color)';
 	let stroke = 'var(--all-svg-color)';
 
@@ -112,7 +116,7 @@
 
 	/**
 	 * on mobile terminal, undisplay the sidebar while click outside
-	 * @param event
+	 * @param {Event} event - event
 	 */
 	function clickOutsideMobileSibarHandler(event) {
 		if (!mobileSibar?.contains(event.target)) {
@@ -183,13 +187,13 @@
 						display = !display;
 					}}
 				>
-					<ZIcon option={'layout'} {fill} {stroke} />
+					<ZIcon option={'layout'} {fill}/>
 				</ZBlurBtn>
 			{/snippet}
 			{#snippet B()}
 				<ZBlurBtn>
 					<a href="/">
-						<ZIcon option={'home'} {fill} {stroke} />
+						<ZIcon option={'home'} {fill}/>
 					</a>
 				</ZBlurBtn>
 			{/snippet}
@@ -204,7 +208,7 @@
 							displayToc = !displayToc;
 						}}
 					>
-						<ZIcon option={'layout'} {fill} {stroke} />
+						<ZIcon option={'monitor'} {fill}/>
 					</ZBlurBtn>
 				{/if}
 			{/snippet}

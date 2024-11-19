@@ -7,10 +7,10 @@
 	 */
 
 	/** @type {Props} */
-	let props = $props();
+	let {width, ...props} = $props();
 </script>
 
-<button type="button" {...props}>
+<button type="button" {...props} style="width: {width};">
 	{@render props.children?.()}
 </button>
 
