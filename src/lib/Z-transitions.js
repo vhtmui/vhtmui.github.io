@@ -27,6 +27,7 @@ export function scaleX(node, { delay = 0, duration = 200, direction = 'left' }) 
         easing: ease.quadOut,
         css(t, u) {
             return `
+                    width: max-content;
 					overflow: hidden;
 					transform: scaleX(${t});
 					transform-origin: ${direction};

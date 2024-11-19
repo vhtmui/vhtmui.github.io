@@ -12,7 +12,7 @@
 	 */
 
 	/** @type {Props} */
-	let { treeArray, signal = 'default', icon = 'plus' } = $props();
+	let { treeArray, signal = 'default', icon = 'plus', width = '100%' } = $props();
 
 	let widther = $state(false);
 	let input = $state('');
@@ -55,7 +55,7 @@
 </script>
 
 <div class="sidebar right" transition:scaleX|global={{ duration: 300 }}>
-	<div class="sidebar-heard">
+	<div class="sidebar-heard" style="width: {width}">
 		<input
 			bind:value={input}
 			type="text"

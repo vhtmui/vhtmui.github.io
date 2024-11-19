@@ -166,13 +166,13 @@
 						display = !display;
 					}}
 				>
-					<ZIcon option={'layout'} {fill}/>
+					<ZIcon option={'layout'} {fill} />
 				</ZBlurBtn>
 			{/snippet}
 			{#snippet B()}
 				<ZBlurBtn>
 					<a href="/">
-						<ZIcon option={'home'} {fill}/>
+						<ZIcon option={'home'} {fill} />
 					</a>
 				</ZBlurBtn>
 			{/snippet}
@@ -187,7 +187,7 @@
 							displayToc = !displayToc;
 						}}
 					>
-						<ZIcon option={'layout'} {fill}/>
+						<ZIcon option={'layout'} {fill} />
 					</ZBlurBtn>
 				{/if}
 			{/snippet}
@@ -215,7 +215,7 @@
 			bind:clientWidth={SibarWidth}
 		>
 			<div class="sibar-innercontainer" style="width: {SibarWidth}px;">
-				<ZSbarContainer treeArray={data.directory} signal="expandAll" />
+				<ZSbarContainer treeArray={data.directory} signal="expandAll" width={`${SibarWidth}px`} />
 			</div>
 		</div>
 	{/if}
@@ -242,10 +242,7 @@
 	{#if displayToc}
 		<div class="toc" bind:this={tocBlock}>
 			{#if tocDisplayAttriute && headings && headings?.length}
-				<div
-					class="tocContainer"
-					transition:slideWithPadding|global={{ duration: 300, axis: 'x' }}
-				>
+				<div class="tocContainer" transition:slideWithPadding|global={{ duration: 300, axis: 'x' }}>
 					<ZTocList {headings} indent="0.5" />
 				</div>
 			{/if}

@@ -1,4 +1,6 @@
 <script>
+	import { scaleX } from '$lib/Z-transitions';
+
 	import { onDestroy, onMount } from 'svelte';
 
 	/**
@@ -62,7 +64,11 @@
 
 <svelte:window bind:scrollY={Y} />
 
-<div class="ZToc" bind:this={tocContainer}>
+<div
+	class="ZToc"
+	bind:this={tocContainer}
+	transition:scaleX|global={{ direction: 'right', duration: 300 }}
+>
 	{#if headings}
 		{#each headings as head, i}
 			<a
