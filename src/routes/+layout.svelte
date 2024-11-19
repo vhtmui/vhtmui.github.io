@@ -285,6 +285,7 @@
 				padding: 0;
 				margin: 0;
 				width: 100%;
+				max-width: 100%;
 				text-rendering: optimizeSpeed;
 			}
 		}

@@ -209,15 +209,26 @@
 			saveCfg();
 		}
 	});
+
+	let timer;
 </script>
 
 <svelte:window
 	onresize={() => {
-		const bodyWidth = document.body.clientWidth;
-		snippets.forEach((snippet) => {
-			const base = get(snippet.start);
-			autoAdjust(base, bodyWidth, snippet);
-		});
+		if (timer) {
+			clearTimeout(timer);
+		}
+		timer = setTimeout(() => {
+			const bodyWidth = document.body.clientWidth;
+			let copy = snippets.map((s) => s).sort((a, b) => get(a.start) - get(b.start));
+			for (let i = 0; i < copy.length; i++) {
+				if (i % 2 === 0 || i === copy.length - 1) {
+					const base = get(copy[i].start);
+					autoAdjust(base, bodyWidth, copy[i]);
+				}
+			}
+			saveCfg();
+		}, 501);
 	}}
 />
 
@@ -253,8 +264,6 @@
 				}
 				window.addEventListener('pointermove', seek);
 
-				// Save config after motion end.
-				const duration = 0.5;
 				// Tie up loose ends while pointerup.
 				window.addEventListener(
 					'pointerup',
@@ -267,7 +276,7 @@
 						let b = (e3.clientX - gap) / bodyWidth;
 						autoAdjust(b, bodyWidth, snippet);
 						// Current target's start position in Percentage.
-						saveCfg(duration * 1001);
+						saveCfg(1001);
 					},
 					{ once: true }
 				);
