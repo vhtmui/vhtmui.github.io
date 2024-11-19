@@ -139,7 +139,7 @@
 					let onTheLeft = Array();
 					let onTheRight = Array();
 
-					let st = (baseLine - gap) / bodyWidth;
+					let st = baseLine;
 					if (st < 0) st = 0;
 					if (st > (bodyWidth - eleWidth) / bodyWidth) st = (bodyWidth - eleWidth) / bodyWidth;
 					const midLine = st * bodyWidth + snippet.width / 2;
@@ -237,6 +237,8 @@
 					}
 				}
 
+				// Save config after motion end.
+				const duration = 0.5;
 				// Tie up loose ends while pointerup.
 				window.addEventListener(
 					'pointerup',
@@ -246,15 +248,23 @@
 						snippet.pointerEvents = 'auto';
 						window.removeEventListener('pointermove', seek);
 
-						// Save config after motion end.
-						const duration = 0.5;
-
-						adjust(e3.clientX);
+						let b = (e3.clientX - gap) / bodyWidth;
+						adjust(b);
 						// Current target's start position in Percentage.
 						saveCfg(duration * 1001);
 					},
 					{ once: true }
 				);
+				window.addEventListener('resize', () => {
+					const b = get(snippet.start);
+
+					adjust(b);
+
+					saveCfg(duration * 1001);
+				});
+			}}
+			onresize={() => {
+				console.log('s');
 			}}
 		>
 			{@render snippet.fn()}

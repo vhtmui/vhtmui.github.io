@@ -7,6 +7,7 @@
 	import ZTocList from '$lib/ZTocList/ZTocList.svelte';
 	import ZThemeBtn from '$lib/ZThemeBtn/ZThemeBtn.svelte';
 	import ZHeader from '$lib/ZHeader/ZHeader.svelte';
+	import { slideWithPadding } from '$lib/Z-transitions.js';
 
 	import { get_childArray } from '$lib/ZSibar/Znav';
 
@@ -76,26 +77,6 @@
 	// Indicate the svg color.
 	let fill = 'var(--all-svg-color)';
 	let stroke = 'var(--all-svg-color)';
-
-	function slideWidthPadding(node, { delay = 0, duration = 400, axis }) {
-		const width = window.getComputedStyle(node).width;
-		const padding = window.getComputedStyle(node).padding.split(' ').map(Number);
-		return {
-			delay,
-			duration,
-			axis,
-			easing: quadOut,
-			css(t, u) {
-				return `
-					position: sticky;
-					overflow: hidden;
-					min-width: 0;
-					padding: ${padding[0] * t} ${padding[1] * t} ${padding[2] * t} ${padding[3] * t};
-					width:${parseInt(width.replace('px', '')) * t}px;
-				`;
-			}
-		};
-	}
 
 	let lastScrollY;
 	let timeoutId = null;
@@ -181,8 +162,6 @@
 		<ZHeader>
 			{#snippet A()}
 				<ZBlurBtn
-					class="sibarBtn"
-					style={'transform: rotateY(0deg);'}
 					onclick={() => {
 						display = !display;
 					}}
@@ -208,7 +187,7 @@
 							displayToc = !displayToc;
 						}}
 					>
-						<ZIcon option={'monitor'} {fill}/>
+						<ZIcon option={'layout'} {fill}/>
 					</ZBlurBtn>
 				{/if}
 			{/snippet}
@@ -265,7 +244,7 @@
 			{#if tocDisplayAttriute && headings && headings?.length}
 				<div
 					class="tocContainer"
-					transition:slideWidthPadding|global={{ duration: 300, axis: 'x' }}
+					transition:slideWithPadding|global={{ duration: 300, axis: 'x' }}
 				>
 					<ZTocList {headings} indent="0.5" />
 				</div>

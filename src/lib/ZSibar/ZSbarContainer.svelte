@@ -1,10 +1,9 @@
 <script>
 	import ZSidebar from './ZSidebar.svelte';
 	import ZIcon from '$lib/ZIcon/ZIcon.svelte';
+	import { scaleX } from '$lib/Z-transitions';
 
 	import { get_childArray, getAll_propertyNames, buildTree } from './Znav';
-
-	import { quadOut } from 'svelte/easing';
 
 	/**
 	 * @typedef {Object} Props
@@ -47,20 +46,6 @@
 		input = '';
 		// widther = false;
 	}
-	function topFly(node, { delay = 0, duration = 200 }) {
-		return {
-			delay,
-			duration,
-			easing: quadOut,
-			css(t, u) {
-				return `
-					overflow: hidden;
-					transform: scaleX(${t});
-					transform-origin: left;
-				`;
-			}
-		};
-	}
 	setExpand(signal);
 	$effect(() => {
 		if (input.length !== 0) {
@@ -69,7 +54,7 @@
 	});
 </script>
 
-<div class="sidebar right" transition:topFly|global={{ duration: 300 }}>
+<div class="sidebar right" transition:scaleX|global={{ duration: 300 }}>
 	<div class="sidebar-heard">
 		<input
 			bind:value={input}
