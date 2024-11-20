@@ -116,7 +116,8 @@
 
 	// Set hightlight item
 	$effect(() => {
-		if (nowLink === $page.route.id) {
+		const url = new URL($page.url);
+		if (nowLink === url.pathname) {
 			selected_item = true;
 		} else if ($page.route.id.match(new RegExp(`^${nowLink}.+`, 'i')) && expand === false) {
 			selected_item = true;
@@ -124,6 +125,7 @@
 			selected_item = false;
 		}
 	});
+	$inspect($page);
 	//#endregion
 </script>
 

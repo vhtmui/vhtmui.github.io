@@ -12,6 +12,4 @@
 	<title>Docs</title>
 </svelte:head>
 
-{#each data.dir as dir }
-    <p>{dir}</p>
-{/each}
+

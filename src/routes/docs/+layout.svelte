@@ -8,9 +8,6 @@
 	let { data, ...props } = $props();
 </script>
 
-<div class="header">Sticky Header</div>
-<div class="content">Scroll down to see the sticky header in action.</div>
-
 {@render props.children?.()}
 
 <style>

@@ -99,7 +99,11 @@
 	let lastY = $state();
 	function scrollHeader() {
 		let gap = Y - lastY;
-		if (top - gap < 0 && top - gap > -96) top = top - gap;
+		console.log(gap);
+		if (top - gap < 0 && top - gap > -96) {
+			top = top - gap;
+		} else if (top - gap >= 0) top = 0;
+		else if (top - gap <= -96) top = -96;
 		lastY = Y;
 	}
 	// Timer for header.

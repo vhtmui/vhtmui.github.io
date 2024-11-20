@@ -1,10 +1,10 @@
 import { readFile } from 'node:fs/promises';
 /** @type {import('./$types').PageServerLoad} */
-export async function load({ parent, cookies }) {
+export async function load({ parent, params }) {
 	// get content
 	const { mdContent } = await parent();
 
-	const h1 = await readFile('./src/routes/docs/doc/a.txt','utf8');
+	const content = mdContent.get(params.doc);
 
-	return { mdContent ,h1};
+	return { content };
 }
