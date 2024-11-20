@@ -156,7 +156,7 @@
 		}
 		div.sibar {
 			min-width: 5rem;
-			max-height: calc(100vh - 8rem);
+			max-height: 60vh;
 			overflow-y: auto;
 			padding-top: 1rem;
 			-webkit-mask-image: linear-gradient(180deg, #0000, #000 1rem calc(100% - 0.5rem), #0000);

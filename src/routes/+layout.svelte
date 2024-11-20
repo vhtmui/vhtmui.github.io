@@ -16,6 +16,7 @@
 	import { navigating } from '$app/stores';
 	import { slide } from 'svelte/transition';
 	import { afterNavigate } from '$app/navigation';
+	import { spring, tweened } from 'svelte/motion';
 
 	let { data, children } = $props();
 
@@ -74,26 +75,14 @@
 	 */
 	let mobileSibar = $state();
 
+	/**
+	 * Bind to window.scrollY
+	 */
+	let Y = $state();
+
 	// Indicate the svg color.
 	let fill = 'var(--all-svg-color)';
 	let stroke = 'var(--all-svg-color)';
-
-	let lastScrollY;
-	let timeoutId = null;
-	function hideHeader() {
-		if (timeoutId) {
-			clearTimeout(timeoutId);
-		}
-		timeoutId = setTimeout(() => {
-			const offset = window.scrollY - lastScrollY;
-			if (offset > 0) {
-				hideHead = true;
-			} else if (offset < 0) {
-				hideHead = false;
-			}
-			lastScrollY = window.scrollY;
-		}, 100);
-	}
 
 	/**
 	 * on mobile terminal, undisplay the sidebar while click outside
@@ -105,23 +94,34 @@
 		}
 	}
 
+	// Scroll header while scrolling.
+	let top = $state(0);
+	let lastY = $state();
+	function scrollHeader() {
+		let gap = Y - lastY;
+		if (top - gap < 0 && top - gap > -96) top = top - gap;
+		lastY = Y;
+	}
+	// Timer for header.
+	let timer;
+
 	onMount(() => {
-		/**
-		 * hide topbar while scroll down, and display it while scroll up.
-		 */
-		lastScrollY = window.scrollY;
-		addEventListener('scroll', hideHeader, { passive: true });
+		lastY = Y;
 
 		/**
-		 * doing things while resizing
+		 * Doing things while resizing
 		 */
 		let timeoutId2 = null;
-		tocDisplayAttriute = window.getComputedStyle(tocBlock).display === 'none' ? false : true;
+		if (tocBlock)
+			tocDisplayAttriute = window.getComputedStyle(tocBlock).display === 'none' ? false : true;
+		else tocDisplayAttriute = false;
 		addEventListener('resize', () => {
 			timeoutId2 && clearTimeout(timeoutId2);
 			timeoutId2 = setTimeout(() => {
 				// destroy toclist component while its parent container display none
-				tocDisplayAttriute = window.getComputedStyle(tocBlock).display === 'none' ? false : true;
+				if (tocBlock)
+					tocDisplayAttriute = window.getComputedStyle(tocBlock).display === 'none' ? false : true;
+				else tocDisplayAttriute = false;
 			}, 100);
 		});
 	});
@@ -157,7 +157,10 @@
 <!-- #endregion -->
 <!-- #region Content
 -->
-<div class="topContainer" class:hideHead>
+<svelte:window bind:scrollY={Y} onscroll={() => scrollHeader()} />
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div id="headHolder" onmouseenter={() => (top = 1)}></div>
+<div class="topContainer" class:hideHead style="top: {top}px;">
 	<div class="topInnerContainer">
 		<ZHeader>
 			{#snippet A()}
@@ -194,23 +197,15 @@
 		</ZHeader>
 	</div>
 </div>
-<main>
+<main
+	onmouseenter={() => {
+		timer = setTimeout(() => (top = -96), 1000);
+	}}
+	onmouseleave={() => clearTimeout(timer)}
+>
 	{#if display}
 		<div
 			class="sidebar-container"
-			onoutroend={() => {
-				// prevent scrolled event listener while animation displaying.
-				addEventListener('scroll', hideHeader);
-			}}
-			onintroend={() => {
-				addEventListener('scroll', hideHeader);
-			}}
-			onoutrostart={() => {
-				removeEventListener('scroll', hideHeader);
-			}}
-			onintrostart={() => {
-				removeEventListener('scroll', hideHeader);
-			}}
 			transition:slide={{ duration: 300, axis: 'x' }}
 			bind:clientWidth={SibarWidth}
 		>
@@ -289,6 +284,13 @@
 				text-rendering: optimizeSpeed;
 			}
 		}
+		#headHolder {
+			position: fixed;
+			top: 3px;
+			width: 100%;
+			height: calc(var(--header-block-height) - 4px);
+			z-index: 15;
+		}
 		div.topContainer {
 			color: var(--header-text-color);
 			background-color: var(--header-nav-bg-color);
@@ -350,7 +352,7 @@
 			}
 			& div.sidebar-container {
 				display: none;
-				padding: 1rem 0 0 0;
+				padding: 0;
 			}
 			& div.mobilesidebar-container {
 				display: block;
@@ -398,7 +400,7 @@
 					display: block;
 					& .sibar-innercontainer {
 						position: fixed;
-						top: calc(var(--header-block-height) + 3rem);
+						top: calc(var(--header-block-height) + 2rem);
 						background-color: transparent;
 						backdrop-filter: none;
 						min-width: initial;
@@ -426,7 +428,7 @@
 					display: block;
 					& .sibar-innercontainer {
 						position: fixed;
-						top: calc(var(--header-block-height) + 3rem);
+						top: calc(var(--header-block-height) + 2rem);
 						background-color: transparent;
 						backdrop-filter: none;
 						min-width: initial;

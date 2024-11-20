@@ -1,20 +1,21 @@
-import { readdir } from 'node:fs/promises';
-import { join, normalize } from 'node:path';
-import { buildTree } from '../lib/ZSibar/Znav.js';
 
-const items = await readdir('src/routes', { recursive: true, withFileTypes: true });
+import { readFile, readdir } from 'node:fs/promises';
+import * as path from 'node:path';
 
-const dir = items
+// get dir array, pass to `ZSbarContainer.svelte`
+const baseDir = 'src/routes';
+const items = await readdir(baseDir, { recursive: true, withFileTypes: true });
+let directory = items
 	.filter((d) => d.isDirectory())
-	.map((d) => {
-		const abp = join(d.parentPath, d.name).replaceAll('\\', '/');
+	.map((d) => path.join(d.parentPath, d.name).replaceAll('\\', '/').replaceAll(baseDir, ''));
 
-		return abp;
-	});
+const mdContent = await readFile('docs/PowerShell.md', 'utf-8');
 
-dir.forEach((d) => {
-	console.log(d);
-});
+const docDir = 'docs/';
+const docItems = await readdir(docDir, { recursive: true, withFileTypes: true });
+const docDirectory = docItems.map((d) => path.join(d.parentPath, d.name).replaceAll('\\', '/').replaceAll(docDir, '/docs/'));
 
-const tree = buildTree({ _link: '/', _title: 'Home' }, dir);
-console.log(tree);
+directory = [...directory, ...docDirectory];
+
+console.log({ directory });
+debugger
