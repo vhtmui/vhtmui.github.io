@@ -4,22 +4,29 @@
 	import ZBlurBtn from '$lib/ZBlurBtn/ZBlurBtn.svelte';
 	import { onMount } from 'svelte';
 
-	let url = $state('/');
+	let urls = $state();
 
-	onMount(() => {});
-
-	afterNavigate(() => {
-		url = new URL($page.url);
+	onMount(() => {
+		const url = new URL($page.url);
+		urls = url.pathname.split('/').filter(Boolean);
 	});
 
-	$inspect(url);
+	afterNavigate(() => {
+		const url = new URL($page.url);
+		urls = url.pathname.split('/').filter(Boolean);
+	});
+
+	$inspect(urls);
 </script>
 
-<span class="znav">
-	<!-- <ZBlurBtn style="width:max-content;"> -->
-	Auto
-	<!-- </ZBlurBtn> -->
-</span>
+<div class="znav">
+	{#each urls as url, i}
+		{#if i !== 0}
+			<span>/</span>
+		{/if}
+		<a href={'/' + urls.slice(0, i + 1).join('/')}>{url}</a>
+	{/each}
+</div>
 
 <style>
 	.znav :global {
@@ -32,6 +39,18 @@
 		flex-direction: row;
 		* {
 			color: var(--header-text-color);
+		}
+		a {
+			font-size: large;
+			font-weight: bolder;
+			text-decoration: none;
+			&:hover {
+				text-decoration: solid underline;
+				color: var(--header-text-hover-color);
+			}
+		}
+		span{
+			padding: 0 1rem;
 		}
 	}
 </style>

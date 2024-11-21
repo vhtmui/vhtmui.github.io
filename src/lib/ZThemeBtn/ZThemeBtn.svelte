@@ -57,7 +57,7 @@
 					setCurrentBtn(0);
 				}}
 			>
-				Light
+				Light&nbsp;
 				<ZIcon option="sun" {fill} />
 			</ZBlurBtn>
 		</div>
@@ -69,7 +69,7 @@
 					setTheme('Dark');
 					setCurrentBtn(1);
 				}}
-				>Dark
+				>Dark&nbsp;
 				<ZIcon option="moon" {fill} />
 			</ZBlurBtn>
 		</div>
@@ -81,7 +81,7 @@
 					setTheme('Auto');
 					setCurrentBtn(2);
 				}}
-				>Auto
+				>Auto&nbsp;
 				<ZIcon option="monitor" {fill} />
 			</ZBlurBtn>
 		</div>

@@ -291,7 +291,8 @@
 </div>
 
 <style>
-	div#rootHead {
+	div#rootHead :global {
+		font-family: Arial, 'Microsoft YaHei', sans-serif, 'Segoe UI';
 		display: flex;
 		flex-direction: row;
 		width: 100%;
