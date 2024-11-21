@@ -17,6 +17,7 @@
 	import { slide } from 'svelte/transition';
 	import { afterNavigate } from '$app/navigation';
 	import { spring, tweened } from 'svelte/motion';
+	import ZNav from '$lib/ZNav/ZNav.svelte';
 
 	let { data, children } = $props();
 
@@ -99,7 +100,6 @@
 	let lastY = $state();
 	function scrollHeader() {
 		let gap = Y - lastY;
-		console.log(gap);
 		if (top - gap < 0 && top - gap > -96) {
 			top = top - gap;
 		} else if (top - gap >= 0) top = 0;
@@ -167,7 +167,20 @@
 <div class="topContainer" class:hideHead style="top: {top}px;">
 	<div class="topInnerContainer">
 		<ZHeader>
-			{#snippet A()}
+			{#snippet home()}
+				<ZBlurBtn>
+					<a href="/">
+						<ZIcon option={'home'} {fill} />
+					</a>
+				</ZBlurBtn>
+			{/snippet}
+			{#snippet nav()}
+				<ZNav></ZNav>	
+			{/snippet}
+			{#snippet themeToggle()}
+				<ZThemeBtn />
+			{/snippet}
+			{#snippet layoutRight()}
 				<ZBlurBtn
 					onclick={() => {
 						display = !display;
@@ -176,17 +189,7 @@
 					<ZIcon option={'layout'} {fill} />
 				</ZBlurBtn>
 			{/snippet}
-			{#snippet B()}
-				<ZBlurBtn>
-					<a href="/">
-						<ZIcon option={'home'} {fill} />
-					</a>
-				</ZBlurBtn>
-			{/snippet}
-			{#snippet C()}
-				<ZThemeBtn />
-			{/snippet}
-			{#snippet D()}
+			{#snippet layoutLeft()}
 				{#if tocDisplayAttriute}
 					<ZBlurBtn
 						style={'transform: rotateY(180deg);'}
