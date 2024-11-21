@@ -12,4 +12,8 @@
 	<title>Docs</title>
 </svelte:head>
 
-
+<ul>
+	{#each data.mdContent as md}
+		<li><a href="docs/{md.doc}">{md.doc}</a></li>
+	{/each}
+</ul>

@@ -13,7 +13,8 @@ const docDir = 'docs/';
 const docItems = await readdir(docDir, { recursive: true, withFileTypes: true });
 const docDirectory = docItems.map((d) => path.join(d.parentPath, d.name).replaceAll('\\', '/').replaceAll(docDir, '/docs/').replace('.md', ''));
 
-directory = [...directory, ...docDirectory];
+directory = [...directory, ...docDirectory].filter((i)=>!i.match(/\[.*\]/g));
+
 
 // get markdown.
 

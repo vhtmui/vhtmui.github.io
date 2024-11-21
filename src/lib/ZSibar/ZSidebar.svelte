@@ -125,7 +125,6 @@
 			selected_item = false;
 		}
 	});
-	$inspect($page);
 	//#endregion
 </script>
 
