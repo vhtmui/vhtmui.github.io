@@ -20,6 +20,7 @@
 </script>
 
 <div class="znav">
+	<div>></div>
 	{#each urls as url, i}
 		{#if i !== 0}
 			<span>/</span>
@@ -31,12 +32,16 @@
 <style>
 	.znav :global {
 		display: flex;
+		padding: 0 1rem;
 		height: 3rem;
 		min-width: 3rem;
 		align-items: center;
 		justify-content: center;
 		flex-wrap: nowrap;
 		flex-direction: row;
+		backdrop-filter: blur(10px);
+		background-color: var(--header-btn-bg-color);
+		border-radius: 0.7rem;
 		* {
 			color: var(--header-text-color);
 		}
