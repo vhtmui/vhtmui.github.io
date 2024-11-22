@@ -17,6 +17,7 @@
 <style>
 	button :global {
 		font-family: unset;
+		font-size: unset;
 		box-sizing: border-box;
 		margin: 0;
 		padding: 0;
@@ -26,7 +27,7 @@
 		border-radius: 0.7rem;
 		outline: none;
 		background-color: var(--header-btn-bg-color);
-		backdrop-filter: blur(10px);
+		backdrop-filter: blur(5px);
 		display: flex;
 		justify-content: center;
 		align-items: center;

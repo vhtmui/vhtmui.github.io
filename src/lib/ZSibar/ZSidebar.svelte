@@ -163,7 +163,7 @@
 		}
 		a.sidebar {
 			text-decoration: none;
-			color: var(----main-text-color);
+			color: var(--sidebar-text-color);
 			transition: all cubic-bezier(0.165, 0.84, 0.44, 1) 300ms 70ms;
 			&:hover {
 				text-decoration: underline;

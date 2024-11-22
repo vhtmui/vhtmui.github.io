@@ -7,8 +7,7 @@
 	import ZTocList from '$lib/ZTocList/ZTocList.svelte';
 	import ZThemeBtn from '$lib/ZThemeBtn/ZThemeBtn.svelte';
 	import ZHeader from '$lib/ZHeader/ZHeader.svelte';
-	import { slideWithPadding } from '$lib/Z-transitions.js';
-
+	import ZNav from '$lib/ZNav/ZNav.svelte';
 	import { get_childArray } from '$lib/ZSibar/Znav';
 
 	import { onMount } from 'svelte';
@@ -17,7 +16,8 @@
 	import { slide } from 'svelte/transition';
 	import { afterNavigate } from '$app/navigation';
 	import { spring, tweened } from 'svelte/motion';
-	import ZNav from '$lib/ZNav/ZNav.svelte';
+	import { page } from '$app/stores';
+	import { displays } from './shared.svelte';
 
 	let { data, children } = $props();
 
@@ -27,14 +27,9 @@
 	let menuIcon = $state('menu_fold');
 
 	/**
-	 * @type {boolean} - indicate sidebar's display.
-	 */
-	let display = $state(true);
-
-	/**
 	 * @type {boolean} - Indicate right sidebar's display.
 	 */
-	let displayToc = $state(true);
+	let displaysdisplayToc = $state(true);
 
 	/**
 	 * @type {string} - css string of sidebar menu
@@ -47,11 +42,6 @@
 	let hideHead = $state(false);
 
 	/**
-	 * @type {HTMLDivElement} - bind to topic list element
-	 */
-	let tocBlock = $state();
-
-	/**
 	 * @type {string} - title levels to display in topic list
 	 */
 	let titles = 'h2,h3,h4,h5,h6';
@@ -60,11 +50,6 @@
 	 * @type {nodeList} - nodelist passed to ZTocList.svelte
 	 */
 	let headings = $state();
-
-	/**
-	 * @type {string} - the `display` attribute of topic list element's style
-	 */
-	let tocDisplayAttriute = $state();
 
 	/**
 	 * @type {number} - bind to the `clientWidth` of `div.sidebar-container`
@@ -81,9 +66,7 @@
 	 */
 	let Y = $state();
 
-	// Indicate the svg color.
-	let fill = 'var(--all-svg-color)';
-	let stroke = 'var(--all-svg-color)';
+	let windowWidth = $state(0);
 
 	/**
 	 * on mobile terminal, undisplay the sidebar while click outside
@@ -91,7 +74,7 @@
 	 */
 	function clickOutsideMobileSibarHandler(event) {
 		if (!mobileSibar?.contains(event.target)) {
-			display = true;
+			displays.display = true;
 		}
 	}
 
@@ -111,23 +94,6 @@
 
 	onMount(() => {
 		lastY = Y;
-
-		/**
-		 * Doing things while resizing
-		 */
-		let timeoutId2 = null;
-		if (tocBlock)
-			tocDisplayAttriute = window.getComputedStyle(tocBlock).display === 'none' ? false : true;
-		else tocDisplayAttriute = false;
-		addEventListener('resize', () => {
-			timeoutId2 && clearTimeout(timeoutId2);
-			timeoutId2 = setTimeout(() => {
-				// destroy toclist component while its parent container display none
-				if (tocBlock)
-					tocDisplayAttriute = window.getComputedStyle(tocBlock).display === 'none' ? false : true;
-				else tocDisplayAttriute = false;
-			}, 100);
-		});
 	});
 	afterNavigate(() => {
 		// get head elements passed to <ZTocList>.
@@ -156,12 +122,12 @@
 		}
 	</script>
 	<link href="/global.css" rel="stylesheet" />
-	<title>MyWeb2</title>
+	<title>{'VH ' + $page.url.pathname.substring(1).replaceAll('/', ' · ')}</title>
 </svelte:head>
 <!-- #endregion -->
 <!-- #region Content
 -->
-<svelte:window bind:scrollY={Y} onscroll={() => scrollHeader()} />
+<svelte:window bind:innerWidth={windowWidth} bind:scrollY={Y} onscroll={() => scrollHeader()} />
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div id="headHolder" onmouseenter={() => (top = 1)}></div>
 <div class="topContainer" class:hideHead style="top: {top}px;">
@@ -170,12 +136,12 @@
 			{#snippet home()}
 				<ZBlurBtn>
 					<a href="/">
-						<ZIcon option={'home'} {fill} />
+						<ZIcon option={'home'} />
 					</a>
 				</ZBlurBtn>
 			{/snippet}
 			{#snippet nav()}
-				<ZNav></ZNav>	
+				<ZNav></ZNav>
 			{/snippet}
 			{#snippet themeToggle()}
 				<ZThemeBtn />
@@ -183,23 +149,21 @@
 			{#snippet layoutRight()}
 				<ZBlurBtn
 					onclick={() => {
-						display = !display;
+						displays.display = !displays.display;
 					}}
 				>
-					<ZIcon option={'layout'} {fill} />
+					<ZIcon option={'layout'} />
 				</ZBlurBtn>
 			{/snippet}
 			{#snippet layoutLeft()}
-				{#if tocDisplayAttriute}
-					<ZBlurBtn
-						style={'transform: rotateY(180deg);'}
-						onclick={() => {
-							displayToc = !displayToc;
-						}}
-					>
-						<ZIcon option={'layout'} {fill} />
-					</ZBlurBtn>
-				{/if}
+				<ZBlurBtn
+					style={'transform: rotateY(180deg);'}
+					onclick={() => {
+						displays.displayToc = !displays.displayToc;
+					}}
+				>
+					<ZIcon option={'layout'} />
+				</ZBlurBtn>
 			{/snippet}
 		</ZHeader>
 	</div>
@@ -210,7 +174,7 @@
 	}}
 	onmouseleave={() => clearTimeout(timer)}
 >
-	{#if display}
+	{#if displays.display}
 		<div
 			class="sidebar-container"
 			transition:slide={{ duration: 300, axis: 'x' }}
@@ -221,7 +185,7 @@
 			</div>
 		</div>
 	{/if}
-	{#if !display && window.innerWidth <= 768}
+	{#if !displays.display && windowWidth <= 768}
 		<div class="mobilesidebar-container">
 			<div
 				bind:this={mobileSibar}
@@ -241,10 +205,13 @@
 	<div class="content">
 		{@render children?.()}
 	</div>
-	{#if displayToc}
-		<div class="toc" bind:this={tocBlock}>
-			{#if tocDisplayAttriute && headings && headings?.length}
-				<div class="tocContainer" transition:slideWithPadding|global={{ duration: 300, axis: 'x' }}>
+	{#if displays.displayToc}
+		<div class="toc">
+			{#if headings && headings?.length}
+				<div
+					class="tocContainer"
+					transition:slide|global={{ duration: 300, axis: 'x' }}
+				>
 					<ZTocList {headings} indent="0.5" />
 				</div>
 			{/if}
@@ -453,11 +420,11 @@
 					display: block;
 					max-width: 20%;
 					min-width: 0;
-					padding-right: 4rem;
 					.tocContainer {
 						margin-top: 5rem;
 						position: sticky;
 						top: calc(var(--header-block-height) + 5rem);
+						padding: 0 4rem 0 0;
 					}
 				}
 			}

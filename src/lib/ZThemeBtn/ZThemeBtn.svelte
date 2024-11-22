@@ -95,6 +95,7 @@
 		width: 5rem;
 		height: var(--header-block-height);
 		justify-content: center;
+		font-size: 0.9rem;
 		& .theme-btnContainer {
 			display: flex;
 			flex-direction: column;

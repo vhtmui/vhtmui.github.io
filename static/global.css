@@ -1,6 +1,6 @@
 :root[data-theme='Light'] {
 	--header-nav-bg-color: rgba(255, 255, 255, 0);
-	--header-border-color: #888888;
+	--header-text-light-color: #717171;
 	--header-text-color: #4e4e4e;
 	--header-text-hover-color: #0069c2;
 	--header-text-active-color: #0057a3;
@@ -23,14 +23,15 @@
 	--sidebar-selected-border-style: groove;
 	--sidebar-filter-text-bg-bolor: #5d00ff;
 	--sidebar-filter-text-bolor: #ffffff;
+	--sidebar-text-color:#4e4e4e;
 	--tocItem-text-color: #515151bf;
 	--input-focus-color: #659aff;
-	--scrollbar-color: #989898;
+	--scrollbar-color: #00000040;
 }
 :root[data-theme='Dark'] {
 	--header-nav-bg-color: rgba(255, 255, 255, 0);
-	--header-border-color: #8b8e91fc;
-	--header-text-color: #fdfefe;
+	--header-text-light-color: #9f9f9f;
+	--header-text-color: #bfbfbf;
 	--header-text-hover-color: #ffa06f;
 	--header-text-active-color: #ffa06f;
 	--header-block-hover-bg-color: #ff73732e;
@@ -41,7 +42,7 @@
 	--main-text-color: #ffffff;
 	--main-a-color: #ff8c8c;
 	--main-visited-a-color: var(--main-a-color);
-	--all-svg-color: var(--main-text-color);
+	--all-svg-color: #cacaca;
 	--all-svg-hover-color: var(--header-text-color);
 	--sidebar-svg-color: #ffffff80;
 	--sidebar-border-top-color: #e6e6e6d2;
@@ -52,9 +53,10 @@
 	--sidebar-selected-border-style: ridge;
 	--sidebar-filter-text-bg-bolor: #e8e87e;
 	--sidebar-filter-text-bolor: #000000;
+	--sidebar-text-color:#cdcdcd;
 	--tocItem-text-color: #ffffffba;
 	--input-focus-color: #b42100;
-	--scrollbar-color: #525049;
+	--scrollbar-color: #ffffff40;
 }
 :root {
 	--header-block-height: 3rem;

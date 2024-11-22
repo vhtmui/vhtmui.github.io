@@ -6,8 +6,8 @@ export async function load({ parent, params }) {
 	const data = await parent();
 	const current = data.mdContent.findIndex((c) => c.doc === params.doc);
 	const content = data.mdContent[current]?.content;
-
+	const title = params.doc;
 	if (!content) error(404);
 
-	return { content };
+	return { content, title };
 }

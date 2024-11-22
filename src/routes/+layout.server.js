@@ -10,9 +10,9 @@ export async function load() {
 		.filter((d) => d.isDirectory())
 		.map((d) => path.join(d.parentPath, d.name).replaceAll('\\', '/').replaceAll(baseDir, ''));
 
-	const docDir = 'docs/';
+	const docDir = 'Docs/';
 	const docItems = await readdir(docDir, { recursive: true, withFileTypes: true });
-	const docDirectory = docItems.map((d) => path.join(d.parentPath, d.name).replaceAll('\\', '/').replaceAll(docDir, '/docs/').replace('.md', ''));
+	const docDirectory = docItems.map((d) => path.join(d.parentPath, d.name).replaceAll('\\', '/').replaceAll(docDir, '/Docs/').replace('.md', ''));
 
 	directory = [...directory, ...docDirectory].filter((i) => !i.match(/\[.*\]/g));
 

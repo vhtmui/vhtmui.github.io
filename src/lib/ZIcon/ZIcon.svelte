@@ -9,14 +9,21 @@
 	 */
 
 	/** @type {Props} */
-	let { option , height = '1.25rem', width = '1.25rem', stroke, fill, ...others } = $props();
+	let {
+		option,
+		height = '1.25rem',
+		width = '1.25rem',
+		stroke = 'var(--all-svg-color)',
+		fill = 'var(--all-svg-color)',
+		...others
+	} = $props();
 	// .replace(/\d+/g, (match) => parseInt(match, 10) * 2.4)
 	let viewBox = $derived(viewBoxs[option]);
 	let path = $derived(paths[option]);
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<svg style="--strokeColor:{stroke};--fillColor:{fill}" {...others} {viewBox} {height} {width}
+<svg {...others} style="--strokeColor:{stroke};--fillColor:{fill}" {viewBox} {height} {width}
 	>{@html path}</svg
 >
 
