@@ -61,6 +61,8 @@
 	 */
 	let mobileSibar = $state();
 
+	let mobileSibarWidth = $state();
+
 	/**
 	 * Bind to window.scrollY
 	 */
@@ -189,6 +191,7 @@
 		<div class="mobilesidebar-container">
 			<div
 				bind:this={mobileSibar}
+				bind:clientWidth={mobileSibarWidth}
 				class="sibar-innercontainer"
 				transition:slide|global={{ axis: 'x' }}
 				onintroend={() => {
@@ -198,7 +201,11 @@
 					removeEventListener('click', clickOutsideMobileSibarHandler);
 				}}
 			>
-				<ZSbarContainer treeArray={data.directory} signal="expandAll" />
+				<ZSbarContainer
+					treeArray={data.directory}
+					signal="expandAll"
+					width={`${mobileSibarWidth}px`}
+				/>
 			</div>
 		</div>
 	{/if}
@@ -208,10 +215,7 @@
 	{#if displays.displayToc}
 		<div class="toc">
 			{#if headings && headings?.length}
-				<div
-					class="tocContainer"
-					transition:slide|global={{ duration: 300, axis: 'x' }}
-				>
+				<div class="tocContainer" transition:slide|global={{ duration: 300, axis: 'x' }}>
 					<ZTocList {headings} indent="0.5" />
 				</div>
 			{/if}
