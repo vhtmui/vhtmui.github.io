@@ -4,7 +4,7 @@ import * as path from "node:path";
 /** @type {import('./$types').LayoutServerLoad} */
 export async function load() {
 
-    const docDir = 'Docs/';
+    const docDir = 'docs/';
     const docItems = await readdir(docDir, { recursive: true, withFileTypes: true });
 
     const mdContent = await Promise.all(

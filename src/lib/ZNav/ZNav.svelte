@@ -47,6 +47,7 @@
 			font-size: 0.9rem;
 			text-decoration: none;
 			color: var(--header-text-light-color);
+			text-transform: capitalize;
 			&:hover {
 				text-decoration: solid underline;
 				color: var(--header-text-hover-color);
