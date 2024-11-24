@@ -1,3 +1,7 @@
+@font-face {
+	font-family: 'CascadiaMono';
+	src: url('/fonts/CascadiaMono.woff2') format('woff2');
+}
 :root[data-theme='Light'] {
 	--header-nav-bg-color: rgba(255, 255, 255, 0);
 	--header-text-light-color: #717171;
@@ -23,7 +27,7 @@
 	--sidebar-selected-border-style: groove;
 	--sidebar-filter-text-bg-bolor: #5d00ff;
 	--sidebar-filter-text-bolor: #ffffff;
-	--sidebar-text-color:#4e4e4e;
+	--sidebar-text-color: #4e4e4e;
 	--tocItem-text-color: #515151bf;
 	--input-focus-color: #659aff;
 	--scrollbar-color: #00000040;
@@ -53,7 +57,7 @@
 	--sidebar-selected-border-style: ridge;
 	--sidebar-filter-text-bg-bolor: #e8e87e;
 	--sidebar-filter-text-bolor: #000000;
-	--sidebar-text-color:#cdcdcd;
+	--sidebar-text-color: #cdcdcd;
 	--tocItem-text-color: #ffffffba;
 	--input-focus-color: #b42100;
 	--scrollbar-color: #ffffff40;
