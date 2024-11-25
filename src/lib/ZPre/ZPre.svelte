@@ -11,6 +11,6 @@
 </script>
 
 <div>
-	<pre><code>{#each $ast.children[0].children as co}{#if co.type === 'text'}{co.value}{:else if co.type === 'element' && co.tagName === 'span'}<span class={co.properties.class}>{co.children[0].value}</span>{/if}{/each}</code></pre>
+	<pre><code class={$ast.children[0].properties.class}>{#each $ast.children[0].children as co}{#if co.type === 'text'}{co.value}{:else if co.type === 'element' && co.tagName === 'span'}<span class={co.properties.class}>{co.children[0].value}</span>{/if}{/each}</code></pre>
 	<div><ZIcon option="copy"></ZIcon></div>
 </div>

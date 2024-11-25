@@ -68,6 +68,8 @@
 	 */
 	let Y = $state();
 
+	let stopReactScroll = $state(false);
+
 	let windowWidth = $state(0);
 
 	/**
@@ -84,6 +86,7 @@
 	let top = $state(0);
 	let lastY = $state();
 	function scrollHeader() {
+		if (stopReactScroll) return;
 		let gap = Y - lastY;
 		if (top - gap < 0 && top - gap > -96) {
 			top = top - gap;
@@ -131,7 +134,14 @@
 -->
 <svelte:window bind:innerWidth={windowWidth} bind:scrollY={Y} onscroll={() => scrollHeader()} />
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div id="headHolder" onmouseenter={() => (top = 1)}></div>
+<!-- svelte-ignore a11y_mouse_events_have_key_events -->
+<div
+	id="headHolder"
+	onmouseenter={() => {
+		stopReactScroll = true;
+		top = 1;
+	}}
+></div>
 <div class="topContainer" class:hideHead style="top: {top}px;">
 	<div class="topInnerContainer">
 		<ZHeader>
@@ -167,11 +177,19 @@
 					<ZIcon option={'layout'} />
 				</ZBlurBtn>
 			{/snippet}
+			{#snippet github()}
+				<ZBlurBtn>
+					<a href="https://github.com/vhtmui">
+						<ZIcon option={'github'} />
+					</a>
+				</ZBlurBtn>
+			{/snippet}
 		</ZHeader>
 	</div>
 </div>
 <main
 	onmouseenter={() => {
+		stopReactScroll = false;
 		timer = setTimeout(() => (top = -96), 1000);
 	}}
 	onmouseleave={() => clearTimeout(timer)}

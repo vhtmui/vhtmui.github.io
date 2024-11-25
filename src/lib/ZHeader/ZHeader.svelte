@@ -192,14 +192,15 @@
 		if (
 			localStorage.hcfg &&
 			isJson &&
-			JSON.parse(localStorage.hcfg).every((item) => 0 <= item && item <= 1)
+			JSON.parse(localStorage.hcfg).every(
+				(item) => typeof item === 'number' && 0 <= item && item <= 1
+			)
 		) {
 			let localCfg = JSON.parse(localStorage.hcfg);
 			for (let index = 0; index < Object.keys(others).length; index++) {
 				snippets[index].start.set(localCfg[index]);
 			}
 		} else {
-			console.log('enter');
 			let initLength = 0;
 			let w = document.body.clientWidth;
 			for (let i = 0; i < Object.keys(others).length; i++) {
