@@ -31,11 +31,13 @@
 	--tocItem-text-color: #515151bf;
 	--input-focus-color: #659aff;
 	--scrollbar-color: #00000040;
+	--hljs-bg-color: rgb(219 219 219 / 42%);
 	--hljs-string: #032f62;
 	--hljs-text-color: #000000;
 	--hljs-keyword: #d73a49;
 	--hljs-attr:#005cc5;
 	--hljs-name:#22863a;
+	--hljs-symbol:#e36209;
 }
 :root[data-theme='Dark'] {
 	--header-nav-bg-color: rgba(255, 255, 255, 0);
@@ -66,11 +68,13 @@
 	--tocItem-text-color: #ffffffba;
 	--input-focus-color: #b42100;
 	--scrollbar-color: #ffffff40;
+	--hljs-bg-color: rgb(49 49 49);
 	--hljs-string: #d18eff;
 	--hljs-text-color: #bdcccc;
 	--hljs-keyword: #ff7a87;
 	--hljs-attr:#00c5b3;
 	--hljs-name:#2fb750;
+	--hljs-symbol:#ff8828;
 }
 :root {
 	--header-block-height: 3rem;

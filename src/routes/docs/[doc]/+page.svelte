@@ -32,7 +32,8 @@
 		code.hljs {
 			font-family: 'CascadiaMono';
 			color: var(--hljs-text-color);
-			background-color: var(--main-bg-color);
+			background-color: var(--hljs-bg-color);
+			border-radius: 8px;
 			.hljs-doctag,
 			.hljs-keyword,
 			.hljs-meta .hljs-keyword,
@@ -73,7 +74,7 @@
 			.hljs-built_in,
 			.hljs-symbol {
 				/* prettylights-syntax-variable */
-				color: #e36209;
+				color: var(--hljs-symbol);
 			}
 			.hljs-comment,
 			.hljs-code,
