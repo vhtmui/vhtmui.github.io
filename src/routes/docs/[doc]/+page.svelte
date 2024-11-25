@@ -49,7 +49,7 @@
 			.hljs-title.class_.inherited__,
 			.hljs-title.function_ {
 				/* prettylights-syntax-entity */
-				color: #6f42c1;
+				color: var(--hljs-title);
 			}
 			.hljs-attr,
 			.hljs-attribute,
@@ -68,7 +68,6 @@
 			.hljs-string,
 			.hljs-meta .hljs-string {
 				/* prettylights-syntax-string */
-				color: #032f62;
 				color: var(--hljs-string);
 			}
 			.hljs-built_in,
@@ -80,18 +79,18 @@
 			.hljs-code,
 			.hljs-formula {
 				/* prettylights-syntax-comment */
-				color: #6a737d;
+				color: var(--hljs-comment);
 			}
 			.hljs-name,
 			.hljs-quote,
 			.hljs-selector-tag,
 			.hljs-selector-pseudo {
 				/* prettylights-syntax-entity-tag */
-				color: #22863a;
+				color: var(--hljs-name);
 			}
 			.hljs-subst {
 				/* prettylights-syntax-storage-modifier-import */
-				color: #24292e;
+				color: var(--hljs-subst);
 			}
 			.hljs-section {
 				/* prettylights-syntax-markup-heading */
@@ -129,6 +128,7 @@
 			.hljs-punctuation,
 			.hljs-tag {
 				/* purposely ignored */
+				
 			}
 		}
 	}

@@ -38,6 +38,9 @@
 	--hljs-attr:#005cc5;
 	--hljs-name:#22863a;
 	--hljs-symbol:#e36209;
+	--hljs-subst:#24292e;
+	--hljs-title:#6f42c1;
+	--hljs-comment:#6a737d;
 }
 :root[data-theme='Dark'] {
 	--header-nav-bg-color: rgba(255, 255, 255, 0);
@@ -73,8 +76,11 @@
 	--hljs-text-color: #bdcccc;
 	--hljs-keyword: #ff7a87;
 	--hljs-attr:#00c5b3;
-	--hljs-name:#2fb750;
+	--hljs-name:#b7a92f;
 	--hljs-symbol:#ff8828;
+	--hljs-subst:#9eb4cb;
+	--hljs-title:#d7c0ff;
+	--hljs-comment:#29b040;
 }
 :root {
 	--header-block-height: 3rem;
