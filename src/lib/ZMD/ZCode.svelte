@@ -5,7 +5,7 @@
 </script>
 
 <code>
-	{$ast.children[0].value}
+	{$ast.children?.[0].value}
 </code>
 
 <style>

@@ -73,6 +73,11 @@
 	let windowWidth = $state(0);
 
 	/**
+	 * @type {number} - bind to the `window.scrollY`
+	 */
+	let timer;
+
+	/**
 	 * on mobile terminal, undisplay the sidebar while click outside
 	 * @param {Event} event - event
 	 */
@@ -95,24 +100,41 @@
 		lastY = Y;
 	}
 
-	let { display, displayToc } = displays;
 	$effect(() => {
-		$navigating ? console.log($navigating) : '';
-		console.log(displays);
-		if ($navigating.to.url.pathname === '/') {
-			display = displays.display;
-			display = displays.displayToc;
-			displays.display = displays.displayToc = false;
-		} else {
-		}
+		// $navigating ? console.log($navigating) : '';
+		// console.log(displays);
 	});
 
 	onMount(() => {
 		lastY = Y;
+
+		// Show sidebar if not in home page.
+		if ($page.url.pathname !== '/') {
+			displays.display = displays.displayToc = true;
+		}
 	});
+
+	/**
+	 * @type {object} - Snapshot of `displays`.
+	 */
+	let { display, displayToc } = $state(displays);
 	afterNavigate(() => {
 		// get head elements passed to <ZTocList>.
 		headings = document.querySelectorAll(titles);
+
+		// Reset `displays` when navigating between home and other pages.
+		console.log('nav!');
+		if ($navigating) {
+			const { from, to } = $navigating;
+			if (from.url.pathname !== '/' && to.url.pathname === '/') {
+				display = displays.display;
+				displayToc = displays.displayToc;
+				displays.display = displays.displayToc = false;
+			} else if (from.url.pathname === '/' && to.url.pathname !== '/') {
+				displays.display = display;
+				displays.displayToc = displayToc;
+			}
+		}
 	});
 </script>
 
