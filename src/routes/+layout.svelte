@@ -17,7 +17,7 @@
 	import { afterNavigate } from '$app/navigation';
 	import { spring, tweened } from 'svelte/motion';
 	import { page } from '$app/stores';
-	import { displays } from './shared.svelte';
+	import { displays } from '$lib/shared.svelte.js';
 
 	let { data, children } = $props();
 
@@ -94,8 +94,18 @@
 		else if (top - gap <= -96) top = -96;
 		lastY = Y;
 	}
-	// Timer for header.
-	let timer;
+
+	let { display, displayToc } = displays;
+	$effect(() => {
+		$navigating ? console.log($navigating) : '';
+		console.log(displays);
+		if ($navigating.to.url.pathname === '/') {
+			display = displays.display;
+			display = displays.displayToc;
+			displays.display = displays.displayToc = false;
+		} else {
+		}
+	});
 
 	onMount(() => {
 		lastY = Y;
@@ -234,7 +244,7 @@
 		<div class="toc">
 			{#if headings && headings?.length}
 				<div class="tocContainer" transition:slide|global={{ duration: 300, axis: 'x' }}>
-					<ZTocList {headings} indent="0.5" />
+					<ZTocList {headings} indent="1" />
 				</div>
 			{/if}
 		</div>
@@ -339,6 +349,7 @@
 			& div.content {
 				max-width: 100%;
 				overflow-wrap: break-word;
+				line-height: 1.75;
 				& a {
 					color: var(--main-a-color);
 					&:visited {

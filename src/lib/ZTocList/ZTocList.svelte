@@ -84,6 +84,7 @@
 <style>
 	div.ZToc :global {
 		font-size: 0.8rem;
+		word-break: break-all;
 		overflow-y: auto;
 		/* margin-top: 4rem; */
 		max-height: 70vh;

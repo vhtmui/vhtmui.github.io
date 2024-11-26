@@ -1,6 +1,7 @@
 <script>
-	import { displays } from './shared.svelte';
+	import { afterNavigate } from '$app/navigation';
+	import { displays } from '$lib/shared.svelte';
+	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
 
-	displays.display = false;
-	displays.displayToc = false;
 </script>

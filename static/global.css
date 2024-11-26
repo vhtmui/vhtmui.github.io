@@ -41,6 +41,7 @@
 	--hljs-subst:#24292e;
 	--hljs-title:#6f42c1;
 	--hljs-comment:#6a737d;
+	--md-code-color:#444444;
 }
 :root[data-theme='Dark'] {
 	--header-nav-bg-color: rgba(255, 255, 255, 0);
@@ -57,7 +58,7 @@
 	--main-a-color: #ff8c8c;
 	--main-visited-a-color: var(--main-a-color);
 	--all-svg-color: #cacaca;
-	--all-svg-hover-color: var(--header-text-color);
+	--all-svg-hover-color: var(--header-text-hover-color);
 	--sidebar-svg-color: #ffffff80;
 	--sidebar-border-top-color: #e6e6e6d2;
 	--sidebar-border-left-color: #ffffff54;
@@ -80,7 +81,8 @@
 	--hljs-symbol:#ff8828;
 	--hljs-subst:#9eb4cb;
 	--hljs-title:#d7c0ff;
-	--hljs-comment:#29b040;
+	--hljs-comment:#6ee883;
+	--md-code-color:#444444;
 }
 :root {
 	--header-block-height: 3rem;
