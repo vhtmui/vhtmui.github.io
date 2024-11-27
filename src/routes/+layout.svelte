@@ -61,6 +61,9 @@
 	 */
 	let mobileSibar = $state();
 
+	/**
+	 * @type {number} - bind to the `div.mobilesidebar-container`'s width
+	 */
 	let mobileSibarWidth = $state();
 
 	/**
@@ -68,14 +71,25 @@
 	 */
 	let Y = $state();
 
+	/**
+	 * @type {boolean} - Indicate whether to stop reacting to scroll event.
+	 */
 	let stopReactScroll = $state(false);
 
+	/**
+	 * @type {number} - bind to the `window.innerWidth`
+	 */
 	let windowWidth = $state(0);
 
 	/**
 	 * @type {number} - bind to the `window.scrollY`
 	 */
 	let timer;
+
+	/**
+	 * @type {object} - Snapshot of `displays`.
+	 */
+	let { display, displayToc } = $state(displays);
 
 	/**
 	 * on mobile terminal, undisplay the sidebar while click outside
@@ -100,31 +114,24 @@
 		lastY = Y;
 	}
 
-	$effect(() => {
-		// $navigating ? console.log($navigating) : '';
-		// console.log(displays);
-	});
-
 	onMount(() => {
 		lastY = Y;
 
 		// Show sidebar if not in home page.
 		if ($page.url.pathname !== '/') {
 			displays.display = displays.displayToc = true;
+		} else{
+			display = displayToc = true;
 		}
 	});
 
-	/**
-	 * @type {object} - Snapshot of `displays`.
-	 */
-	let { display, displayToc } = $state(displays);
 	afterNavigate(() => {
 		// get head elements passed to <ZTocList>.
 		headings = document.querySelectorAll(titles);
-
+		
 		// Reset `displays` when navigating between home and other pages.
-		console.log('nav!');
 		if ($navigating) {
+			console.log('navigating');
 			const { from, to } = $navigating;
 			if (from.url.pathname !== '/' && to.url.pathname === '/') {
 				display = displays.display;
@@ -280,9 +287,18 @@
 <style>
 	:global {
 		* {
-			scrollbar-color: var(--scrollbar-color) #00000000;
+			/* scrollbar-color: var(--scrollbar-color) #00000000; */
 			text-wrap: wrap;
 			scroll-behavior: smooth;
+		}
+		::-webkit-scrollbar,::-webkit-scrollbar-track{
+			background-color: #00000000;
+			width: 8px;
+			height: 8px;
+		}
+		::-webkit-scrollbar-thumb{
+			background-color: var(--scrollbar-color);
+			border-radius: 4px;
 		}
 		:root {
 			word-break: break-word;
@@ -375,7 +391,7 @@
 				& a {
 					color: var(--main-a-color);
 					&:visited {
-						color: var(--main-visited-a-color);
+						/* color: var(--main-visited-a-color); */
 					}
 				}
 			}
@@ -441,6 +457,7 @@
 				& div.content {
 					flex: 3;
 					width: 75%;
+					padding: 0 3rem 0 3rem;
 				}
 				& main div.toc {
 					display: none;

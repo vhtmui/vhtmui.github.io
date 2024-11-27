@@ -16,6 +16,7 @@
 	--main-text-color: #1b1b1b;
 	--main-a-color: #0069c2;
 	--main-visited-a-color: var(--main-a-color);
+	--home-border-color: #484747;
 	--all-svg-color: var(--header-text-color);
 	--all-svg-hover-color: var(--header-text-hover-color);
 	--sidebar-svg-color: #454545ba;
@@ -41,7 +42,7 @@
 	--hljs-subst:#24292e;
 	--hljs-title:#6f42c1;
 	--hljs-comment:#6a737d;
-	--md-code-color:#444444;
+	--md-code-color:#d4d4d4b3;
 }
 :root[data-theme='Dark'] {
 	--header-nav-bg-color: rgba(255, 255, 255, 0);
@@ -57,6 +58,7 @@
 	--main-text-color: #ffffff;
 	--main-a-color: #ff8c8c;
 	--main-visited-a-color: var(--main-a-color);
+	--home-border-color: #b6acac;
 	--all-svg-color: #cacaca;
 	--all-svg-hover-color: var(--header-text-hover-color);
 	--sidebar-svg-color: #ffffff80;

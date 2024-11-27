@@ -1,6 +1,6 @@
 <script>
 	import ZIcon from '$lib/ZIcon/ZIcon.svelte';
-	import ZCode from './ZPreCode.svelte';
+	import ZPreCode from './ZPreCode.svelte';
 
 	import { getAstNode } from 'svelte-exmarkdown';
 
@@ -10,37 +10,57 @@
 
 	let content = $state();
 
+	let icon = $state('copy');
+	let visibility = $state('hidden');
+	let hint = $state('');
+	let disabled = $state(false);
+
 	async function copyContent() {
-        try {
-            await navigator.clipboard.writeText(content);
-        } catch (err) {
-            console.error('复制失败:', err);
-        }
-    }
+		try {
+			await navigator.clipboard.writeText(content);
+			icon = 'check';
+			visibility = 'visible';
+			hint = '复制!';
+			disabled = true;
+
+			setTimeout(() => {
+				icon = 'copy';
+				visibility = 'hidden';
+				hint = '';
+				disabled = false;
+			}, 1800);
+		} catch (err) {
+			console.error('复制失败:', err);
+		}
+	}
 </script>
 
 <div class="codeContainer">
 	<pre contenteditable="false" bind:innerText={content}><code
-			class={$ast.children[0].properties?.class}><ZCode ast={$ast.children[0]}></ZCode></code
+			class={$ast.children[0].properties?.class}><ZPreCode ast={$ast.children[0]}></ZPreCode></code
 		></pre>
-	<button class="copyBtn" onclick={copyContent}><ZIcon height="1.5rem" width="1.5rem" option="copy"></ZIcon></button>
+	<button {disabled} class="copyBtn" style="visibility: {visibility};" onclick={copyContent}>
+		<span style="visibility: {visibility};" class="hint">{hint}</span>
+		<ZIcon height="1.5rem" width="1.5rem" option={icon}></ZIcon>
+	</button>
 </div>
 
 <style>
-	.codeContainer :global {
+	:global .codeContainer {
 		position: relative;
+		background-color: var(--hljs-bg-color);
+		border-radius: 4px;
 		.copyBtn {
 			background-color: unset;
 			border: none;
 			position: absolute;
-			right: 10px;
-			top: 6.8px;
+			right: 8px;
+			top: 4.5px;
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			box-sizing: border-box;
 			padding: 0.2rem;
-			visibility: hidden;
 			opacity: 0.8;
 			&:hover {
 				cursor: pointer;
@@ -49,19 +69,30 @@
 					fill: var(--all-svg-hover-color);
 				}
 			}
+			.hint {
+				margin-left: 0.5rem;
+				font-size: 0.8rem;
+				color: white;
+				background-color: rgba(0, 0, 0, 0.7);
+				padding: 0.2rem 0.5rem;
+				border-radius: 4px;
+			}
 		}
 		&:hover {
 			.copyBtn {
-				visibility: visible;
+				visibility: visible !important;
 			}
+		}
+		pre{
+			
 		}
 		code.hljs {
 			font-family: 'CascadiaMono';
 			font-size: smaller;
 			color: var(--hljs-text-color);
-			background-color: var(--hljs-bg-color);
-			border-radius: 4px;
-			padding: 0.5rem 1rem !important;
+			padding: 0.5rem 2.5rem 0.5rem 1rem !important;
+			width: fit-content;
+			background-color: unset;
 			.hljs-doctag,
 			.hljs-keyword,
 			.hljs-meta .hljs-keyword,
