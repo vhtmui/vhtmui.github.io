@@ -9,6 +9,7 @@
 
 	import ZPre from '$lib/ZMD/ZPre.svelte';
 	import ZCode from '$lib/ZMD/ZCode.svelte';
+	import ZImage from '$lib/ZMD/ZImage.svelte';
 
 	/** @type {import('./$types').PageData} */
 	let { data } = $props();
@@ -17,7 +18,7 @@
 	const plugins = [
 		{
 			rehypePlugin: [rehypeSlug],
-			renderer: { pre: ZPre, code: ZCode }
+			renderer: { pre: ZPre, code: ZCode, img: ZImage }
 		},
 		{
 			rehypePlugin: [rehypeHighlight, { languages: { ...common, powershell } }]
@@ -29,4 +30,11 @@
 <Markdown md={data.content} {plugins} />
 
 <style>
+	:global {
+		blockquote {
+			color: var(--md-blockquote-text-color);
+			border-left: 4px solid var(--md-blockquote-border-color);
+			padding-left: 1em;
+		}
+	}
 </style>

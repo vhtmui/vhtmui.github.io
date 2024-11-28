@@ -170,13 +170,14 @@ button.addEventListener("click", async () => {//使用async关键字
 其他已知特点：
 
 1. 行级盒子内包含块级盒子会导致整个盒子展现出块级盒子的表现，比如换行。
-2.
 
 ### 基线
 
 基线（baseline）是指欧洲和西亚文字排版中，字体中大多数文字坐落在其上的一条假想线。
 
-东亚文字没有基线，所有字形（glyph）坐落在一个方框中，既没有升部（ascender）也没有降部（descender）。当与有低基线的文字混排时，东亚文字应该坐落在有低基线的文字的基线与降部高度的中间。
+1. 东亚文字没有基线，所有字形（glyph）坐落在一个方框中，既没有升部（ascender）也没有降部（descender）。当与有低基线的文字混排时，东亚文字应该坐落在有低基线的文字的基线与降部高度的中间。
+
+2. 不同的字体基线不同，因此会导致如图片、`svg`等内联元素的垂直对齐位置和使用其他字体时的对齐位置不同。即呈现出高度不在一个水平线的情况。
 
 ### img
 
@@ -355,6 +356,9 @@ function fade(node, { delay = 0, duration = 400 }) {//node为自动传入的当�
 </script>
 ```
 
+1. 过渡`position: sticky`的元素时，内部元素的`margin`会影响动画开始和结束后的高度。  
+    >具体表现为，在动画开始时，元素会偏移父元素`top`减去子元素`margin-top`的高度，因此需要设置`css`函数变量的`top`值为其差值。或不要在内部元素设置`margin-top`属性，改为在外部元素设置。
+
 ### Key blocks
 
 Key块,即 `{#kye 表达式}{/key}`，使其内表达式发生变化时会销毁并重新创建其包含的元素。此功能可用于触发 `in`和 `out`动画。
@@ -424,7 +428,7 @@ Key块,即 `{#kye 表达式}{/key}`，使其内表达式发生变化时会销毁
 
 同时在组件初始化时，若`prop`没有初始值，即初始值为`undefined`，而直接读取其某个属性，则会发生错误。
 
-### SVELTEKIT
+## SVELTEKIT
 
 sveltekit完成一次任务需要经过如下三步
 
@@ -432,7 +436,7 @@ sveltekit完成一次任务需要经过如下三步
 2. 加载 - 加载数据，约等于执行`+*.js`文件中的`load`函数
 3. 渲染 - 服务端生成HTML或在浏览器中更新DOM
 
-#### 路由参数
+### 路由参数
 
 可以设置方括号文件夹名如：`src/routes/blog/[slug]/`，此时 `[slug]`的值将为你访问的URL名的对应位置的字符串。
 
@@ -440,7 +444,7 @@ sveltekit完成一次任务需要经过如下三步
 
 可以在服务端即`*server.js`中，使用`params.slug`获取路由参数的值。
 
-#### 静态网页构建
+### 静态网页构建
 
 预渲染构建静态网页时，kit会检查页面的各种链接是否指向未知的链接，如果有未知链接则会构建失败，参考文档[prerender!](https://kit.svelte.dev/docs/configuration#prerender)
 
@@ -484,20 +488,20 @@ sveltekit完成一次任务需要经过如下三步
 
 4. 构建项目 `npm run build`
 
-#### load
+### load
 
 在`+*.js`或`+*.server.js`文件中，可以使用导出一个`load`函数，该`load`函数的返回值可以被同级或子级路由页面`+*.svelte`中通过`let { data } = $props()`获取。
 
 如果是在服务端运行，load获取的数据是实时的。如果是静态构建后只在客户端运行，那`load`获取的数据是构建时获取的。
 
-#### actions
+### actions
 
 * 可以在`+page.svelte.js`中导出`actions`函数用来处理`+page.svelte`中的`from`元素提交的表单。
 * `actions`函数可以返回值，返回值可以在`+page.svelte`中用`form`接口来获取，`form`只在提交表单后填充值。
 
 注意：`sveltekit`不能预渲染`actions`，否则会导致错误。
 
-##### enhance
+### enhance
 
 `enhance`可以增强form表单的行为，类似于`sveltekit`对`<a>`元素的优化，防止页面刷新，变为更新页面。
 
@@ -569,3 +573,15 @@ sveltekit完成一次任务需要经过如下三步
 #### locals
 
 用来设置自定义数据，会随`event`对象传入到`+server.js`的`handler`和`load`函数中。
+
+### prerender
+
+sveltekit预渲染需要通过所有预渲染的界面中获取显式的链接，从而抓取预渲染页面。对于动态路由参数，需要有对应动态路由的链接，才能预渲染。
+
+需要有类似`<a></a>`这样的链接出现在某些可预渲染的页面上，才能预渲染动态路由页面。使用其他组件生成的链接无法被爬取。
+
+#### entries
+
+若所有可预渲染的页面都没有动态路由的链接。可以通过指定`entries`参数来帮助`sveltekit`发现页面。
+
+参考：[prerender](https://svelte.dev/docs/kit/page-options#prerender)

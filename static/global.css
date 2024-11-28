@@ -43,6 +43,8 @@
 	--hljs-title:#6f42c1;
 	--hljs-comment:#6a737d;
 	--md-code-color:#d4d4d4b3;
+	--md-blockquote-border-color: #6a737d;
+	--md-blockquote-text-color: #9ba2aa;
 }
 :root[data-theme='Dark'] {
 	--header-nav-bg-color: rgba(255, 255, 255, 0);
@@ -85,6 +87,8 @@
 	--hljs-title:#d7c0ff;
 	--hljs-comment:#6ee883;
 	--md-code-color:#444444;
+	--md-blockquote-border-color: #616a74a6;
+	--md-blockquote-text-color: #9eacbb;
 }
 :root {
 	--header-block-height: 3rem;

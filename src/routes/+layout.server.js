@@ -14,7 +14,7 @@ export async function load() {
 	const docItems = await readdir(docDir, { recursive: true, withFileTypes: true });
 	const docDirectory = docItems.map((d) => path.join(d.parentPath, d.name).replaceAll('\\', '/').replaceAll(docDir, '/docs/').replace('.md', ''));
 
-	directory = [...directory, ...docDirectory].filter((i) => !i.match(/\[.*\]/g));
+	directory = [...directory, ...docDirectory].filter((i) => !i.match(/(\[.*\])|(docs\/image)/g));
 
 	return { directory };
 }

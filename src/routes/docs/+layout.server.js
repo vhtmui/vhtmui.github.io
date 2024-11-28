@@ -5,7 +5,8 @@ import * as path from "node:path";
 export async function load() {
 
     const docDir = 'docs/';
-    const docItems = await readdir(docDir, { recursive: true, withFileTypes: true });
+    let docItems = await readdir(docDir, { recursive: true, withFileTypes: true });
+    docItems = docItems.filter((d) => d.isFile() && d.name.endsWith('.md'));
 
     const mdContent = await Promise.all(
         docItems.map(async (docItem) => ({
