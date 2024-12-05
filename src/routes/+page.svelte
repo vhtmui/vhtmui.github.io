@@ -13,6 +13,7 @@
 		display: grid;
 		grid-template-columns: repeat(1, 1fr);
 		gap: 1rem;
+		justify-content: center;
 		height: 100vh;
 		a {
 			display: flex;
@@ -21,12 +22,12 @@
 			color: unset;
 			text-decoration: unset;
 			width: 100%;
-			border:1px solid var(--home-border-color);
+			border: 1px solid var(--home-border-color);
 			border-radius: 3rem;
 			font-size: 64px;
 			font-family: 'Courier New', Courier, monospace;
 			font-weight: 900;
-			&:visited{
+			&:visited {
 				color: unset;
 			}
 		}

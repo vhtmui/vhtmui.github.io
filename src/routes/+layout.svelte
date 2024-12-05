@@ -71,6 +71,8 @@
 	 */
 	let Y = $state();
 
+	let topBar = $state();
+
 	/**
 	 * @type {boolean} - Indicate whether to stop reacting to scroll event.
 	 */
@@ -96,8 +98,8 @@
 	 * @param {Event} event - event
 	 */
 	function clickOutsideMobileSibarHandler(event) {
-		if (!mobileSibar?.contains(event.target)) {
-			displays.display = true;
+		if (!mobileSibar?.contains(event.target) && !mobileSibar?.contains(topBar)) {
+			displays.display = false;
 		}
 	}
 
@@ -120,7 +122,7 @@
 		// Show sidebar if not in home page.
 		if ($page.url.pathname !== '/') {
 			displays.display = displays.displayToc = true;
-		} else{
+		} else {
 			display = displayToc = true;
 		}
 	});
@@ -128,10 +130,9 @@
 	afterNavigate(() => {
 		// get head elements passed to <ZTocList>.
 		headings = document.querySelectorAll(titles);
-		
+
 		// Reset `displays` when navigating between home and other pages.
-		if ($navigating) {
-			console.log('navigating');
+		if ($navigating && windowWidth >= 768) {
 			const { from, to } = $navigating;
 			if (from.url.pathname !== '/' && to.url.pathname === '/') {
 				display = displays.display;
@@ -182,7 +183,7 @@
 	}}
 ></div>
 <div class="topContainer" class:hideHead style="top: {top}px;">
-	<div class="topInnerContainer">
+	<div class="topInnerContainer" bind:this={topBar}>
 		<ZHeader>
 			{#snippet home()}
 				<ZBlurBtn>
@@ -244,7 +245,7 @@
 			</div>
 		</div>
 	{/if}
-	{#if !displays.display && windowWidth <= 768}
+	{#if displays.display && windowWidth < 768}
 		<div class="mobilesidebar-container">
 			<div
 				bind:this={mobileSibar}
@@ -291,12 +292,13 @@
 			text-wrap: wrap;
 			scroll-behavior: smooth;
 		}
-		::-webkit-scrollbar,::-webkit-scrollbar-track{
+		::-webkit-scrollbar,
+		::-webkit-scrollbar-track {
 			background-color: #00000000;
 			width: 8px;
 			height: 8px;
 		}
-		::-webkit-scrollbar-thumb{
+		::-webkit-scrollbar-thumb {
 			background-color: var(--scrollbar-color);
 			border-radius: 4px;
 		}
