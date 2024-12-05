@@ -2,14 +2,14 @@
 	import { goto } from '$app/navigation';
 </script>
 
-<main>
+<div class="homepage">
 	<a href="/docs">Docs</a>
 	<a href="/posts">Post</a>
 	<a href="/tools">Tools</a>
-</main>
+</div>
 
 <style>
-	main {
+	.homepage :global {
 		display: grid;
 		grid-template-columns: repeat(1, 1fr);
 		gap: 1rem;
@@ -21,7 +21,7 @@
 			align-items: center;
 			color: unset;
 			text-decoration: unset;
-			width: 100%;
+			width: 84vw;
 			border: 1px solid var(--home-border-color);
 			border-radius: 3rem;
 			font-size: 64px;

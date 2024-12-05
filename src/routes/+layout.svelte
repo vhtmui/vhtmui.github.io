@@ -404,6 +404,7 @@
 			& div.mobilesidebar-container {
 				display: block;
 				position: fixed;
+				z-index: 11;
 				& .sibar-innercontainer {
 					background-color: var(--header-btn-bg-color);
 					backdrop-filter: blur(10px);
