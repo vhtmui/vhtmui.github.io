@@ -52,14 +52,32 @@
 * 可使用生成器函数快速创建一个 可迭代对象。如：
 
   ```js
+  //生成器生成可迭代对象
   function* generator(i) {
     yield i;
     yield i + 10;
   }
   const gen = generator(10);
-  //等同于
-
-  
+  const gen2 = generator(10)[Symbol.iterator]();
+  //迭代器，可以使用next()方法迭代，但不是可迭代对象。因此仅实现迭代器的作用较小。
+  gen = {
+    next() {
+      return {done: false, value: 10};
+    }
+  }
+  //实现Symbol.iterator方法后就是可迭代的迭代器了，也是可迭代对象。
+  gen = {
+    i: 0,
+    next() {
+      if (i >= 10) { return { done: true } } 
+      else{
+        return { done:false, value: i++ };
+      }
+    },
+    [Symbol.iterator]() {
+      return this
+    }
+  }
   ```
 
 ### 异步JS
