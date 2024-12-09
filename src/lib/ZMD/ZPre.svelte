@@ -14,6 +14,7 @@
 	let visibility = $state('hidden');
 	let hint = $state('');
 	let disabled = $state(false);
+	let delay = $state('0s');
 
 	async function copyContent() {
 		try {
@@ -22,13 +23,15 @@
 			visibility = 'visible';
 			hint = '复制!';
 			disabled = true;
+			delay = '1500ms';
 
 			setTimeout(() => {
 				icon = 'copy';
 				visibility = 'hidden';
 				hint = '';
 				disabled = false;
-			}, 1800);
+				delay = '0s';
+			}, 2000);
 		} catch (err) {
 			console.error('复制失败:', err);
 		}
@@ -39,7 +42,7 @@
 	<pre contenteditable="false" bind:innerText={content}><code
 			class={$ast.children[0].properties?.class}><ZPreCode ast={$ast.children[0]}></ZPreCode></code
 		></pre>
-	<button {disabled} class="copyBtn"  onclick={copyContent}>
+	<button {disabled} class="copyBtn" style="--delay:{delay};" onclick={copyContent}>
 		<span style="visibility: {visibility};" class="hint">{hint}</span>
 		<ZIcon height="1.5rem" width="1.5rem" option={icon}></ZIcon>
 	</button>
@@ -62,7 +65,7 @@
 			box-sizing: border-box;
 			padding: 0.2rem;
 			opacity: 0;
-			transition: opacity 0.3s 1s ease;
+			transition: opacity 0.3s var(--delay) ease;
 			&:hover {
 				cursor: pointer;
 				path {
