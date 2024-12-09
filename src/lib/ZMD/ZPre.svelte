@@ -39,7 +39,7 @@
 	<pre contenteditable="false" bind:innerText={content}><code
 			class={$ast.children[0].properties?.class}><ZPreCode ast={$ast.children[0]}></ZPreCode></code
 		></pre>
-	<button {disabled} class="copyBtn" style="visibility: {visibility};" onclick={copyContent}>
+	<button {disabled} class="copyBtn"  onclick={copyContent}>
 		<span style="visibility: {visibility};" class="hint">{hint}</span>
 		<ZIcon height="1.5rem" width="1.5rem" option={icon}></ZIcon>
 	</button>
@@ -61,7 +61,8 @@
 			justify-content: center;
 			box-sizing: border-box;
 			padding: 0.2rem;
-			opacity: 0.8;
+			opacity: 0;
+			transition: opacity 0.3s 1s ease;
 			&:hover {
 				cursor: pointer;
 				path {
@@ -81,10 +82,9 @@
 		&:hover {
 			.copyBtn {
 				visibility: visible !important;
+				opacity: 0.8;
+				transition: opacity 0.2s ease;
 			}
-		}
-		pre{
-			
 		}
 		code.hljs {
 			font-family: 'CascadiaMono';
