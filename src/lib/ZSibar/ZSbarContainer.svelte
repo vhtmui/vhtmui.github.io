@@ -104,7 +104,7 @@
 			& button.clear-input {
 				visibility: hidden;
 				position: absolute;
-				right: calc(3.3rem + 1vw);
+				right: 3.3rem;
 				box-sizing: border-box;
 				margin: 0;
 				padding: 0 0.5rem 0 0.5rem;

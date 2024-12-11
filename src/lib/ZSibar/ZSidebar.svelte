@@ -30,7 +30,7 @@
 	/**
 	 * The ZIcon option
 	 */
-	let option = 'chevron_down';
+	const option = 'chevron_down';
 
 	/**
 	 * Plain html textContent of <a>
@@ -45,9 +45,9 @@
 	let IconUp = $derived(expand);
 
 	/**
-	 * An string includes all child object's links string of current tree object, divide with character '`'.
+	 * An string includes all child object's links string of current tree object and current title, divide with character '`'.
 	 */
-	let allChildNode = getAll_propertyNames(tree);
+	const allChildTitle = getAll_propertyNames(tree) + '`' + tree._link;
 
 	/**
 	 * For signal to determine if the page url include the href.
@@ -59,12 +59,12 @@
 	 * Link relative to the root, also the property `href` of <a>.
 	 * @type {string}
 	 */
-	let nowLink = $derived((preLink + '/' + tree._link).replace(RegExp('/+'), '/'));
+	const nowLink = (preLink + '/' + tree._link).replace(RegExp('/+'), '/');
 
 	/**
 	 * @type {Tree}
 	 */
-	let child_tree = $derived(get_childArray(tree));
+	const child_tree = get_childArray(tree);
 
 	function toggle_display() {
 		expand = !expand;
@@ -78,7 +78,7 @@
 				filter.replace(/\[|\.|\*|\+|\?|\^|\$|\{|\}|\(|\)|\||\\|\]/g, '\\$&'),
 				'i'
 			);
-			if (allChildNode.match(pattern) || tree._title.match(pattern)) {
+			if (allChildTitle.search(pattern) + 1) {
 				visable = true;
 			} else {
 				visable = false;
