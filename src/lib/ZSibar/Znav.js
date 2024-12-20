@@ -5,6 +5,13 @@
  * @property {Tree} [*] - Optional children nodes. Each child must also be a Tree.
  */
 
+export class Tree {
+	constructor(dirArray,rootName) {
+		this._link = link;
+		this._title = title;
+	}
+}
+
 /**
  * Return child objects from a parent object, excluding objects whose names start with string '_'
  * @param {Tree} obj
@@ -73,3 +80,5 @@ export function buildTree(r, links) {
 
 	return root;
 }
+
+

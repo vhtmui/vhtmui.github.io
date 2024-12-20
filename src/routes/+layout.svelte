@@ -144,6 +144,7 @@
 			}
 		}
 	});
+	$inspect(data.directory);
 </script>
 
 <!-- #endregion -->
