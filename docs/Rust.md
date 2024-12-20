@@ -338,7 +338,7 @@ Trait用于定义共同行为，类似于其他语言中的 `Interface`，各类
 
   * **函数接收参数**即使用 `fn A<T:Display> (a: T)`代替 `fn A(a: impl display)`。
   * **类型方法**指通过注释有条件的实现某类型的方法，比如 `impl<T: Display + PartialOrd> Pair<T>`表示只为实现了指定trait的类型实现方法。
-  * **函数返回值**的trait bound如 `fn A(a) -> impl Display`，表示要求返回值的类型实现了指定的trait（只适用与返回单一类型的情况，返回多种类型见[动态分发](#动态分发dynamic-dispatch)）。
+  * **函数返回值**的trait bound如 `fn A(a) -> impl Display`，表示要求返回值的类型实现了指定的trait（只适用与返回单一类型的情况，返回多种类型见[动态分发](#特征对象及动态分发dynamic-dispatch)。
 
 #### 案例思考
 
@@ -412,7 +412,7 @@ Trait用于定义共同行为，类似于其他语言中的 `Interface`，各类
    }
    ```
 
-### 特征对象及动态分发(Dynamic Dispatch)
+### 特征对象及动态分发dynamic-dispatch
 
 上节知道rust的泛型是静态分发的，也就是说编译时会为每种调用函数的类型生成对应的类型的函数代码。这是零成本的，因为在编译时就生成了。但是这样做的前提是函数的输入输出类型是编译时可推断的，而有些情况类型是无法在编译时确定的，这就要用到动态分发了。
 
@@ -481,7 +481,7 @@ fn draw_with_box(x: Box<dyn Draw>) {
 * 返回类型不能是Self
 * 不能使用泛型参数
 
-### 关联类型(associated types)
+### 关联类型associated-types
 
 ## 生命周期
 
