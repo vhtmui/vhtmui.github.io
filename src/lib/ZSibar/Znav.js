@@ -4,12 +4,31 @@
  * @property {string} _title - The title for the tree.
  * @property {Tree} [*] - Optional children nodes. Each child must also be a Tree.
  */
-
-export class Tree {
-	constructor(dirArray,rootName) {
-		this._link = link;
-		this._title = title;
-	}
+class Tree {
+    _title = '/';
+    _link = '/';
+    children = [];
+    constructor(dirArray) {
+        if (dirArray) {
+            dirArray.forEach((dir) => {
+                let currentNode = this;
+                let parts = dir.split('/').filter(Boolean);
+                parts.forEach((part, i) => {
+                    let index = currentNode.children.findIndex((v) => v._title === part);
+                    if (index === -1) {
+                        currentNode.children.push({
+                            _title: part,
+                            _link: this._link + parts.slice(0, i + 1).join('/'),
+                            children: []
+                        });
+                        currentNode = currentNode.children[0];
+                    } else {
+                        currentNode = currentNode.children[index];
+                    }
+                })
+            })
+        }
+    }
 }
 
 /**
