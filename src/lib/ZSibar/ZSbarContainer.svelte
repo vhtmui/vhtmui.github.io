@@ -3,7 +3,7 @@
 	import ZIcon from '$lib/ZIcon/ZIcon.svelte';
 	import { scaleX } from '$lib/Z-transitions';
 
-	import { get_childArray, getAll_propertyNames, buildTree } from './Znav';
+	import { Tree } from './Znav';
 
 	/**
 	 * @typedef {Object} Props
@@ -12,12 +12,13 @@
 	 */
 
 	/** @type {Props} */
-	let { treeArray, signal = 'default', icon = 'plus', width = '100%' } = $props();
+	let { Dirs, signal = 'default', icon = 'plus', width = '100%' } = $props();
 
 	let widther = $state(false);
 	let input = $state('');
 
-	let tree = buildTree({ _link: '/', _title: 'Home' }, treeArray);
+	let tree = $state(new Tree(Dirs));
+	tree.title = 'Home';
 
 	function setExpand(mode) {
 		switch (mode) {
@@ -52,6 +53,7 @@
 			setExpand('expandAll');
 		}
 	});
+	$inspect(Dirs, `\n`, tree.toString());
 </script>
 
 <div class="sidebar right" transition:scaleX|global={{ duration: 300 }}>

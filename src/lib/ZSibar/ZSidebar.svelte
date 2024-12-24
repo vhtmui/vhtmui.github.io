@@ -2,8 +2,6 @@
 	import ZSidebar from './ZSidebar.svelte';
 	import ZIcon from '$lib/ZIcon/ZIcon.svelte';
 
-	import { getAll_propertyNames, get_childArray } from './Znav';
-
 	import { slide } from 'svelte/transition';
 	import { quadOut } from 'svelte/easing';
 	import { page } from '$app/stores';
@@ -23,7 +21,7 @@
 	let expand = $state(false);
 
 	/**
-	 * Indicate whether current node visable
+	 * Indicate could current node visabled.
 	 */
 	let visable = $state(true);
 
@@ -36,7 +34,7 @@
 	 * Plain html textContent of <a>
 	 * @type {string}
 	 */
-	let title = $state(tree._title);
+	let title = $state(tree.title);
 
 	/**
 	 * ZIcon direction
@@ -47,7 +45,7 @@
 	/**
 	 * An string includes all child object's links string of current tree object and current title, divide with character '`'.
 	 */
-	const allChildTitle = getAll_propertyNames(tree) + '`' + tree._link;
+	const allChildTitle = [...tree.getAllChildTitle()].join('`');
 
 	/**
 	 * For signal to determine if the page url include the href.
@@ -59,12 +57,12 @@
 	 * Link relative to the root, also the property `href` of <a>.
 	 * @type {string}
 	 */
-	const nowLink = (preLink + '/' + tree._link).replace(RegExp('/+'), '/');
+	const nowLink = tree.link;
 
 	/**
-	 * @type {Tree}
+	 * @type {Array<Tree>} - child tree array.
 	 */
-	const child_tree = get_childArray(tree);
+	const child_tree = tree.children;
 
 	function toggle_display() {
 		expand = !expand;
@@ -83,11 +81,11 @@
 			} else {
 				visable = false;
 			}
-			const match = pattern.exec(tree._title);
-			title = tree._title.replace(pattern, `<span class="highlightClass">${match}</span>`);
+			const match = pattern.exec(tree.title);
+			title = tree.title.replace(pattern, `<span class="highlightClass">${match}</span>`);
 		} else {
 			visable = true;
-			title = tree._title;
+			title = tree.title;
 		}
 	});
 	//#endregion
@@ -131,7 +129,7 @@
 <div id="Sidebar">
 	{#if tree && visable}
 		<div transition:slide|global={{ easing: quadOut, duration: 300 }} class="tree-head">
-			{#if child_tree}
+			{#if child_tree.length}
 				<button class:IconUp onclick={toggle_display}><ZIcon {option} /></button>
 				<a class="sidebar" class:selected_item href={nowLink}>{@html title}</a>
 			{:else}

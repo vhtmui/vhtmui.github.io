@@ -144,7 +144,6 @@
 			}
 		}
 	});
-	$inspect(data.directory);
 </script>
 
 <!-- #endregion -->
@@ -242,7 +241,7 @@
 			bind:clientWidth={SibarWidth}
 		>
 			<div class="sibar-innercontainer" style="width: {SibarWidth}px;">
-				<ZSbarContainer treeArray={data.directory} signal="expandAll" width={`${SibarWidth}px`} />
+				<ZSbarContainer Dirs={data.directory} signal="expandAll" width={`${SibarWidth}px`} />
 			</div>
 		</div>
 	{/if}
@@ -261,7 +260,7 @@
 				}}
 			>
 				<ZSbarContainer
-					treeArray={data.directory}
+					Dirs={data.directory}
 					signal="expandAll"
 					width={`${mobileSibarWidth}px`}
 				/>
