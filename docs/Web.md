@@ -89,25 +89,21 @@
 
 1. 内部函数如果访问了外部函数的变量，该变量会被保存在闭包中，可以超出函数的生命周期，直到引用该变量的对象被销毁。相当于一个仅限于函数内作用域的**状态**指示。
 
-### 异步JS
+### Promise
 
-JS异步函数会立刻返回一个 `promise`，`promise`拥有一个状态。可以对返回的 `promise`对象调用 `then()`方法，`then()`方法接收一个函数，`promise`会调用这个函数。如*Example 1*：
+JS异步函数会立刻返回一个 `promise`，`promise`拥有一个状态。可以对返回的 `promise`对象调用 `then()`方法，`then()`方法接收一个函数，`promise`会用使用**原异步函数调用`resolve`函数的参数**作为参数调用这个函数。如*Example 1*：
 
 ```js
 //Example 1
-const fetchPromise = fetch(
-  "https://mdn.github.io/learning-area/javascript/apis/fetching-data/can-store/products.json",
-);
-console.log(fetchPromise);
-//fetchPromis是一个promise对象
-fetchPromise.then((response) => {
-  console.log(`已收到响应：${response.status}`);
+// 使用Promise构造函数创建一个promise对象
+// resolve函数的参数"done"将在fulfillment时返回，并作为调用then方法的参数
+const promise = new Promise((resolve) => setTimeout(() => { resolve("done") }, 1000))
+promise.then((result) => {
+    console.log(`${result}`);
 });
-//给then方法传入一个函数，promise内部会调用这个函数
-console.log("已发送请求……")
 ```
 
-使用 `asycn`关键字表示异步函数，随后可以在函数内部使用 `await`使异步函数直接返回 `promise`内部调用函数传的参数，而不是先返回 `promise`对象。如*Example 1*:
+使用 `asycn`关键字注释的函数可以在函数内部使用 `await`关键字调用异步函数，使异步函数直接返回 `fulfillment`，而不是先返回 `promise`对象。`asycn\await`写法也更直观，看起来和同步函数一样。如*Example 2*:
 
 ```js
 //Example 2
