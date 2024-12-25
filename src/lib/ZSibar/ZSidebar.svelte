@@ -8,7 +8,7 @@
 
 	/**
 	 * @typedef {Object} Props
-	 * @property {import('./Znav').Tree} tree
+	 * @property {import('./Ztree').Tree} tree
 	 * @property {string} [preLink]
 	 * @property {boolean} [selected_item]
 	 * @property {string} [signal]
@@ -26,11 +26,6 @@
 	let visable = $state(true);
 
 	/**
-	 * The ZIcon option
-	 */
-	const option = 'chevron_down';
-
-	/**
 	 * Plain html textContent of <a>
 	 * @type {string}
 	 */
@@ -46,12 +41,6 @@
 	 * An string includes all child object's links string of current tree object and current title, divide with character '`'.
 	 */
 	const allChildTitle = [...tree.getAllChildTitle()].join('`');
-
-	/**
-	 * For signal to determine if the page url include the href.
-	 * @type {boolean}
-	 */
-	let include = $state(false);
 
 	/**
 	 * Link relative to the root, also the property `href` of <a>.
@@ -95,24 +84,15 @@
 	$effect(() => {
 		if (signal === 'default') {
 			// Determin by whether the url include the current link.
-			include = $page.route.id.match(new RegExp(`^${nowLink}.*`));
+			expand = $page.route.id.match(new RegExp(`^${nowLink}.*`));
 		} else if (signal === 'expandAll') {
-			include = true;
-		} else if (signal === 'foldingAll' && nowLink !== '/') {
-			include = false;
-		}
-	});
-
-	// If include, expand current element
-	$effect(() => {
-		if (include) {
 			expand = true;
-		} else {
+		} else if (signal === 'foldingAll' && nowLink !== '/') {
 			expand = false;
 		}
 	});
 
-	// Set hightlight item
+	// Indicate if current tree is selected.
 	$effect(() => {
 		const url = new URL($page.url);
 		if (nowLink === url.pathname) {
@@ -130,7 +110,7 @@
 	{#if tree && visable}
 		<div transition:slide|global={{ easing: quadOut, duration: 300 }} class="tree-head">
 			{#if child_tree.length}
-				<button class:IconUp onclick={toggle_display}><ZIcon {option} /></button>
+				<button class:IconUp onclick={toggle_display}><ZIcon option="chevron_down" /></button>
 				<a class="sidebar" class:selected_item href={nowLink}>{@html title}</a>
 			{:else}
 				<div class="sidebar-paddingblock"></div>

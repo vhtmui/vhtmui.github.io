@@ -8,7 +8,6 @@
 	import ZThemeBtn from '$lib/ZThemeBtn/ZThemeBtn.svelte';
 	import ZHeader from '$lib/ZHeader/ZHeader.svelte';
 	import ZNav from '$lib/ZNav/ZNav.svelte';
-	import { get_childArray } from '$lib/ZSibar/Znav';
 
 	import { onMount } from 'svelte';
 	import { quadOut } from 'svelte/easing';

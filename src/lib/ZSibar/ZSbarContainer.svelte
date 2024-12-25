@@ -3,7 +3,7 @@
 	import ZIcon from '$lib/ZIcon/ZIcon.svelte';
 	import { scaleX } from '$lib/Z-transitions';
 
-	import { Tree } from './Znav';
+	import { Tree } from './Ztree';
 
 	/**
 	 * @typedef {Object} Props
@@ -43,17 +43,12 @@
 			setExpand('default');
 		}
 	}
-	function cleanInput() {
-		input = '';
-		// widther = false;
-	}
 	setExpand(signal);
 	$effect(() => {
 		if (input.length !== 0) {
 			setExpand('expandAll');
 		}
 	});
-	$inspect(Dirs, `\n`, tree.toString());
 </script>
 
 <div class="sidebar right" transition:scaleX|global={{ duration: 300 }}>
@@ -65,7 +60,7 @@
 			class:widther
 			onclick={() => (widther = true)}
 		/>
-		<button type="button" class="clear-input" class:widther onclick={cleanInput}
+		<button type="button" class="clear-input" class:widther onclick={() => (input = '')}
 			><ZIcon option="x" /></button
 		>
 		<button type="button" class="expand" onclick={toggle_expand}><ZIcon option={icon} /></button>
