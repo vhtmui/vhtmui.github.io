@@ -118,7 +118,7 @@
 			{/if}
 		</div>
 
-		{#if expand && child_tree}
+		{#if expand && child_tree.length}
 			<ul>
 				{#each child_tree as t}
 					<div>
@@ -162,7 +162,8 @@
 		}
 		a.selected_item {
 			font-weight: bolder;
-			padding: 0 1.2rem 0 1.2rem;
+			font-size: large;
+			padding: 0 1.2rem 0 0.8rem;
 			color: var(--sidebar-selected-text-color);
 			border-left: 10px;
 			border-left-style: var(--sidebar-selected-border-style);
