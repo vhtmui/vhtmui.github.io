@@ -36,5 +36,9 @@
 			border-left: 4px solid var(--md-blockquote-border-color);
 			padding-left: 1em;
 		}
+		ol,ul{
+			padding: 0;
+			padding-inline-start: 1em;
+		}
 	}
 </style>
