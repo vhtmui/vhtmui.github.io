@@ -47,37 +47,62 @@
 ### 可迭代对象
 
 * 可迭代对象必须实现`Symbol.iterator`方法，该方法返回一个迭代器对象
-* **迭代器对象**必须实现`next()`方法
-  * `next()`方法返回一个对象，对象必须包含一个属性`done`，表示是否迭代完成，如果迭代完成则返回一个对象`{done: true}`，否则返回一个对象`{done: false, value: 值}`。
-* 可使用生成器函数快速创建一个 可迭代对象。如：
+* **迭代器**为实现了`next()`方法的对象,`next()`方法返回一个包含两个属性的对象`{value, done}`
+  * `done`属性表示是否迭代完成，如果迭代完成则`done`的值应该为`true`,否则为`false`
+  * `valuel`即迭代产生的值
+* 可使用生成器函数快速创建一个可迭代对象。如：
 
   ```js
-  //生成器生成可迭代对象
+  //example1 生成器函数直接生成可迭代对象
   function* generator(i) {
     yield i;
     yield i + 10;
   }
   const gen = generator(10);
   const gen2 = generator(10)[Symbol.iterator]();
-  //迭代器，可以使用next()方法迭代，但不是可迭代对象。因此仅实现迭代器的作用较小。
+
+  //example2 迭代器，可以使用next()方法迭代，但不是可迭代对象。因此仅实现迭代器的作用较小。
   gen = {
     next() {
       return {done: false, value: 10};
     }
   }
-  //实现Symbol.iterator方法后就是可迭代的迭代器了，也是可迭代对象。
+
+  //example3 实现Symbol.iterator方法（返回对象本身或迭代器/生成器）后就是可迭代的迭代器了，也就是可迭代对象。
+  // 1.若返回的是对象本身，如下例或example1，则该可迭代象只能迭代一次，因为迭代完成后迭代器就被消耗了。
+  // 2.若返回的时新的迭代器/生产器，则可以迭代多次。
   gen = {
     i: 0,
     next() {
-      if (i >= 10) { return { done: true } } 
+      if (this.i >= 10) { return { done: true } } 
       else{
-        return { done:false, value: i++ };
+        return { done:false, value: this.i++ };
       }
     },
     [Symbol.iterator]() {
       return this
     }
   }
+  gen2 = {
+    i: 0,
+    next() {
+      if (this.i >= 10) { return { done: true } } 
+      else{
+        return { done:false, value: this.i++ };
+      }
+    },
+    [Symbol.iterator]() {
+      let i = 0;
+      return function* () {
+        while (i < 10) {
+          yield i++;
+        }
+      }.bind(this)();
+    }
+  }
+  console.log(`1:\ngen:${[...gen]}\ngen2:${[...gen2]}`);
+  console.log(`2:\ngen:${[...gen]}\ngen2:${[...gen2]}`);
+  // 仅gen2可以迭代两次，因为gen的状态变量i在迭代一次后就固定了。
   ```
 
 可迭代对象可以使用多种方法遍历，如：`for-of`方法，`[...var]`展开。
