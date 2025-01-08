@@ -70,7 +70,7 @@
 
   //example3 实现Symbol.iterator方法（返回对象本身或迭代器/生成器）后就是可迭代的迭代器了，也就是可迭代对象。
   // 1.若返回的是对象本身，如下例或example1，则该可迭代象只能迭代一次，因为迭代完成后迭代器就被消耗了。
-  // 2.若返回的时新的迭代器/生产器，则可以迭代多次。
+  // 2.若返回的是新的可迭代对象，则可能迭代多次。
   gen = {
     i: 0,
     next() {
@@ -92,10 +92,10 @@
       }
     },
     [Symbol.iterator]() {
-      let i = 0;
+      this.i = 0;
       return function* () {
-        while (i < 10) {
-          yield i++;
+        while (this.i < 10) {
+          yield this.i++;
         }
       }.bind(this)();
     }
@@ -103,6 +103,17 @@
   console.log(`1:\ngen:${[...gen]}\ngen2:${[...gen2]}`);
   console.log(`2:\ngen:${[...gen]}\ngen2:${[...gen2]}`);
   // 仅gen2可以迭代两次，因为gen的状态变量i在迭代一次后就固定了。
+  // 而gen2每次调用[Symbol.iterator]产生的是新的对象，闭包每次会将变量i重置为0，但上述写法可能导致竞争。
+  
+  // 也可以生成不依赖于状态的生成器。
+  const myIterable = {
+    *[Symbol.iterator]() {
+      yield 1;
+      yield 2;
+      yield 3;
+    },
+  };
+
   ```
 
 可迭代对象可以使用多种方法遍历，如：`for-of`方法，`[...var]`展开。
