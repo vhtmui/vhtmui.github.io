@@ -205,6 +205,23 @@ button.addEventListener("click", async () => {//使用async关键字
 
 触发事件后便会触发事件侦听器，并触发事件处理函数。但与原生的侦听器的事件处理函数会异步执行不同，dispatchEvent触发的事件处理函数会同步执行，即会阻塞后续代码的执行直到事件处理函数执行完毕。
 
+### Proxy
+
+Proxy用于拦截一些操作，替换成自定义实现。如：
+
+```js
+const handler = {
+  get(target, property){
+    return name in target ? target[name] : 42;
+  }
+}
+const p = new Proxy({}, handler);
+p.a = 1;
+console.log(p.a,p.b); // 1, 42
+```
+
+proxy操作不是随意的，需要保持`不可拓展对象`和`不可配置属性`的语义不变。比如说，对于不可拓展对象，不能拦截修改使其`proxy`的`isExtensible`方法返回`true`，否则会抛出`TypeError`异常。
+
 ## CSS
 
 ### 选择器
