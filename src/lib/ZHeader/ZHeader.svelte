@@ -42,6 +42,8 @@
 	 */
 	let starts = $state(Array(Object.keys(others).length));
 
+	let headWidth = $derived([...snippets].reduce((acc, cur) => acc + cur.width, 0));
+	$inspect(headWidth, 'headWidth');
 	/**
 	 * To save configs
 	 * */
@@ -224,8 +226,8 @@
 			let copy = snippets.map((s) => s).sort((a, b) => get(a.start) - get(b.start));
 			for (let i = 0; i < copy.length; i++) {
 				if (i % 2 === 0 || i === copy.length - 1) {
-					const base = get(copy[i].start);
-					autoAdjust(base, bodyWidth, copy[i]);
+					const baseLine = get(copy[i].start);
+					autoAdjust(baseLine, bodyWidth, copy[i]);
 				}
 			}
 			saveCfg();
@@ -233,7 +235,7 @@
 	}}
 />
 
-<div id="rootHead">
+<div id="rootHead" style="min-width: {headWidth}px;">
 	{#each snippets as snippet, i}
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div

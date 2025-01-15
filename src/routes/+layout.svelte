@@ -350,26 +350,13 @@
 			}
 			& div.topInnerContainer {
 				max-width: var(--main-max-width);
+				min-width: fit-content;
 				padding: 0 1rem 0 0;
 				margin-left: auto;
 				margin-right: auto;
 				display: flex;
 				align-items: center;
 				height: var(--header-block-height);
-				& header.top {
-					box-sizing: border-box;
-					font-weight: normal;
-					padding: 0 2vw 0 1rem;
-					width: 100%;
-					display: flex;
-					flex: 1 1;
-					gap: 0.5rem;
-					align-items: center;
-					justify-content: flex-start;
-					& * {
-						pointer-events: auto;
-					}
-				}
 			}
 		}
 		main {
