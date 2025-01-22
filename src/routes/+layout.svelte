@@ -258,11 +258,7 @@
 					removeEventListener('click', clickOutsideMobileSibarHandler);
 				}}
 			>
-				<ZSbarContainer
-					Dirs={data.directory}
-					signal="expandAll"
-					width={`${mobileSibarWidth}px`}
-				/>
+				<ZSbarContainer Dirs={data.directory} signal="expandAll" width={`${mobileSibarWidth}px`} />
 			</div>
 		</div>
 	{/if}
@@ -343,6 +339,9 @@
 			top: 1px;
 			z-index: 20;
 			transition: top 100ms linear;
+			max-width: 100%;
+			overflow: auto visible;
+			height: auto;
 			/* pointer-events: none; */
 			&.hideHead {
 				top: calc(0rem - var(--header-block-height));

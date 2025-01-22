@@ -222,6 +222,15 @@ console.log(p.a,p.b); // 1, 42
 
 proxy操作不是随意的，需要保持`不可拓展对象`和`不可配置属性`的语义不变。比如说，对于不可拓展对象，不能拦截修改使其`proxy`的`isExtensible`方法返回`true`，否则会抛出`TypeError`异常。
 
+### 原型
+
+对象的原型为其`[[Propotype]]`属性，由构造器对象的`prototype`属性定义。即：
+
+```js
+let s = new String('a');
+Object.getPrototypeOf(s) === String.prototype;
+```
+
 ## CSS
 
 ### 选择器
