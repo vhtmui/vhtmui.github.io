@@ -320,19 +320,23 @@ Object.getPrototypeOf(s) === String.prototype;
 
 ### 溢出内容
 
-元素内容的溢出是指某个盒子，其内容溢出其本身的大小。
+* 元素内容的溢出是指某个盒子，其内容溢出其本身的大小。
 
-控制溢出内容的属性 `overflow`是针对被内容溢出的盒子的，而非内容本身。如*Example1*：
+  控制溢出内容的属性 `overflow`是针对被内容溢出的盒子的，而非内容本身。如*Example1*：
 
-```html
-<!-- Example1 -->
-<article>
-  <img src="images/top-image.png" alt="top-image" id="top-image">
-</article>
-<!-- 假设图片宽度比article宽度要大 -->
-```
+  ```html
+  <!-- Example1 -->
+  <article>
+    <img src="images/top-image.png" alt="top-image" id="top-image">
+  </article>
+  <!-- 假设图片宽度比article宽度要大 -->
+  ```
 
-此处发生内容溢出的是 `<article>`元素，而非 `<img>`元素，因而需要对 `<article>`使用 `overflow`
+  此处发生内容溢出的是 `<article>`元素，而非 `<img>`元素，因而需要对 `<article>`使用 `overflow`
+
+* `overflow-x`和`overflow-y`中任意一个使用`visable`，另一个使用其他值会使`visable`表现为`auto`。
+
+* `position: absolute`的元素位置超出盒子大小范围时也成为溢出内容。
 
 ### 文本内容排布
 
