@@ -96,7 +96,8 @@
 		onTheLeft.sort((a, b) => a.start.current - b.start.current);
 		onTheRight.sort((a, b) => b.start.current - a.start.current);
 
-		// Find the blocks that needs to be moved left or right.
+		// Find the snippets that needs to be moved left or right.
+		// Base on whether the snippets is overlayed, from current snippet to both sides.
 		let leftStart = st; // In Percentage.
 		let leftest;
 		for (let i = onTheLeft.length - 1; i >= 0; i--) {
