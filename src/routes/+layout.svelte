@@ -340,7 +340,6 @@
 			z-index: 20;
 			transition: top 100ms linear;
 			max-width: 100%;
-			overflow: auto visible;
 			height: auto;
 			/* pointer-events: none; */
 			&.hideHead {
