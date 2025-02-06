@@ -42,8 +42,6 @@
 	 */
 	let starts = $state(Array(Object.keys(others).length));
 
-	let headWidth = $derived([...snippets].reduce((acc, cur) => acc + cur.width, 0));
-	$inspect(headWidth, 'headWidth');
 	/**
 	 * To save configs
 	 * */
@@ -61,7 +59,7 @@
 		return {
 			fn: fn,
 			ele: null,
-			start: spring(0, { stiffness: 0.2, damping: 0.6, precision: 0.001 }),
+			start: tweened(0, { stiffness: 0.2, damping: 0.6, precision: 0.001 }),
 			width: 0,
 			pointerEvents: 'auto',
 			actived: false
@@ -235,7 +233,7 @@
 	}}
 />
 
-<div id="rootHead" style="min-width: {headWidth}px;">
+<div id="rootHead">
 	{#each snippets as snippet, i}
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div
