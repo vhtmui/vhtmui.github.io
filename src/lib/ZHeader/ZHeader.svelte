@@ -79,7 +79,7 @@
 			.map((s) => s)
 			.sort(
 				(a, b) =>
-					a.start.current * bodyWidth + 0.5 * a.width - b.start.current * bodyWidth - 0.5 * b.width
+					a.start.target * bodyWidth + 0.5 * a.width - b.start.target * bodyWidth - 0.5 * b.width
 			);
 		const length = copy.reduce((acc, cur) => acc + cur.width, 0);
 		const start = (bodyWidth - length) * 0.5;
@@ -139,22 +139,11 @@
 			}, 501);
 		});
 	});
-	// afterNavigate(() => {
-	// 	const a = snippets[1].width;
-	// 	console.log('s', a);
-	// 	let copy = snippets.map((s) => s).sort((a, b) => a.start.current - b.start.current);
-	// 	for (let i = 0; i < copy.length; i++) {
-	// 		if (i % 2 === 0 || i === copy.length - 1) {
-	// 			autoAdjust(guides, document.body.clientWidth);
-	// 		}
-	// 	}
-	// 	saveCfg();
-	// });
 	$effect(() => {
 		snippets[1].width;
-		console.log('s', snippets[1].width);
-		// autoAdjust(guides, document.body.clientWidth);
-		// saveCfg();
+		setTimeout(() => {
+			autoAdjust(guides, document.body.clientWidth);
+		}, 100);
 	});
 </script>
 
