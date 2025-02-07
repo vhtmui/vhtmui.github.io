@@ -32,7 +32,7 @@
 		display: flex;
 		padding: 0 0.5rem;
 		height: 3rem;
-		min-width: 3rem;
+		min-width: 0;
 		align-items: center;
 		justify-content: center;
 		flex-wrap: nowrap;

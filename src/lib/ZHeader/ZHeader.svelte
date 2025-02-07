@@ -1,4 +1,5 @@
 <script>
+	import { afterNavigate } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { quadOut } from 'svelte/easing';
 	import { spring, Tween, tweened } from 'svelte/motion';
@@ -6,14 +7,14 @@
 
 	/**
 	 * Only the snippet paraments are accepted.
+	 * @property {guides} - The guide line, as Percentage.
 	 */
-	let { children, ...others } = $props();
+	let { children, guides = 0.5, ...others } = $props();
 
 	/**
 	 * @type {function} - Expect only snippet function.
 	 */
 	let fns = Object.values(others);
-
 	/**
 	 * Used to indicate the state of the snippets and calculate the layout of the snippets
 	 * @typedef {Object} Snippet
@@ -39,7 +40,7 @@
 
 	/**
 	 * The number of snippets .
-     * @type {number}
+	 * @type {number}
 	 */
 	let numOfSnippets = Object.keys(others).length;
 
@@ -60,7 +61,7 @@
 		return {
 			fn: fn,
 			ele: null,
-			start: new Tween(0, { duration: 200, easing: quadOut }),
+			start: new Tween(0, { duration: 150, easing: quadOut }),
 			width: 0,
 			pointerEvents: 'auto',
 			actived: false
@@ -69,129 +70,47 @@
 
 	/**
 	 * Auto adjust layout base on a specify snippet.
-	 * @param {number} baseLine - Indicate the node's left position, in Percentage.
+	 * @param {number} midLine - Indicate the center line of the header, in Percentage.
 	 * @param {number} bodyWidth - The <body> width.
-	 * @param {Snippet} snippet - The snippet object.
+	 * @param {Snippet} snippet - The snippet not to be adjusted.
 	 */
-	function autoAdjust(baseLine, bodyWidth, snippet) {
-		let onTheLeft = Array();
-		let onTheRight = Array();
-		const eleWidth = snippet.width;
+	function autoAdjust(midLine, bodyWidth, snippet) {
+		let copy = snippets
+			.map((s) => s)
+			.sort(
+				(a, b) =>
+					a.start.current * bodyWidth + 0.5 * a.width - b.start.current * bodyWidth - 0.5 * b.width
+			);
+		const length = copy.reduce((acc, cur) => acc + cur.width, 0);
+		const start = (bodyWidth - length) * 0.5;
+		const end = bodyWidth - length - start;
+		let startLine;
 
-		let st = baseLine;
-		if (st < 0) st = 0;
-		if (st > (bodyWidth - eleWidth) / bodyWidth) st = (bodyWidth - eleWidth) / bodyWidth;
-		const midLine = st * bodyWidth + snippet.width / 2;
+		startLine = start > 0 && end / bodyWidth < 1 ? start : start < 0 ? 0 : bodyWidth - length;
 
-		// Divide snippets to the right and left of current snippet.
-		for (let j = 0; j < numOfSnippets; j++) {
-			if (snippets[j] === snippet) continue;
-
-			const st2 = snippets[j].start.current;
-
-			const midLine2 = st2 * bodyWidth + snippets[j].width / 2;
-
-			midLine >= midLine2 ? onTheLeft.push(snippets[j]) : onTheRight.push(snippets[j]);
-		}
-		onTheLeft.sort((a, b) => a.start.current - b.start.current);
-		onTheRight.sort((a, b) => b.start.current - a.start.current);
-
-		// Find the snippets that needs to be moved left or right.
-		// Base on whether the snippets is overlayed, from current snippet to both sides.
-		let leftStart = st; // In Percentage.
-		let leftest;
-		for (let i = onTheLeft.length - 1; i >= 0; i--) {
-			const end = onTheLeft[i].start.current + onTheLeft[i].width / bodyWidth;
-			if (end >= leftStart) {
-				leftStart -= onTheLeft[i].width / bodyWidth;
-				leftest = i;
-			} else break;
-		}
-		let rightEnd = st + snippet.width / bodyWidth; // In Percentage.
-		let rightest;
-		for (let i = onTheRight.length - 1; i >= 0; i--) {
-			const start = onTheRight[i].start.current;
-			if (start <= rightEnd) {
-				rightEnd += onTheRight[i].width / bodyWidth;
-				rightest = i;
-			} else break;
-		}
-
-		// Move block and handle out-of-bounds scenes.
-		// case 1. Not out of bound.
-		if (leftStart >= 0 && rightEnd <= 1) {
-			// If not null
-			if (leftest < onTheLeft.length) {
-				onTheLeft.push(snippet);
-				for (let i = leftest; i < onTheLeft.length; i++) {
-					onTheLeft[i].start.target = leftStart;
-					leftStart += onTheLeft[i].width / bodyWidth;
-				}
+		copy.forEach((s) => {
+			if (s !== snippet) {
+				s.start.target = startLine / bodyWidth;
 			}
-			if (rightest < onTheRight.length) {
-				onTheRight.push(snippet);
-				for (let i = rightest; i < onTheRight.length; i++) {
-					onTheRight[i].start.target = rightEnd - onTheRight[i].width / bodyWidth;
-					rightEnd -= onTheRight[i].width / bodyWidth;
-				}
-			}
-		}
-		// case 2. Out of right bound.
-		else if (leftStart >= 0 && rightEnd > 1) {
-			const rightGap = rightEnd - 1;
-			rightEnd = 1;
-			if (rightest < onTheRight.length) {
-				onTheRight.push(snippet);
-				for (let i = rightest; i < onTheRight.length; i++) {
-					onTheRight[i].start.target = rightEnd - onTheRight[i].width / bodyWidth;
-					rightEnd -= onTheRight[i].width / bodyWidth;
-				}
-			}
-			leftStart -= rightGap;
-			if (leftest < onTheLeft.length) {
-				onTheLeft.push(snippet);
-				for (let i = leftest; i < onTheLeft.length; i++) {
-					onTheLeft[i].start.target = leftStart;
-					leftStart += onTheLeft[i].width / bodyWidth;
-				}
-			}
-		}
-		// case 3. Out of left bound or both bounds.
-		else {
-			const leftGap = 0 - leftStart;
-			leftStart = 0;
-			if (leftest < onTheLeft.length) {
-				onTheLeft.push(snippet);
-				for (let i = leftest; i < onTheLeft.length; i++) {
-					onTheLeft[i].start.target = leftStart;
-					leftStart += onTheLeft[i].width / bodyWidth;
-				}
-			}
-			rightEnd += leftGap;
-			if (rightest < onTheRight.length) {
-				for (let i = rightest; i < onTheRight.length; i++) {
-					onTheRight[i].start.target = rightEnd - onTheRight[i].width / bodyWidth;
-					rightEnd -= onTheRight[i].width / bodyWidth;
-				}
-			}
-		}
+			startLine += s.width;
+		});
 	}
 	onMount(() => {
 		// Init with default config if local config is null
 		let isJson = true;
 		try {
-			Array.isArray(JSON.parse(localStorage.hcfg));
+			Array.isArray(JSON.parse(localStorage.headcfg));
 		} catch {
 			isJson = false;
 		}
 		if (
-			localStorage.hcfg &&
+			localStorage.headcfg &&
 			isJson &&
-			JSON.parse(localStorage.hcfg).every(
+			JSON.parse(localStorage.headcfg).every(
 				(item) => typeof item === 'number' && 0 <= item && item <= 1
 			)
 		) {
-			let localCfg = JSON.parse(localStorage.hcfg);
+			let localCfg = JSON.parse(localStorage.headcfg);
 			for (let index = 0; index < Object.keys(others).length; index++) {
 				snippets[index].start.target = localCfg[index];
 			}
@@ -204,29 +123,40 @@
 			}
 			saveCfg();
 		}
-	});
-
-	let timer;
-</script>
-
-<svelte:window
-	onresize={() => {
-		if (timer) {
-			clearTimeout(timer);
-		}
-		timer = setTimeout(() => {
-			const bodyWidth = document.body.clientWidth;
-			let copy = snippets.map((s) => s).sort((a, b) => a.start.current - b.start.current);
-			for (let i = 0; i < copy.length; i++) {
-				if (i % 2 === 0 || i === copy.length - 1) {
-					const baseLine = copy[i].start.current;
-					autoAdjust(baseLine, bodyWidth, copy[i]);
-				}
+		let timer;
+		addEventListener('resize', () => {
+			if (timer) {
+				clearTimeout(timer);
 			}
-			saveCfg();
-		}, 501);
-	}}
-/>
+			timer = setTimeout(() => {
+				let copy = snippets.map((s) => s).sort((a, b) => a.start.current - b.start.current);
+				for (let i = 0; i < copy.length; i++) {
+					if (i % 2 === 0 || i === copy.length - 1) {
+						autoAdjust(guides, document.body.clientWidth);
+					}
+				}
+				saveCfg();
+			}, 501);
+		});
+	});
+	// afterNavigate(() => {
+	// 	const a = snippets[1].width;
+	// 	console.log('s', a);
+	// 	let copy = snippets.map((s) => s).sort((a, b) => a.start.current - b.start.current);
+	// 	for (let i = 0; i < copy.length; i++) {
+	// 		if (i % 2 === 0 || i === copy.length - 1) {
+	// 			autoAdjust(guides, document.body.clientWidth);
+	// 		}
+	// 	}
+	// 	saveCfg();
+	// });
+	$effect(() => {
+		snippets[1].width;
+		console.log('s', snippets[1].width);
+		// autoAdjust(guides, document.body.clientWidth);
+		// saveCfg();
+	});
+</script>
 
 <div id="rootHead">
 	{#each snippets as snippet}
@@ -257,6 +187,7 @@
 					if (snippet.start.target < 0) snippet.start.target = 0;
 					if (snippet.start.target > (bodyWidth - eleWidth) / bodyWidth)
 						snippet.start.target = (bodyWidth - eleWidth) / bodyWidth;
+					autoAdjust(guides, bodyWidth, snippet);
 				}
 				window.addEventListener('pointermove', seek);
 
@@ -269,8 +200,7 @@
 						snippet.pointerEvents = 'auto';
 						window.removeEventListener('pointermove', seek);
 
-						let b = (e3.clientX - gap) / bodyWidth;
-						autoAdjust(b, bodyWidth, snippet);
+						autoAdjust(guides, bodyWidth);
 						// Current target's start position in Percentage.
 						saveCfg(1001);
 					},
