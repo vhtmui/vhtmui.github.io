@@ -1,39 +1,21 @@
 <!-- #region Script
 -->
 <script>
-	import ZBlurBtn from '$lib/ZBlurBtn/ZBlurBtn.svelte';
-	import ZIcon from '$lib/ZIcon/ZIcon.svelte';
 	import ZSbarContainer from '$lib/ZSibar/ZSbarContainer.svelte';
 	import ZTocList from '$lib/ZTocList/ZTocList.svelte';
-	import ZThemeBtn from '$lib/ZThemeBtn/ZThemeBtn.svelte';
-	import ZHeader from '$lib/ZHeader/ZHeader.svelte';
-	import ZNav from '$lib/ZNav/ZNav.svelte';
+	import ZTopBar from '$lib/ZTopBar/ZTopBar.svelte';
 
 	import { onMount } from 'svelte';
-	import { quadOut } from 'svelte/easing';
 	import { navigating } from '$app/stores';
 	import { slide } from 'svelte/transition';
 	import { afterNavigate } from '$app/navigation';
-	import { spring, tweened } from 'svelte/motion';
 	import { page } from '$app/stores';
 	import { displays } from '$lib/shared.svelte.js';
+	import { leftDisplay } from '$lib/shared.svelte.js';
+	import ZSibar from '$lib/ZSibar/ZSibar.svelte';
+	import ZSidebar from '$lib/ZSibar/ZSidebar.svelte';
 
 	let { data, children } = $props();
-
-	/**
-	 * @type {string} - icon of sidebar menu
-	 */
-	let menuIcon = $state('menu_fold');
-
-	/**
-	 * @type {boolean} - Indicate right sidebar's display.
-	 */
-	let displaysdisplayToc = $state(true);
-
-	/**
-	 * @type {string} - css string of sidebar menu
-	 */
-	let BlurBtnSytle = $state();
 
 	/**
 	 * @type {boolean} - indicate whether to hide header block
@@ -51,26 +33,9 @@
 	let headings = $state();
 
 	/**
-	 * @type {number} - bind to the `clientWidth` of `div.sidebar-container`
-	 */
-	let SibarWidth = $state();
-
-	/**
-	 * @type {HTMLDivElement} - bind to the `div.mobilesidebar-container`
-	 */
-	let mobileSibar = $state();
-
-	/**
-	 * @type {number} - bind to the `div.mobilesidebar-container`'s width
-	 */
-	let mobileSibarWidth = $state();
-
-	/**
 	 * Bind to window.scrollY
 	 */
 	let Y = $state();
-
-	let topBar = $state();
 
 	/**
 	 * @type {boolean} - Indicate whether to stop reacting to scroll event.
@@ -88,19 +53,14 @@
 	let timer;
 
 	/**
+	 * @type {element} - bind to the `sidebar` element
+	 */
+	let moblieSidebar = $state();
+
+	/**
 	 * @type {object} - Snapshot of `displays`.
 	 */
 	let { display, displayToc } = $state(displays);
-
-	/**
-	 * on mobile terminal, undisplay the sidebar while click outside
-	 * @param {Event} event - event
-	 */
-	function clickOutsideMobileSibarHandler(event) {
-		if (!mobileSibar?.contains(event.target) && !mobileSibar?.contains(topBar)) {
-			displays.display = false;
-		}
-	}
 
 	// Scroll header while scrolling.
 	let top = $state(0);
@@ -124,6 +84,13 @@
 		} else {
 			display = displayToc = true;
 		}
+
+		leftDisplay.displayMobile = false;
+		if ($page.url.pathname === '/') {
+			leftDisplay.displayPC = false;
+		} else {
+			leftDisplay.displayPC = true;
+		}
 	});
 
 	afterNavigate(() => {
@@ -134,18 +101,26 @@
 		if ($navigating && windowWidth >= 768) {
 			const { from, to } = $navigating;
 			if (from.url.pathname !== '/' && to.url.pathname === '/') {
-				display = displays.display;
 				displayToc = displays.displayToc;
 				displays.display = displays.displayToc = false;
 			} else if (from.url.pathname === '/' && to.url.pathname !== '/') {
-				displays.display = display;
 				displays.displayToc = displayToc;
 			}
 		}
 	});
-</script>
 
-<!-- #endregion -->
+	$effect(() => {
+		if (moblieSidebar) {
+			function clickOutside(e) {
+				if (e.clientY > moblieSidebar.getBoundingClientRect().bottom) {
+					leftDisplay.displayMobile = false;
+					removeEventListener('click', clickOutside);
+				}
+			}
+			addEventListener('click', clickOutside);
+		}
+	});
+</script>
 
 <!-- #region Set head 
  -->
@@ -168,7 +143,7 @@
 	<link href="/global.css" rel="stylesheet" />
 	<title>{'VH ' + $page.url.pathname.substring(1).replaceAll('/', ' · ')}</title>
 </svelte:head>
-<!-- #endregion -->
+
 <!-- #region Content
 -->
 <svelte:window bind:innerWidth={windowWidth} bind:scrollY={Y} onscroll={() => scrollHeader()} />
@@ -182,48 +157,8 @@
 	}}
 ></div>
 <div class="topContainer" class:hideHead style="top: {top}px;">
-	<div class="topInnerContainer" bind:this={topBar}>
-		<ZHeader>
-			{#snippet home()}
-				<ZBlurBtn>
-					<a href="/">
-						<ZIcon option={'home'} />
-					</a>
-				</ZBlurBtn>
-			{/snippet}
-			{#snippet nav()}
-				<ZNav></ZNav>
-			{/snippet}
-			{#snippet themeToggle()}
-				<ZThemeBtn />
-			{/snippet}
-			{#snippet layoutRight()}
-				<ZBlurBtn
-					onclick={() => {
-						displays.display = !displays.display;
-					}}
-				>
-					<ZIcon option={'layout'} />
-				</ZBlurBtn>
-			{/snippet}
-			{#snippet layoutLeft()}
-				<ZBlurBtn
-					style={'transform: rotateY(180deg);'}
-					onclick={() => {
-						displays.displayToc = !displays.displayToc;
-					}}
-				>
-					<ZIcon option={'layout'} />
-				</ZBlurBtn>
-			{/snippet}
-			{#snippet github()}
-				<ZBlurBtn>
-					<a href="https://github.com/vhtmui">
-						<ZIcon option={'github'} />
-					</a>
-				</ZBlurBtn>
-			{/snippet}
-		</ZHeader>
+	<div class="topInnerContainer">
+		<ZTopBar></ZTopBar>
 	</div>
 </div>
 <main
@@ -233,35 +168,7 @@
 	}}
 	onmouseleave={() => clearTimeout(timer)}
 >
-	{#if displays.display}
-		<div
-			class="sidebar-container"
-			transition:slide={{ duration: 300, axis: 'x' }}
-			bind:clientWidth={SibarWidth}
-		>
-			<div class="sibar-innercontainer" style="width: {SibarWidth}px;">
-				<ZSbarContainer Dirs={data.directory} signal="expandAll" width={`${SibarWidth}px`} />
-			</div>
-		</div>
-	{/if}
-	{#if displays.display && windowWidth < 768}
-		<div class="mobilesidebar-container">
-			<div
-				bind:this={mobileSibar}
-				bind:clientWidth={mobileSibarWidth}
-				class="sibar-innercontainer"
-				transition:slide|global={{ axis: 'x' }}
-				onintroend={() => {
-					addEventListener('click', clickOutsideMobileSibarHandler);
-				}}
-				onoutroend={() => {
-					removeEventListener('click', clickOutsideMobileSibarHandler);
-				}}
-			>
-				<ZSbarContainer Dirs={data.directory} signal="expandAll" width={`${mobileSibarWidth}px`} />
-			</div>
-		</div>
-	{/if}
+	<ZSibar Dirs={data.directory} bind:ZSibar={moblieSidebar}></ZSibar>
 	<div class="content">
 		{@render children?.()}
 	</div>
@@ -275,8 +182,6 @@
 		</div>
 	{/if}
 </main>
-
-<!-- #endregion -->
 
 <!-- #region Style
 -->
