@@ -50,7 +50,7 @@
 	function saveCfg(timeOut = 501) {
 		setTimeout(() => {
 			cfg = snippets.map((sn) => {
-				return sn.start.current;
+				return sn.start.target;
 			});
 			localStorage.setItem('headcfg', JSON.stringify(cfg));
 		}, timeOut);
@@ -77,10 +77,27 @@
 	function autoAdjust(midLine, bodyWidth, snippet) {
 		let copy = snippets
 			.map((s) => s)
-			.sort(
-				(a, b) =>
-					a.start.target * bodyWidth + 0.5 * a.width - b.start.target * bodyWidth - 0.5 * b.width
-			);
+			.sort((a, b) => {
+				const aStart = a.start.target * bodyWidth;
+				const gapBase = (a.width + b.width) * 0.5;
+				const gapActual =
+					a.start.target * bodyWidth + 0.5 * a.width - b.start.target * bodyWidth - 0.5 * b.width;
+				if (a === snippet) {
+					if (aStart < gapBase - 8) {
+						return -1;
+					} else {
+						return gapActual;
+					}
+				} else if (b === snippet) {
+					if (gapActual < gapBase - 8) {
+						return 1;
+					} else {
+						return gapActual;
+					}
+				} else {
+					return gapActual
+				}
+			});
 		const length = copy.reduce((acc, cur) => acc + cur.width, 0);
 		const start = (bodyWidth - length) * 0.5;
 		const end = bodyWidth - length - start;
@@ -129,12 +146,7 @@
 				clearTimeout(timer);
 			}
 			timer = setTimeout(() => {
-				let copy = snippets.map((s) => s).sort((a, b) => a.start.current - b.start.current);
-				for (let i = 0; i < copy.length; i++) {
-					if (i % 2 === 0 || i === copy.length - 1) {
-						autoAdjust(guides, document.body.clientWidth);
-					}
-				}
+				autoAdjust(guides, document.body.clientWidth);
 				saveCfg();
 			}, 501);
 		});
