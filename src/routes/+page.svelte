@@ -21,7 +21,7 @@
 			align-items: center;
 			color: unset;
 			text-decoration: unset;
-			width: 84vw;
+			width: 100%;
 			border: 1px solid var(--home-border-color);
 			border-radius: 3rem;
 			font-size: 64px;

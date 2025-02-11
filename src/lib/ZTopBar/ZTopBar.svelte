@@ -1,5 +1,5 @@
 <script>
-	import { displays } from '$lib/shared.svelte';
+	import { rightDisplay } from '$lib/shared.svelte';
 	import { leftDisplay } from '$lib/shared.svelte';
 	import ZBlurBtn from '$lib/ZBlurBtn/ZBlurBtn.svelte';
 	import ZIcon from '$lib/ZIcon/ZIcon.svelte';
@@ -36,7 +36,7 @@
 		<ZBlurBtn
 			style={'transform: rotateY(180deg);'}
 			onclick={() => {
-				displays.displayToc = !displays.displayToc;
+				rightDisplay.displayToc = !rightDisplay.displayToc;
 			}}
 		>
 			<ZIcon option={'layout'} />

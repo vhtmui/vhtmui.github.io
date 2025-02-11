@@ -1,6 +1,5 @@
 <script>
 	import ZSbarContainer from './ZSbarContainer.svelte';
-	import { displays } from '$lib/shared.svelte';
     import {leftDisplay} from '$lib/shared.svelte';
 
 	import { slide } from 'svelte/transition';

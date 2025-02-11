@@ -44,6 +44,12 @@
 	 */
 	let numOfSnippets = Object.keys(others).length;
 
+	let windowWidth = $state(0);
+
+	let userAgent = $derived(windowWidth > 768 ? 'PC' : 'Mobile');
+
+	let p = $derived(windowWidth > 768 ? 1 : 15);
+
 	/**
 	 * To save configs
 	 * */
@@ -78,25 +84,9 @@
 		let copy = snippets
 			.map((s) => s)
 			.sort((a, b) => {
-				const aStart = a.start.target * bodyWidth;
-				const gapBase = (a.width + b.width) * 0.5;
 				const gapActual =
 					a.start.target * bodyWidth + 0.5 * a.width - b.start.target * bodyWidth - 0.5 * b.width;
-				if (a === snippet) {
-					if (aStart < gapBase - 8) {
-						return -1;
-					} else {
-						return gapActual;
-					}
-				} else if (b === snippet) {
-					if (gapActual < gapBase - 8) {
-						return 1;
-					} else {
-						return gapActual;
-					}
-				} else {
-					return gapActual
-				}
+				return gapActual;
 			});
 		const length = copy.reduce((acc, cur) => acc + cur.width, 0);
 		const start = (bodyWidth - length) * 0.5;
@@ -151,6 +141,7 @@
 			}, 501);
 		});
 	});
+	$inspect(userAgent);
 	$effect(() => {
 		snippets[1].width;
 		setTimeout(() => {
@@ -159,12 +150,14 @@
 	});
 </script>
 
+<svelte:window bind:innerWidth={windowWidth} />
+
 <div id="rootHead">
 	{#each snippets as snippet}
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div
 			class="headItem"
-			style="left: {snippet.start.current * 100}%;"
+			style="{userAgent === 'PC' ? 'left' : 'top'}: {snippet.start.current * 100 * p}%;"
 			style:pointer-events={snippet.pointerEvents}
 			class:actived={snippet.actived}
 			bind:this={snippet.ele}

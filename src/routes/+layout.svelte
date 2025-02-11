@@ -10,7 +10,7 @@
 	import { slide } from 'svelte/transition';
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { displays } from '$lib/shared.svelte.js';
+	import { rightDisplay } from '$lib/shared.svelte.js';
 	import { leftDisplay } from '$lib/shared.svelte.js';
 	import ZSibar from '$lib/ZSibar/ZSibar.svelte';
 	import ZSidebar from '$lib/ZSibar/ZSidebar.svelte';
@@ -58,9 +58,9 @@
 	let moblieSidebar = $state();
 
 	/**
-	 * @type {object} - Snapshot of `displays`.
+	 * @type {object} - Snapshot of `rightDisplay`.
 	 */
-	let { display, displayToc } = $state(displays);
+	let { displayToc } = $state(rightDisplay);
 
 	// Scroll header while scrolling.
 	let top = $state(0);
@@ -78,41 +78,42 @@
 	onMount(() => {
 		lastY = Y;
 
-		// Show sidebar if not in home page.
-		if ($page.url.pathname !== '/') {
-			displays.display = displays.displayToc = true;
-		} else {
-			display = displayToc = true;
-		}
+		// Show right sidebar if not in home page.
+		$page.url.pathname !== '/'
+			? (rightDisplay.displayToc = true)
+			: (rightDisplay.displayToc = false);
 
+		// Hide left sidebar if in home page. Always hide mobile sidebar on start.
 		leftDisplay.displayMobile = false;
-		if ($page.url.pathname === '/') {
-			leftDisplay.displayPC = false;
-		} else {
-			leftDisplay.displayPC = true;
-		}
+		$page.url.pathname === '/' ? (leftDisplay.displayPC = false) : (leftDisplay.displayPC = true);
 	});
 
 	afterNavigate(() => {
 		// get head elements passed to <ZTocList>.
 		headings = document.querySelectorAll(titles);
 
-		// Reset `displays` when navigating between home and other pages.
+		// Reset sidebars when navigating between home and other pages.
 		if ($navigating && windowWidth >= 768) {
 			const { from, to } = $navigating;
 			if (from.url.pathname !== '/' && to.url.pathname === '/') {
-				displayToc = displays.displayToc;
-				displays.display = displays.displayToc = false;
+				leftDisplay.displayPC = false;
+
+				// Save the current value of `displayToc` and set it to false.
+				displayToc = rightDisplay.displayToc;
+				rightDisplay.displayToc = false;
 			} else if (from.url.pathname === '/' && to.url.pathname !== '/') {
-				displays.displayToc = displayToc;
+				leftDisplay.displayPC = true;
+
+				rightDisplay.displayToc = displayToc;
 			}
 		}
 	});
 
 	$effect(() => {
 		if (moblieSidebar) {
+			removeEventListener('click', clickOutside);
 			function clickOutside(e) {
-				if (e.clientY > moblieSidebar.getBoundingClientRect().bottom) {
+				if (e.clientY > moblieSidebar?.getBoundingClientRect().bottom) {
 					leftDisplay.displayMobile = false;
 					removeEventListener('click', clickOutside);
 				}
@@ -172,7 +173,7 @@
 	<div class="content">
 		{@render children?.()}
 	</div>
-	{#if displays.displayToc}
+	{#if rightDisplay.displayToc}
 		<div class="toc">
 			{#if headings && headings?.length}
 				<div class="tocContainer" transition:slide|global={{ duration: 300, axis: 'x' }}>

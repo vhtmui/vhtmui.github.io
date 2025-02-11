@@ -40,6 +40,9 @@
 		border-radius: 0.7rem;
 		backdrop-filter: blur(5px);
 		background-color: var(--header-btn-bg-color);
+		&:empty{
+			display: none;
+		}
 		* {
 			color: var(--header-text-color);
 		}
