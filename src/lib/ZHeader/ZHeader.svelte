@@ -44,12 +44,6 @@
 	 */
 	let numOfSnippets = Object.keys(others).length;
 
-	let windowWidth = $state(0);
-
-	let userAgent = $derived(windowWidth > 768 ? 'PC' : 'Mobile');
-
-	let p = $derived(windowWidth > 768 ? 1 : 15);
-
 	/**
 	 * To save configs
 	 * */
@@ -141,7 +135,6 @@
 			}, 501);
 		});
 	});
-	$inspect(userAgent);
 	$effect(() => {
 		snippets[1].width;
 		setTimeout(() => {
@@ -150,14 +143,12 @@
 	});
 </script>
 
-<svelte:window bind:innerWidth={windowWidth} />
-
 <div id="rootHead">
 	{#each snippets as snippet}
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div
 			class="headItem"
-			style="{userAgent === 'PC' ? 'left' : 'top'}: {snippet.start.current * 100 * p}%;"
+			style="left: {snippet.start.current * 100}%;"
 			style:pointer-events={snippet.pointerEvents}
 			class:actived={snippet.actived}
 			bind:this={snippet.ele}
