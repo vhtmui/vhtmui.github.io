@@ -27,16 +27,19 @@
 	];
 </script>
 
-<Markdown md={data.content} {plugins} />
+<div class="markdown">
+	<Markdown md={data.content} {plugins} />
+</div>
 
 <style>
-	:global {
+	.markdown :global {
 		blockquote {
 			color: var(--md-blockquote-text-color);
 			border-left: 4px solid var(--md-blockquote-border-color);
 			padding-left: 1em;
 		}
-		ol,ul{
+		ol,
+		ul {
 			padding: 0;
 			padding-inline-start: 1em;
 		}

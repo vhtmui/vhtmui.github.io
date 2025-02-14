@@ -1,5 +1,4 @@
 <script>
-	import { goto } from '$app/navigation';
 </script>
 
 <div class="homepage">
