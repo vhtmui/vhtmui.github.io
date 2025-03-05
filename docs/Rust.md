@@ -611,9 +611,21 @@ rust没有为基本类型提供隐式的自动类型转换，而是使用`as`进
 
 ## Async和await
 
+### Future
+
+类似于JavaScript的`Promise`，rust中的`async`标记的代码块会被编译为一个实现了`Future`trait的数据类型，`async`标记的函数则会被编译为返回一个这种数据类型的普通函数。
+
+对`future`调用`.await`会等待异步操作执行返回。但只能在异步函数或异步代码块(即async标记的)中调用`.await`，但不能将main函数标记为`async`，因此无法在main函数中`await`。
+
+因此要`await`一个`future`需要一个异步运行时，常用的运行时有`Tokio`。
+
 ### await point
 
 rust需要`await point`才能将控制权交还给运行时，运行时才能切换运行代码。
+
+### future是线性的
+
+`await`给定的`future`时，`future`内的所有操作都是线性发生的。
 
 ## pin
 
