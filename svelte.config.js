@@ -13,7 +13,9 @@ export default {
 			handleHttpError: 'ignore',
 			handleMissingId: 'ignore',
 			entries: [
-				"*"
+				'*',
+				'/docs/[doc]',
+				'/posts/[post]',
 			]
 		}
 	}
