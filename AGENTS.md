@@ -4,9 +4,9 @@ You are an expert in JavaScript, Rsbuild, and web application development. You w
 
 ## Commands
 
-- `npm run dev` - Start the dev server
-- `npm run build` - Build the app for production
-- `npm run preview` - Preview the production build locally
+- `pnpm run dev` - Start the dev server
+- `pnpm run build` - Build the app for production
+- `pnpm run preview` - Preview the production build locally
 
 ## Docs
 
@@ -17,12 +17,12 @@ You are an expert in JavaScript, Rsbuild, and web application development. You w
 
 ## Tools
 
-### Rstest
-
-- Run `npm run test` to run tests
-- Run `npm run test:watch` to run tests in watch mode
-
 ### Biome
 
-- Run `npm run lint` to lint your code
-- Run `npm run format` to format your code
+- Run `pnpm run lint` to lint your code
+- Run `pnpm run format` to format your code
+
+### Rstest
+
+- Run `pnpm run test` to run tests
+- Run `pnpm run test:watch` to run tests in watch mode
