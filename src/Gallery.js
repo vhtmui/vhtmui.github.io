@@ -1,14 +1,28 @@
+function Item({ name, isPacked }) {
+    if (isPacked) {
+        return <li className="item">{name} ✅</li>;
+    }
+    return <li className="item">{name}</li>;
+}
 
-export function Profile({ text, size, alt }) {
+export default function PackingList() {
     return (
-        <div>
-            <img
-                src="https://picx.zhimg.com/v2-d6f44389971daab7e688e5b37046e4e4_720w.jpg?source=172ae18b"
-                className="circle-img"
-                style={{ borderRadius: "50%", width: size, height: size, objectFit: "cover" }}
-                alt={alt}
-            />
-            <text>{text}</text>
-        </div>
+        <section>
+            <h1>Sally Ride 的行李清单</h1>
+            <ul>
+                <Item
+                    isPacked={true}
+                    name="宇航服"
+                />
+                <Item
+                    isPacked={true}
+                    name="带金箔的头盔"
+                />
+                <Item
+                    isPacked={false}
+                    name="Tam 的照片"
+                />
+            </ul>
+        </section>
     );
 }
