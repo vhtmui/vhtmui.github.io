@@ -1,28 +1,18 @@
-function Item({ name, isPacked }) {
-    if (isPacked) {
-        return null;
-    }
-    return <li className="item">{name}</li>;
-}
+const people = [
+    '凯瑟琳·约翰逊: 数学家',
+    '马里奥·莫利纳: 化学家',
+    '穆罕默德·阿卜杜勒·萨拉姆: 物理学家',
+    '珀西·莱温·朱利亚: 化学家',
+    '苏布拉马尼扬·钱德拉塞卡: 天体物理学家',
+];
+let key = 0;
 
-export default function PackingList() {
-    return (
-        <section>
-            <h1>Sally Ride 的行李清单</h1>
-            <ul>
-                <Item
-                    isPacked={true}
-                    name="宇航服"
-                />
-                <Item
-                    isPacked={true}
-                    name="带金箔的头盔"
-                />
-                <Item
-                    isPacked={false}
-                    name="Tam 的照片"
-                />
-            </ul>
-        </section>
-    );
+export default function List() {
+    let items = [];
+    for (let i = 0; i < people.length; i++) {
+        let li = <li key={key}>{people[i]}</li>;
+        items.push(li);
+        key++;
+    }
+    return <ul>{items}</ul>;
 }
