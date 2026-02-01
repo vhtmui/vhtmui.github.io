@@ -1,11 +1,21 @@
 import "./App.css";
-import Profile from "./Gallery";
-const App = () => {
-  return (
-    <div>
-      <Profile />
-    </div>
-  );
+import { Fragment } from "react";
+
+const poem = {
+  lines: [
+    "I write, erase, rewrite",
+    "Erase again, and then",
+    "A poppy blooms.",
+  ],
 };
 
-export default App;
+let id = 2;
+
+export default function Poem() {
+  let result = [];
+  for (const line of poem.lines) {
+    result.push(<p>{line + ", id is:" + id}</p>);
+    id++;
+  }
+  return <div>{result}</div>;
+}
