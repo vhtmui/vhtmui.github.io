@@ -1,49 +1,16 @@
-import { useState } from 'react';
-import ContactList from './ContactList.js';
-import EditContact from './EditContact.js';
+import SearchButton from './SearchButton.js';
+import SearchInput from './SearchInput.js';
+import { createContext } from 'react';
 
-export default function ContactManager() {
-  const [
-    contacts,
-    setContacts
-  ] = useState(initialContacts);
-  const [
-    selectedId,
-    setSelectedId
-  ] = useState(0);
-  const selectedContact = contacts.find(c =>
-    c.id === selectedId
-  );
+export let SearchInputContext = createContext(() => { });
 
-  function handleSave(updatedData) {
-    const nextContacts = contacts.map(c => {
-      if (c.id === updatedData.id) {
-        return updatedData;
-      } else {
-        return c;
-      }
-    });
-    setContacts(nextContacts);
-  }
-
+export default function Page() {
   return (
-    <div>
-      <ContactList
-        contacts={contacts}
-        selectedId={selectedId}
-        onSelect={id => setSelectedId(id)}
-      />
-      <hr />
-      <EditContact key = {selectedId}
-        initialData={selectedContact}
-        onSave={handleSave}
-      />
-    </div>
-  )
+    <SearchInputContext.Provider value={() => {}}>
+      <nav>
+        <SearchButton/>
+      </nav>
+      <SearchInput />
+    </SearchInputContext.Provider>
+  );
 }
-
-const initialContacts = [
-  { id: 0, name: 'Taylor', email: 'taylor@mail.com' },
-  { id: 1, name: 'Alice', email: 'alice@mail.com' },
-  { id: 2, name: 'Bob', email: 'bob@mail.com' }
-];

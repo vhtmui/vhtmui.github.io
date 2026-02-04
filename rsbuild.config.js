@@ -6,4 +6,7 @@ import { pluginBabel } from '@rsbuild/plugin-babel';
 // Docs: https://rsbuild.rs/config/
 export default defineConfig({
   plugins: [pluginReact(), pluginBabel()],
+  html: {
+    title: 'My App',
+  },
 });
