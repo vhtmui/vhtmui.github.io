@@ -13,7 +13,7 @@ export default function Nav() {
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Link href="/mac-trans">MacTrans</Link>
+                            <Link href="/mac-converter">MAC Converter</Link>
                         </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
