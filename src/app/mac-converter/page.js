@@ -2,12 +2,13 @@
 
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { Typography } from "@/components/typography";
 export default function MacTrans() {
     const [macAddress, setMacAddress] = useState("");
     return (
         <main className="flex min-h-screen flex-col items-center gap-10 p-24">
-            <TypographyH1 />
-            <Input placeholder="MacAddress" className="min-w-60 max-w-[50%]" onChange={(e) => setMacAddress(e.target.value)} />
+            <Typography elementName="h1">Mac Address Converter</Typography>
+            <Input placeholder="MacAddress" className="min-w-60 max-w-[50%] align-center" onChange={(e) => setMacAddress(e.target.value)} />
             <MacTransInput macAddress={macAddress} />
         </main>
     );
@@ -53,12 +54,4 @@ function MacTransInput({ macAddress }) {
             </li>
         </ul>
     );
-}
-
-export function TypographyH1() {
-    return (
-        <h1 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance">
-            Mac Address Converter
-        </h1>
-    )
 }

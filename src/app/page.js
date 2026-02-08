@@ -1,4 +1,4 @@
-import LinkCard from "./_lib/LinkCard";
+import { LinkCard } from "@/components/home-com";
 
 export default function Home() {
   return (
