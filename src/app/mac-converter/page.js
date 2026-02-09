@@ -2,14 +2,9 @@
 
 import { InputGroup, InputGroupInput, InputGroupAddon } from "@/components/ui/input-group";
 import { Separator } from "@/components/ui/separator";
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipTrigger,
-} from "@/components/ui/tooltip"
-import { useState } from "react";
 import CopyText from "@/components/copy-text";
-import { TriangleAlert } from "lucide-react";
+import { useShortCut } from "@/lib/myhook";
+import { useRef, useState } from "react";
 
 export default function MacConverter() {
     return (
@@ -22,21 +17,16 @@ export default function MacConverter() {
 
 function MacInput() {
     const [macAddress, setMacAddress] = useState("");
+    const inputRef = useRef();
+
+    useShortCut("ctrl+k", () => {
+        inputRef.current.select();
+    });
 
     const cleanMac = macAddress.replace(/[^A-Fa-f0-9]/g, "");
-
     const upperMac = cleanMac.toUpperCase();
 
-    const warning = cleanMac.length !== 12 ?
-        <InputGroupAddon align="inline-end" className="text-red-500 flex items-center gap-2">
-            <Tooltip>
-                <TooltipTrigger><TriangleAlert className="w-4 h-4" /></TooltipTrigger>
-                <TooltipContent>
-                    <p className="text-red-500 font-medium">Over Length</p>
-                </TooltipContent>
-            </Tooltip>
-        </InputGroupAddon> : null;
-
+    const lengthTips = <InputGroupAddon align="inline-end"> length: {cleanMac.length} </InputGroupAddon>
     const output = cleanMac.length > 0 ? <ul className="flex flex-col gap-2 mt-6">
         <li>
             <CopyText text={macFormatter(upperMac, 2, "-")} />
@@ -53,13 +43,14 @@ function MacInput() {
         <li>
             <CopyText text={macFormatter(upperMac, 4, ":")} />
         </li>
+        <li><Separator /></li>
     </ul> : null;
 
     return (
         <div>
             <InputGroup>
-                <InputGroupInput name="macAddress" placeholder="MacAddress" className="min-w-60 max-w-80" onChange={(e) => setMacAddress(e.target.value)} />
-                {warning}
+                <InputGroupInput ref={inputRef} name="macAddress" placeholder="MacAddress" className="min-w-60 max-w-80" onChange={(e) => setMacAddress(e.target.value)} value={upperMac} />
+                {lengthTips}
             </InputGroup>
             {output}
         </div>
@@ -83,4 +74,3 @@ function macFormatter(macStr, eachEount, separator) {
 
     return output;
 }
-

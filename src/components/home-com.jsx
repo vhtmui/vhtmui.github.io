@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Moon, Sun, Monitor } from "lucide-react"
 import { useTheme } from "next-themes"
@@ -18,22 +19,33 @@ export function Header() {
 }
 
 export function Nav() {
+    const pathnames = ['/'].concat(usePathname().split("/").filter(Boolean));
+
+    const items = pathnames.map((pathname, index) => {
+
+        const name = pathname === "/" ? "Home" : pathname;
+
+        const innerItem = index === pathnames.length - 1 ? <BreadcrumbPage>
+            {name}
+        </BreadcrumbPage> : <BreadcrumbLink asChild>
+            <Link href={`/${pathname}`}>{name}</Link>
+        </BreadcrumbLink>
+
+        return (
+            <React.Fragment key={index}>
+                <BreadcrumbItem >
+                    {innerItem}
+                </BreadcrumbItem>
+                {index !== pathnames.length - 1 && <BreadcrumbSeparator />}
+            </React.Fragment>
+        );
+    });
+
     return (
         <div className="mr-auto">
             <Breadcrumb >
                 <BreadcrumbList>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <Link href="/">Home</Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <Link href="/mac-converter">MAC Converter</Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
+                    {items}
                 </BreadcrumbList>
             </Breadcrumb>
         </div>
