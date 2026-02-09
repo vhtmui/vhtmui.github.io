@@ -47,7 +47,7 @@ export function LinkCard({ className, href, children }) {
         <Button
             asChild
             variant="outline"
-            className={`grow min-w-50 h-50 flex items-center justify-center ${className}`}
+            className={`text-2xl font-bold grow min-w-50 max-w-1/1 h-50 flex items-center justify-center whitespace-normal text-center ${className}`}
         >
             <Link href={href}>{children}</Link>
         </Button>
