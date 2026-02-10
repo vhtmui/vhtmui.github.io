@@ -10,9 +10,9 @@ scp -r "%SOURCE_DIR%\*" "%DEST_USER%@%DEST_HOST%:%DEST_PATH%"
 
 :: 检查命令是否成功执行
 if %errorlevel% equ 0 (
-    echo 文件复制成功！
+    echo success
 ) else (
-    echo 文件复制失败，请检查网络连接或权限设置。
+    echo fail
 )
 
 pause

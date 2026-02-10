@@ -68,6 +68,7 @@ export function LinkCard({ className, href, children }) {
 
 export function ModeToggle() {
     const { theme, setTheme } = useTheme()
+
     function handleThemeChange() {
         if (theme === "system") {
             setTheme("light")
@@ -82,7 +83,7 @@ export function ModeToggle() {
     }
 
     return (
-        <Button variant="outline" size="icon" onClick={() => handleThemeChange()}>
+        <Button variant="outline" size="icon" onClick={handleThemeChange}>
             <ThemeIcon theme={theme} />
         </Button>
     )
