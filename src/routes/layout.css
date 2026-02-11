@@ -117,5 +117,11 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: "bahnschrift";
+    h1 {
+      font-size: x-large;
+      font-weight: bold;
+      font-style: normal;
+    }
   }
 }

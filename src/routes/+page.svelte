@@ -1,3 +1,15 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="/mac-converter">mac-converter</a> to read the documentation</p>
+<script>
+  import Button from "$lib/components/ui/button/button.svelte";
 
+  const className =
+    "text-2xl font-bold grow min-w-50 max-w-1/1 h-50 flex items-center justify-center whitespace-normal text-center";
+  const variant = "outline";
+</script>
+
+<main class="flex flex-wrap items-start gap-8 p-10 min-h-screen w-full">
+  <Button {variant} class={className} href="/mac-converter"
+    >Mac Address Converter</Button
+  >
+  <Button {variant} class={className} href="/dufs">Dufs</Button>
+  <Button {variant} class={className} href="/pending">Pending...</Button>
+</main>
