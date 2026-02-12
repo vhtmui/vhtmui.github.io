@@ -17,6 +17,17 @@ const config = {
     alias: {
       "@ui/*": "src/lib/components/ui/*",
     },
+    prerender: {
+      handleHttpError: ({ path, message }) => {
+        // ignore deliberate link to shiny 404 page
+        if (path === '/dufs' || path === '/pending') {
+          return;
+        }
+
+        // otherwise fail the build
+        throw new Error(message);
+      }
+    }
   },
 };
 
