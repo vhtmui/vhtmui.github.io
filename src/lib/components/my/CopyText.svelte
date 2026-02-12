@@ -1,7 +1,6 @@
 <script>
 	import { Copy, Check } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { setShortCut } from '$lib/my_utils';
 
 	let { text, delay = 0 } = $props();
 
@@ -41,7 +40,13 @@
 
 <div class="flex items-center align-middle">
 	<span class="mr-auto">{text}</span>
-	<Button onclick={handleCopy} variant="ghost" size="icon" disabled={copied || text.length === 0}>
+	<Button
+		class="ml-1"
+		onclick={handleCopy}
+		variant="ghost"
+		size="icon"
+		disabled={copied || text.length === 0}
+	>
 		{#if copied}
 			<Check />
 		{:else}

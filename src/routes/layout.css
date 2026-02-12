@@ -117,7 +117,7 @@
 	}
 	body {
 		@apply bg-background text-foreground;
-		font-family: 'bahnschrift';
+		font-family: 'Geist Mono', 'Courier New';
 		h1 {
 			font-weight: bold;
 			font-style: normal;
@@ -130,4 +130,9 @@
 			}
 		}
 	}
+}
+
+@font-face {
+	font-family: 'Geist Mono';
+	src: url('fonts/GeistMono-Regular.woff2') format('woff2');
 }

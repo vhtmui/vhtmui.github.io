@@ -55,7 +55,7 @@
 	<InputGroup.Root class="max-w-[500px] min-w-[250px]">
 		<InputGroup.Input
 			bind:ref={inputRef}
-			placeholder="MAC Address"
+			placeholder="CTRL K"
 			bind:value={
 				cleanMac,
 				(v) => {

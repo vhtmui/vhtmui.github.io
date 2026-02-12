@@ -8,7 +8,7 @@
 
 <main class="flex flex-wrap items-start gap-8 p-10 min-h-screen w-full">
   <Button {variant} class={className} href="/mac-converter"
-    >Mac Address Converter</Button
+    >MAC Address Converter</Button
   >
   <Button {variant} class={className} href="/dufs">Dufs</Button>
   <Button {variant} class={className} href="/pending">Pending...</Button>
