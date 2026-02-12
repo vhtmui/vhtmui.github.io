@@ -1,101 +1,100 @@
 <script>
-  import * as InputGroup from "$lib/components/ui/input-group";
-  import { Separator } from "@ui/separator";
-  import CopyText from "$lib/components/my/CopyText.svelte";
-  import { useShortCut } from "@/lib/myhook";
-  import { useRef, useState } from "react";
+	import * as InputGroup from '$lib/components/ui/input-group';
+	import { Separator } from '@ui/separator';
+	import CopyText from '$lib/components/my/CopyText.svelte';
+	import { setShortCut } from '$lib/my_utils';
 
-  export default function MacConverter() {
-    return (
-      <main className="flex min-h-screen flex-col items-center gap-10 p-24">
-        <h1 className="scroll-m-20 text-center text-2xl font-extrabold tracking-tight text-balance">
-          Mac Address Converter
-        </h1>
-        <MacInput />
-      </main>
-    );
-  }
+	/** @type {HTMLInputElement} */
+	let inputRef = null;
+	let macAddress = $state('');
 
-  function MacInput() {
-    const [macAddress, setMacAddress] = useState("");
-    const inputRef = useRef();
+	const delay = 750;
+	const macExp = [
+		{ name: 'Hyphen-Hex', nums: 2, symbol: '-' },
+		{ name: 'Colon-Hex', nums: 2, symbol: ':' },
+		{ name: 'CiscoLike-Hyphen-Hex', nums: 4, symbol: '-' },
+		{ name: 'CiscoLike-Colon-Hex', nums: 4, symbol: ':' }
+	];
 
-    useShortCut("ctrl+k", () => {
-      inputRef.current.select();
-    });
+	function cleanMac() {
+		return macAddress.replace(/[^A-Fa-f0-9]/g, '').toUpperCase();
+	}
 
-    const cleanMac = macAddress.replace(/[^A-Fa-f0-9]/g, "");
-    const upperMac = cleanMac.toUpperCase();
+	/**
+	 * @param {string} macAddr - MAC Address
+	 * @param {number} eachCounts - Nums of each mac group
+	 * @param {string} separator - Separator between each mac group
+	 */
+	function macFormatter(macAddr, eachCounts, separator) {
+		macAddr = macAddr
+			.replace(/[^A-Fa-f0-9]/g, '')
+			.slice(0, 12)
+			.toUpperCase();
 
-    const lengthTips = (
-      <InputGroupAddon align="inline-end">
-        {" "}
-        length: {cleanMac.length}{" "}
-      </InputGroupAddon>
-    );
-    const output =
-      cleanMac.length > 0 ? (
-        <ul className="flex flex-col gap-2 mt-6">
-          <li>
-            <CopyText text={macFormatter(upperMac, 2, "-")} />
-          </li>
-          <li>
-            <Separator />
-          </li>
-          <li>
-            <CopyText text={macFormatter(upperMac, 2, ":")} />
-          </li>
-          <li>
-            <Separator />
-          </li>
-          <li>
-            <CopyText text={macFormatter(upperMac, 4, "-")} />
-          </li>
-          <li>
-            <Separator />
-          </li>
-          <li>
-            <CopyText text={macFormatter(upperMac, 4, ":")} />
-          </li>
-          <li>
-            <Separator />
-          </li>
-        </ul>
-      ) : null;
+		let output = String();
 
-    return (
-      <div>
-        <InputGroup>
-          <InputGroupInput
-            ref={inputRef}
-            name="macAddress"
-            placeholder="MacAddress"
-            className="min-w-60 max-w-80"
-            onChange={(e) => setMacAddress(e.target.value)}
-            value={upperMac}
-          />
-          {lengthTips}
-        </InputGroup>
-        {output}
-      </div>
-    );
-  }
+		for (let i = 0; i < macAddr.length; i += 1) {
+			output += macAddr[i];
+			if (i % eachCounts === eachCounts - 1 && i !== macAddr.length - 1) {
+				output += separator;
+			}
+		}
 
-  function macFormatter(macStr, eachEount, separator) {
-    macStr = macStr
-      .replace(/[^A-Fa-f0-9]/g, "")
-      .slice(0, 12)
-      .toUpperCase();
+		return output;
+	}
 
-    let output = String();
-
-    for (let i = 0; i < macStr.length; i += 1) {
-      output += macStr[i];
-      if (i % eachEount === eachEount - 1 && i !== macStr.length - 1) {
-        output += separator;
-      }
-    }
-
-    return output;
-  }
+	$effect(() => {
+		setShortCut('ctrl+k', () => {
+			inputRef.select();
+		});
+	});
 </script>
+
+<main>
+	<h1>Mac Address Converter</h1>
+	<InputGroup.Root class="max-w-[500px] min-w-[250px]">
+		<InputGroup.Input
+			bind:ref={inputRef}
+			placeholder="MAC Address"
+			bind:value={
+				cleanMac,
+				(v) => {
+					macAddress = v;
+				}
+			}
+		/>
+		<InputGroup.Addon align="inline-end">len: {cleanMac().length}</InputGroup.Addon>
+	</InputGroup.Root>
+	{#if cleanMac().length}
+		<ul>
+			{#each macExp as { name, nums, symbol }, i}
+				<li>
+					<CopyText text={macFormatter(cleanMac(), nums, symbol)} {delay} />
+				</li>
+				{#if i < macExp.length - 1}
+					<Separator />
+				{/if}
+			{/each}
+		</ul>
+	{/if}
+</main>
+
+<style>
+	main {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: calc(var(--spacing) * 10);
+		padding: 10vw;
+		min-height: 100%;
+	}
+	h1 {
+		text-align: center;
+	}
+	ul {
+		display: flex;
+		flex-direction: column;
+		gap: calc(var(--spacing) * 2);
+	}
+</style>
