@@ -1,4 +1,4 @@
-import adapter from "@sveltejs/adapter-auto";
+import adapter from "@sveltejs/adapter-static";
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -10,7 +10,7 @@ const config = {
       // default options are shown
       pages: "build",
       assets: "build",
-      fallback: "200.html",
+      fallback: undefined,
       precompress: false,
       strict: true,
     }),
