@@ -1,3 +1,4 @@
+import { mdsvex } from 'mdsvex';
 import adapter from '@sveltejs/adapter-static';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -14,9 +15,7 @@ const config = {
 			precompress: false,
 			strict: true
 		}),
-		alias: {
-			'@ui/*': 'src/lib/components/ui/*'
-		},
+		alias: { '@ui/*': 'src/lib/components/ui/*' },
 		prerender: {
 			handleHttpError: ({ path, message }) => {
 				// ignore deliberate link to shiny 404 page
@@ -28,7 +27,9 @@ const config = {
 				throw new Error(message);
 			}
 		}
-	}
+	},
+	preprocess: [mdsvex()],
+	extensions: ['.svelte', '.svx']
 };
 
 export default config;
