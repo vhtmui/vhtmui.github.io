@@ -28,7 +28,14 @@ const config = {
 			}
 		}
 	},
-	preprocess: [mdsvex()],
+	preprocess: [mdsvex({
+		smartypants:{
+			quotes: true,
+			ellipses: true,
+			backticks: true,
+			dashes: 'oldschool'
+		}
+	})],
 	extensions: ['.svelte', '.svx']
 };
 
