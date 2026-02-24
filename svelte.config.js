@@ -1,4 +1,3 @@
-import { mdsvex } from 'mdsvex';
 import adapter from '@sveltejs/adapter-static';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -27,16 +26,7 @@ const config = {
 				throw new Error(message);
 			}
 		}
-	},
-	preprocess: [mdsvex({
-		smartypants:{
-			quotes: true,
-			ellipses: true,
-			backticks: true,
-			dashes: 'oldschool'
-		}
-	})],
-	extensions: ['.svelte', '.svx']
+	}
 };
 
 export default config;
