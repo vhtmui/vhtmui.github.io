@@ -52,7 +52,7 @@
 
 <main>
 	<h1>Mac Address Converter</h1>
-	<InputGroup.Root class="max-w-[500px] min-w-[250px]">
+	<InputGroup.Root class="max-w-70">
 		<InputGroup.Input
 			bind:ref={inputRef}
 			placeholder="CTRL K"
@@ -85,7 +85,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: calc(var(--spacing) * 10);
+		gap: calc(10 * 0.25rem);
 		padding: 10vw;
 		min-height: 100%;
 	}
@@ -93,8 +93,10 @@
 		text-align: center;
 	}
 	ul {
+		width: 90%;
+		max-width: calc(64 * 0.25rem);
 		display: flex;
 		flex-direction: column;
-		gap: calc(var(--spacing) * 2);
+		gap: calc(2 * 0.25rem);
 	}
 </style>

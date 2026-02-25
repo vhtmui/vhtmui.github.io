@@ -7,7 +7,7 @@ import { onMount } from 'svelte';
  * @param {string} shortcut - A string representing the shortcut, e.g., 'ctrl+s'.
  * @param {function} handler - A function to be executed when the shortcut is triggered.
  */
-export function setShortCut(shortcut, handler) {
+export async function setShortCut(shortcut, handler) {
 	shortcut = shortcut.toLowerCase();
 	if (shortcut.split('+').length !== 2)
 		throw new Error("Invalid shortcut format. Please use 'modifier+key'.");

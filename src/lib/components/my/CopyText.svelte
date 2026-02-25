@@ -2,7 +2,7 @@
 	import { Copy, Check } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 
-	let { text, delay = 0 } = $props();
+	let { text, delay = 0, class: className } = $props();
 
 	let copied = $state(false);
 
@@ -38,7 +38,7 @@
 	}
 </script>
 
-<div class="flex items-center align-middle">
+<div class={'flex items-center align-middle ' + className}>
 	<span class="mr-auto">{text}</span>
 	<Button
 		class="ml-1"
