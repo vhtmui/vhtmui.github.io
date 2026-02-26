@@ -4,5 +4,4 @@
 </script>
 
 {#each data.docItems as dl}
-	<p>{dl.relativePath}</p>
 {/each}

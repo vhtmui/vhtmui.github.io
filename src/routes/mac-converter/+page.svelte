@@ -2,7 +2,7 @@
 	import * as InputGroup from '$lib/components/ui/input-group';
 	import { Separator } from '@ui/separator';
 	import CopyText from '$lib/components/my/CopyText.svelte';
-	import { setShortCut } from '$lib/my_utils';
+	import { setShortCut } from '$lib/my-utils';
 
 	/** @type {HTMLInputElement} */
 	let inputRef = null;
@@ -50,7 +50,7 @@
 	});
 </script>
 
-<main>
+<div class="mac-converter">
 	<h1>Mac Address Converter</h1>
 	<InputGroup.Root class="max-w-70">
 		<InputGroup.Input
@@ -77,10 +77,10 @@
 			{/each}
 		</ul>
 	{/if}
-</main>
+</div>
 
 <style>
-	main {
+	div.mac-converter {
 		display: flex;
 		flex-direction: column;
 		align-items: center;

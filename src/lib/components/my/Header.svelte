@@ -1,11 +1,13 @@
 <script>
-  import ThemeToggle from "./ThemeToggle.svelte";
-  import Nav from "./Nav.svelte";
+	import ThemeToggle from './ThemeToggle.svelte';
+	import Nav from './Nav.svelte';
+	import SidebarTrigger from '$lib/components/ui/sidebar/sidebar-trigger.svelte';
 </script>
 
 <header
-  class="h-14 flex flex-row items-center pr-4 pl-4 sticky top-0 z-10 backdrop-blur-sm border-b"
+	class="sticky top-0 z-10 flex h-14 flex-row items-center border-b pr-4 pl-4 backdrop-blur-sm"
 >
-  <Nav />
-  <ThemeToggle />
+	<SidebarTrigger />
+	<Nav />
+	<ThemeToggle />
 </header>

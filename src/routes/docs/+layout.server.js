@@ -1,4 +1,4 @@
-import { walkDir } from '$lib/my_utils';
+import { walkDir } from '$lib/my-utils';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load() {
