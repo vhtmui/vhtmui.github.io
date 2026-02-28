@@ -20,3 +20,9 @@
 		{@render children?.()}
 	</main>
 </Siderbar.Provider>
+
+<style>
+	main {
+		flex: 1;
+	}
+</style>
