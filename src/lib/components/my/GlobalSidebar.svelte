@@ -1,7 +1,4 @@
 <script module>
-	import { setContext, getContext } from 'svelte';
-	const GSBCONTEXT = Symbol('GSB');
-
 	/**
 	 * 侧边栏菜单项，基于路径渲染
 	 */
@@ -28,9 +25,10 @@
 	/**
 	 * 从GlobalSidebarMenuItem[] 更新菜单项的children，渲染时将以root为根节点渲染
 	 * @param {GlobalSidebarMenuItem[]} itemProps 菜单项
+	 * @param {string} nameToRoot 根节点路径
 	 * @returns {Map<string, GlobalSidebarMenuItem>} 菜单项
 	 */
-	export function createSidebarMenuItems(itemProps) {
+	export function createSidebarMenuItems(itemProps, nameToRoot) {
 		let items = new Map();
 		itemProps
 			.map((item) => {
@@ -46,23 +44,34 @@
 					parent.children.push(item);
 				}
 			});
+
+		if (items.has(nameToRoot)) {
+			const root = items.get(nameToRoot);
+			items.delete(nameToRoot);
+			items.set('root', root);
+		} else {
+			throw new Error(`nameToRoot: ${nameToRoot} not found`);
+		}
+
 		return items;
 	}
 
 	/**
-	 * @function setSidebarManager
-	 * @description 设置侧边栏管理器
-	 * @param {Map<string, GlobalSidebarMenuItem>} items 侧边栏菜单项
+	 * 菜单项数据
+	 * @type {Object}
+	 * @property {Map<string, GlobalSidebarMenuItem>} data 菜单项数据
 	 */
-	export let sbNode = $state({ data: null });
-
+	export const sbNode = $state({ data: null });
 </script>
 
 <script>
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import * as Collapsible from '$lib/components/ui/collapsible/index.js';
 
-	let menuItems = createSidebarMenuItems([new GlobalSidebarMenuItem('root', 'init...', '/', null)]);
+	let menuItems = createSidebarMenuItems(
+		[new GlobalSidebarMenuItem('root', 'init...', '/', null)],
+		'root'
+	);
 	sbNode.data = menuItems;
 
 	$inspect(sbNode);
@@ -88,15 +97,15 @@
 		</Collapsible.Root>
 	{:else}
 		<Sidebar.MenuSub>
-			<Sidebar.MenuItem>{menuItem.label}</Sidebar.MenuItem>
+			<Sidebar.MenuItem>{menuItem?.label}</Sidebar.MenuItem>
 		</Sidebar.MenuSub>
 	{/if}
 {/snippet}
 
 <Sidebar.Root>
 	<Sidebar.Menu>
-		{#if sbNode.data}
-			{@render mitem(sbNode.data?.get('root'))}
+		{#if sbNode.data && sbNode.data.get('root')}
+			{@render mitem(sbNode.data.get('root'))}
 		{/if}
 	</Sidebar.Menu>
 </Sidebar.Root>

@@ -12,21 +12,16 @@
 
 	let items = $state(
 		data.docItems.map((d) => {
-			switch (d.relativePath) {
-				case 'docs':
-					return new GlobalSidebarMenuItem('root', 'Home', 'index', House);
-				default:
-					return new GlobalSidebarMenuItem(
-						d.relativePath.replace('.md', ''),
-						d.name.replace('.md', ''),
-						d.relativePath.replace('.md', ''),
-						House
-					);
-			}
+			return new GlobalSidebarMenuItem(
+				d.relativePath.replace('.md', ''),
+				d.name.replace('.md', ''),
+				d.relativePath.replace('.md', ''),
+				House
+			);
 		})
 	);
 
-	sbNode.data = createSidebarMenuItems(items);
+	sbNode.data = createSidebarMenuItems(items, 'docs');
 </script>
 
 {#each data.docItems as d}
