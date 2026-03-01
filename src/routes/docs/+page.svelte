@@ -4,4 +4,5 @@
 </script>
 
 {#each data.docItems as dl}
+	<a href={dl.relativePath.replace('.md', '')}>{dl.name.replace('.md', '')}</a>
 {/each}

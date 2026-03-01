@@ -1,5 +1,4 @@
 <script>
-	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import { Folder, FolderOpen } from '@lucide/svelte';
 	import {
 		GlobalSidebarMenuItem,
@@ -22,7 +21,6 @@
 			return item;
 		})
 	);
-	$inspect(items);
 
 	$effect(() => {
 		sbNode.data = createSidebarMenuItems(items, 'docs');
@@ -33,7 +31,4 @@
 	});
 </script>
 
-{#each data.docItems as d}
-	<p>{d.relativePath}</p>
-{/each}
 {@render children()}
