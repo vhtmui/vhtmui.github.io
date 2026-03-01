@@ -5,7 +5,7 @@
 	import { setShortCut } from '$lib/my-utils';
 
 	/** @type {HTMLInputElement} */
-	let inputRef = null;
+	let inputRef = $state(null);
 	let macAddress = $state('');
 
 	const delay = 750;

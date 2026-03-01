@@ -33,6 +33,12 @@
 		itemProps
 			.map((item) => {
 				item.path = item.path.replaceAll(/\\+/g, '/');
+				if (item.path.startsWith('/')) {
+					item.path = item.path.slice(1);
+				}
+				if (!item.href.startsWith('/')) {
+					item.href = '/' + item.href;
+				}
 				return item;
 			})
 			.sort((a, b) => a.path.split('/').length - b.path.split('/').length)
@@ -61,7 +67,13 @@
 	 * @type {Object}
 	 * @property {Map<string, GlobalSidebarMenuItem>} data 菜单项数据
 	 */
-	export const sbNode = $state({ data: null });
+	export const sbNode = $state({
+		data: null,
+		option: {
+			header: null,
+			footer: null
+		}
+	});
 </script>
 
 <script>
@@ -73,8 +85,6 @@
 		'root'
 	);
 	sbNode.data = menuItems;
-
-	$inspect(sbNode);
 </script>
 
 {#snippet mitem(/** @type {GlobalSidebarMenuItem} */ menuItem)}
@@ -83,7 +93,16 @@
 			<Sidebar.MenuItem>
 				<Collapsible.Trigger>
 					{#snippet child({ props })}
-						<Sidebar.MenuButton {...props}>{menuItem.label}</Sidebar.MenuButton>
+						<Sidebar.MenuButton {...props}>
+							{#snippet child({ props })}
+								<a href={menuItem.href} {...props}>
+									{#if menuItem.icon}
+										<menuItem.icon />
+									{/if}
+									<span>{menuItem.label}</span>
+								</a>
+							{/snippet}
+						</Sidebar.MenuButton>
 					{/snippet}
 				</Collapsible.Trigger>
 				<Collapsible.Content>
@@ -96,16 +115,37 @@
 			</Sidebar.MenuItem>
 		</Collapsible.Root>
 	{:else}
-		<Sidebar.MenuSub>
-			<Sidebar.MenuItem>{menuItem?.label}</Sidebar.MenuItem>
-		</Sidebar.MenuSub>
+		<Sidebar.MenuItem>
+			<Sidebar.MenuButton>
+				{#snippet child({ props })}
+					<a href={menuItem.href} {...props}>
+						{#if menuItem.icon}
+							<menuItem.icon />
+						{/if}
+						<span>{menuItem.label}</span>
+					</a>
+				{/snippet}
+			</Sidebar.MenuButton>
+		</Sidebar.MenuItem>
 	{/if}
 {/snippet}
 
 <Sidebar.Root>
-	<Sidebar.Menu>
-		{#if sbNode.data && sbNode.data.get('root')}
-			{@render mitem(sbNode.data.get('root'))}
-		{/if}
-	</Sidebar.Menu>
+	{#if sbNode.option?.header}
+		<Sidebar.Header>
+			{@render sbNode.option.header()}
+		</Sidebar.Header>
+	{/if}
+	<Sidebar.Content class="p-2">
+		<Sidebar.Menu>
+			{#if sbNode.data && sbNode.data.get('root')}
+				{@render mitem(sbNode.data.get('root'))}
+			{/if}
+		</Sidebar.Menu>
+	</Sidebar.Content>
+	{#if sbNode.option?.footer}
+		<Sidebar.Footer>
+			{@render sbNode.option.footer()}
+		</Sidebar.Footer>
+	{/if}
 </Sidebar.Root>

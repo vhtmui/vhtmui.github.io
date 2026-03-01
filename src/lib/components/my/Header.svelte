@@ -5,9 +5,9 @@
 </script>
 
 <header
-	class="sticky top-0 z-10 flex h-14 flex-row items-center border-b pr-4 pl-4 backdrop-blur-sm"
+	class="sticky top-0 z-10 flex flex-row gap-2 h-14 items-center border-b pr-2 pl-2 backdrop-blur-sm"
 >
-	<SidebarTrigger />
+	<SidebarTrigger variant="ghost" size="icon" />
 	<Nav />
 	<ThemeToggle />
 </header>

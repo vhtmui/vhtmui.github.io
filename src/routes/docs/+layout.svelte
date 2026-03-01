@@ -1,6 +1,6 @@
 <script>
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
-	import { House } from '@lucide/svelte';
+	import { Folder, FolderOpen } from '@lucide/svelte';
 	import {
 		GlobalSidebarMenuItem,
 		createSidebarMenuItems,
@@ -10,18 +10,27 @@
 	/** @type {import('./$types').LayoutProps} */
 	let { data, children } = $props();
 
-	let items = $state(
+	let items = $derived(
 		data.docItems.map((d) => {
-			return new GlobalSidebarMenuItem(
+			const icon = d.isDirectory ? Folder : null;
+			const item = new GlobalSidebarMenuItem(
 				d.relativePath.replace('.md', ''),
 				d.name.replace('.md', ''),
 				d.relativePath.replace('.md', ''),
-				House
+				icon
 			);
+			return item;
 		})
 	);
+	$inspect(items);
 
-	sbNode.data = createSidebarMenuItems(items, 'docs');
+	$effect(() => {
+		sbNode.data = createSidebarMenuItems(items, 'docs');
+
+		return () => {
+			sbNode.data = null;
+		};
+	});
 </script>
 
 {#each data.docItems as d}
