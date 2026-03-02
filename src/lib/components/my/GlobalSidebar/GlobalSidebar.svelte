@@ -1,9 +1,10 @@
 <script>
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import * as Collapsible from '$lib/components/ui/collapsible/index.js';
+	import SidebarTrigger from '$lib/components/ui/sidebar/sidebar-trigger.svelte';
 	import { GlobalSidebarMenuItem, sb } from './context.svelte.js';
 
-	$inspect(sb);
+	let { top } = $props();
 </script>
 
 {#snippet mitem(/** @type {GlobalSidebarMenuItem} */ menuItem)}
@@ -45,7 +46,8 @@
 	{/if}
 {/snippet}
 
-<Sidebar.Root>
+<Sidebar.Root style="top: {top}px;">
+	<SidebarTrigger class="absolute top-1 right-1 z-10" />
 	{#if sb.option?.header}
 		<Sidebar.Header>
 			{@render sb.option.header()}

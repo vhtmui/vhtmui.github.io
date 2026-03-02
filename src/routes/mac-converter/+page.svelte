@@ -81,12 +81,13 @@
 
 <style>
 	div.mac-converter {
+		width: 100%;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
 		gap: calc(10 * 0.25rem);
-		padding: 10vw;
+		padding: 5vw 10vw;
 		min-height: 100%;
 	}
 	h1 {

@@ -1,13 +1,21 @@
 <script>
 	import ThemeToggle from './ThemeToggle.svelte';
 	import Nav from './Nav.svelte';
-	import SidebarTrigger from '$lib/components/ui/sidebar/sidebar-trigger.svelte';
+
+	let { top = $bindable(0) } = $props();
 </script>
 
 <header
-	class="sticky top-0 z-10 flex flex-row gap-2 h-14 items-center border-b pr-2 pl-2 backdrop-blur-sm"
+	class="fixed z-11 flex h-14 flex-row items-center gap-2 border-b pr-2 pl-2"
+	style="top: {top}px"
 >
-	<SidebarTrigger variant="ghost" size="icon" />
 	<Nav />
 	<ThemeToggle />
 </header>
+
+<style>
+	header {
+		width: 100%;
+		background-color: var(--secondary);
+	}
+</style>

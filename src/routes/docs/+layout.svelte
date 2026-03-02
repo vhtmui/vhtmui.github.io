@@ -24,7 +24,6 @@
 	setSidebarMenuItems(items, 'docs');
 
 	$effect(() => {
-		console.log('sb.itemData', sb.itemData);
 		sb.itemData.forEach((/** @type {GlobalSidebarMenuItem} */ item) => {
 			item.icon = item.icon ? (item.open ? FolderOpen : Folder) : null;
 		});
