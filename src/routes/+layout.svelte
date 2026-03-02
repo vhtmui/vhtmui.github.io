@@ -5,7 +5,7 @@
 	import './layout.css';
 	import Header from '$lib/components/my/Header.svelte';
 	import * as Siderbar from '$lib/components/ui/sidebar';
-	import GlobalSidebar from '$lib/components/my/GlobalSidebar.svelte';
+	import GlobalSidebar from '$lib/components/my/GlobalSidebar/GlobalSidebar.svelte';
 
 	let { children } = $props();
 </script>

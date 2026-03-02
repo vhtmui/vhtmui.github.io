@@ -2,32 +2,32 @@
 	import { Folder, FolderOpen } from '@lucide/svelte';
 	import {
 		GlobalSidebarMenuItem,
-		createSidebarMenuItems,
-		sbNode
-	} from '$lib/components/my/GlobalSidebar.svelte';
+		setSidebarMenuItems,
+		sb
+	} from '$lib/components/my/GlobalSidebar/context.svelte';
 
 	/** @type {import('./$types').LayoutProps} */
 	let { data, children } = $props();
 
-	let items = $derived(
-		data.docItems.map((d) => {
-			const icon = d.isDirectory ? Folder : null;
-			const item = new GlobalSidebarMenuItem(
-				d.relativePath.replace('.md', ''),
-				d.name.replace('.md', ''),
-				d.relativePath.replace('.md', ''),
-				icon
-			);
-			return item;
-		})
-	);
+	// set sidebar in docs layout
+	let items = data.docItems.map((d) => {
+		const path = d.relativePath.replace('.md', '');
+		const label = d.name.replace('.md', '');
+		const href = d.relativePath.replace('.md', '');
+		const open = true;
+		const icon = d.isDirectory ? (open ? FolderOpen : Folder) : null;
+		const highlight = false;
+		const item = new GlobalSidebarMenuItem(path, label, href, icon, open, highlight);
+		return item;
+	});
+
+	setSidebarMenuItems(items, 'docs');
 
 	$effect(() => {
-		sbNode.data = createSidebarMenuItems(items, 'docs');
-
-		return () => {
-			sbNode.data = null;
-		};
+		console.log('sb.itemData', sb.itemData);
+		sb.itemData.forEach((/** @type {GlobalSidebarMenuItem} */ item) => {
+			item.icon = item.icon ? (item.open ? FolderOpen : Folder) : null;
+		});
 	});
 </script>
 
