@@ -5,7 +5,7 @@
 	import './layout.css';
 	import Header from '$lib/components/my/Header.svelte';
 	import * as Sidebar from '$lib/components/ui/sidebar';
-	import GlobalSidebar from '$lib/components/my/GlobalSidebar/GlobalSidebar.svelte';
+	import { GlobalSidebar } from '$lib/components/my/GlobalSidebar';
 
 	let { children } = $props();
 
@@ -26,8 +26,6 @@
 	}
 
 	let sidebarRef = $state(null);
-
-	$inspect(sidebarRef);
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
@@ -56,7 +54,7 @@
 		overflow-wrap: break-word;
 		overflow-x: auto;
 		:global(pre) {
-			overflow-x: scroll;
+			overflow-x: auto;
 		}
 	}
 </style>

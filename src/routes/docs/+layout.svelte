@@ -5,6 +5,7 @@
 		setSidebarMenuItems,
 		sb
 	} from '$lib/components/my/GlobalSidebar/context.svelte';
+	import { onDestroy } from 'svelte';
 
 	/** @type {import('./$types').LayoutProps} */
 	let { data, children } = $props();
@@ -23,15 +24,12 @@
 
 	setSidebarMenuItems(items, 'docs');
 
-	$effect(() => {
-		sb.itemData.forEach((/** @type {GlobalSidebarMenuItem} */ item) => {
+	$effect(() =>
+		sb.itemData?.forEach((/** @type {GlobalSidebarMenuItem} */ item) => {
 			item.icon = item.icon ? (item.open ? FolderOpen : Folder) : null;
-		});
-
-		return () => {
-			sb.itemData = null;
-		};
-	});
+		})
+	);
+	onDestroy(() => (sb.itemData = null));
 </script>
 
 <div class="docs-layout">
@@ -40,6 +38,18 @@
 
 <style>
 	.docs-layout {
-		padding: 16px;
-	}	
+		padding: 1rem 1rem;
+	}
+
+	@media (min-width: 768px) {
+		.docs-layout {
+			padding: 1rem 2rem;
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.docs-layout {
+			padding: 1rem 3rem;
+		}
+	}
 </style>
