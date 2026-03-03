@@ -34,4 +34,12 @@
 	});
 </script>
 
-{@render children()}
+<div class="docs-layout">
+	{@render children()}
+</div>
+
+<style>
+	.docs-layout {
+		padding: 16px;
+	}	
+</style>

@@ -1,6 +1,7 @@
 <script>
 	import { page } from '$app/state';
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb/index.js';
+	import { formatUrl } from '$lib/my-utils';
 
 	let pathName_items = $derived.by(() => {
 		const pn_array = ['/'].concat(page.url.pathname.split('/').filter(Boolean));
@@ -9,7 +10,7 @@
 			let name = pathname === '/' ? 'Home' : pathname;
 			let href = pn_array.slice(0, index + 1).join('/');
 			if (href === '') href = '/';
-			return { href, name };
+			return { href: formatUrl(href), name };
 		});
 	});
 </script>
