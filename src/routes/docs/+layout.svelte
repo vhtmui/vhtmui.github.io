@@ -27,6 +27,10 @@
 		sb.itemData.forEach((/** @type {GlobalSidebarMenuItem} */ item) => {
 			item.icon = item.icon ? (item.open ? FolderOpen : Folder) : null;
 		});
+
+		return () => {
+			sb.itemData = null;
+		};
 	});
 </script>
 

@@ -1,10 +1,20 @@
 <script>
-	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
-	import * as Collapsible from '$lib/components/ui/collapsible/index.js';
-	import SidebarTrigger from '$lib/components/ui/sidebar/sidebar-trigger.svelte';
+	import * as Sidebar from '@ui/sidebar/index.js';
+	import * as Collapsible from '@ui/collapsible/index.js';
 	import { GlobalSidebarMenuItem, sb } from './context.svelte.js';
+	import { useSidebar } from '@ui/sidebar/context.svelte.js';
 
-	let { top } = $props();
+	let { ref = $bindable(null), top } = $props();
+
+	const sidebar = useSidebar();
+
+	let triggerStyle = $derived(
+		sidebar.open
+			? sidebar.openMobile
+				? 'display: none;'
+				: 'right: 0; transform: rotate(0deg);'
+			: 'right: -36px; transform: rotate(180deg);'
+	);
 </script>
 
 {#snippet mitem(/** @type {GlobalSidebarMenuItem} */ menuItem)}
@@ -46,8 +56,11 @@
 	{/if}
 {/snippet}
 
-<Sidebar.Root style="top: {top}px;">
-	<SidebarTrigger class="absolute top-1 right-1 z-10" />
+<Sidebar.Root bind:ref style="top: {top}px;">
+	<Sidebar.Trigger
+		variant="outline"
+		style="position: absolute; top: calc(50vh - 32px); {triggerStyle} width: 24px; height: 64px; border-radius: 12px; transition: all 0.3s ease;"
+	/>
 	{#if sb.option?.header}
 		<Sidebar.Header>
 			{@render sb.option.header()}
