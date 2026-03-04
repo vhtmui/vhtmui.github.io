@@ -7,7 +7,8 @@
 	import ts from 'shiki/langs/typescript.mjs';
 	import rust from 'shiki/langs/rust.mjs';
 	import githubLight from 'shiki/themes/github-light.mjs';
-	// import githubDark from 'shiki/themes/github-dark.mjs';
+	import githubDark from 'shiki/themes/github-dark.mjs';
+	import '$lib/components/my/md/style.css';
 
 	let { data } = $props();
 	let md = $derived(data.content);
@@ -16,11 +17,11 @@
 		rehypePlugin: [
 			rehypeShikiFromHighlighter,
 			createHighlighterCoreSync({
-				themes: [githubLight],
+				themes: [githubLight, githubDark],
 				langs: [ts, rust],
 				engine: createJavaScriptRegexEngine()
 			}),
-			{ theme: 'github-light' }
+			{ themes: { light: 'github-light', dark: 'github-dark' } }
 		]
 	} satisfies Plugin;
 	const plugins: Plugin[] = [shikiPlugin];
