@@ -11,7 +11,7 @@
 	let { data, children } = $props();
 
 	// set sidebar in docs layout
-	let items = data.docItems.map((d) => {
+	const items = data.docItems.map((d) => {
 		const path = d.relativePath.replace('.md', '');
 		const label = d.name.replace('.md', '');
 		const href = d.relativePath.replace('.md', '');

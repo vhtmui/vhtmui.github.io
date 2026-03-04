@@ -5,7 +5,7 @@
 
 <div>
 	<h1>{page.status}: {page.error.message}</h1>
-	<Button href="/" variant='outline'>Go back</Button>
+	<Button onclick={() => window.history.back()} size="lg" variant="outline">Back</Button>
 </div>
 
 <style>
@@ -13,7 +13,7 @@
 		height: 80vh;
 		display: flex;
 		flex-direction: column;
-        gap: 1rem;
+		gap: 1rem;
 		align-items: center;
 		justify-content: center;
 	}

@@ -1,22 +1,29 @@
-<script>
+<script lang="ts">
+	import type { Plugin } from 'svelte-exmarkdown';
 	import Markdown from 'svelte-exmarkdown';
-	import { gfmPlugin } from 'svelte-exmarkdown/gfm';
-	// import rehypeSlug from 'rehype-slug';
-	// import rehypeHighlight from 'rehype-highlight';
-	// import powershell from 'highlight.js/lib/languages/powershell';
-	// import { common } from 'lowlight';
-	// import 'highlight.js/styles/github.css';
+	import rehypeShikiFromHighlighter from '@shikijs/rehype/core';
+	import { createHighlighterCoreSync } from 'shiki/core';
+	import { createJavaScriptRegexEngine } from 'shiki/engine/javascript';
+	import ts from 'shiki/langs/typescript.mjs';
+	import rust from 'shiki/langs/rust.mjs';
+	import githubLight from 'shiki/themes/github-light.mjs';
+	// import githubDark from 'shiki/themes/github-dark.mjs';
 
-	/** @type {import('./$types').PageData} */
 	let { data } = $props();
+	let md = $derived(data.content);
 
-	let md = $state('# hello world');
-	const plugins = [gfmPlugin()];
+	const shikiPlugin = {
+		rehypePlugin: [
+			rehypeShikiFromHighlighter,
+			createHighlighterCoreSync({
+				themes: [githubLight],
+				langs: [ts, rust],
+				engine: createJavaScriptRegexEngine()
+			}),
+			{ theme: 'github-light' }
+		]
+	} satisfies Plugin;
+	const plugins: Plugin[] = [shikiPlugin];
 </script>
 
-<div class="markdown">
-	<Markdown md={data.content} {plugins} />
-</div>
-
-<style>
-</style>
+<Markdown {md} {plugins} />
