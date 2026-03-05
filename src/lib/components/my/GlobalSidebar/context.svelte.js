@@ -4,6 +4,7 @@ import { SvelteMap } from 'svelte/reactivity';
  * 菜单项数据
  * @type {Object}
  * @property {Map<string, GlobalSidebarMenuItem>} data 菜单项数据
+ * @property {Object} option 选项
  */
 export const sb = $state({
 	itemData: null,

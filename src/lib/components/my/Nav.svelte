@@ -18,13 +18,13 @@
 <div class="mr-auto w-full">
 	<Breadcrumb.Root>
 		<Breadcrumb.List>
-			{#each pathName_items as items, i}
+			{#each pathName_items as item, i (item.href)}
 				<Breadcrumb.Item>
 					{#if i === pathName_items.length - 1}
-						<Breadcrumb.Page>{items.name}</Breadcrumb.Page>
+						<Breadcrumb.Page>{item.name}</Breadcrumb.Page>
 					{:else}
-						<Breadcrumb.Link href={items.href}>
-							{items.name}
+						<Breadcrumb.Link href={item.href}>
+							{item.name}
 						</Breadcrumb.Link>
 					{/if}
 				</Breadcrumb.Item>

@@ -12,5 +12,5 @@
   >
   <Button {variant} class={className} href="/dufs">Dufs</Button>
   <Button {variant} class={className} href="/docs">Docs</Button>
-  <Button {variant} class={className} href="/pending">Pending...</Button>
+  <Button {variant} class={className} href="/testpage">Test Page</Button>
 </div>

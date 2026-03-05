@@ -1,7 +1,7 @@
 <script>
 	import * as Sidebar from '@ui/sidebar/index.js';
 	import * as Collapsible from '@ui/collapsible/index.js';
-	import { GlobalSidebarMenuItem, sb } from './context.svelte.js';
+	import { sb } from './context.svelte.js';
 	import { useSidebar } from '@ui/sidebar/context.svelte.js';
 
 	let { ref = $bindable(null), top } = $props();
@@ -33,7 +33,7 @@
 				</Collapsible.Trigger>
 				<Collapsible.Content>
 					<Sidebar.MenuSub>
-						{#each menuItem.children as child}
+						{#each menuItem.children as child (child.href)}
 							{@render mitem(child)}
 						{/each}
 					</Sidebar.MenuSub>
