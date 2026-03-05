@@ -1,6 +1,6 @@
 <script>
 	import Markdown from 'svelte-exmarkdown';
-	import {gfmPlugin} from 'svelte-exmarkdown/gfm';
+	import { gfmPlugin } from 'svelte-exmarkdown/gfm';
 
 	import { fromHtmlIsomorphic } from 'hast-util-from-html-isomorphic';
 	import rehypeSlug from 'rehype-slug';
@@ -10,12 +10,12 @@
 	import { createHighlighterCoreSync } from 'shiki/core';
 	import { createJavaScriptRegexEngine } from 'shiki/engine/javascript';
 	import ts from 'shiki/langs/typescript.mjs';
-	import ps  from 'shiki/langs/powershell.mjs';
+	import ps from 'shiki/langs/powershell.mjs';
 	import rust from 'shiki/langs/rust.mjs';
 	import slackDark from 'shiki/themes/slack-dark.mjs';
 	import slackOchin from 'shiki/themes/slack-ochin.mjs';
 
-	import { h1,h2 } from '$lib/components/my/md';
+	import { h1, h2 } from '$lib/components/my/md';
 
 	let { data } = $props();
 	let md = $derived(data.content);
@@ -28,12 +28,12 @@
 			rehypeShikiFromHighlighter,
 			createHighlighterCoreSync({
 				themes: [slackDark, slackOchin],
-				langs: [ts, rust,ps],
+				langs: [ts, rust, ps],
 				engine: createJavaScriptRegexEngine()
 			}),
 			{ themes: { light: 'slack-ochin', dark: 'slack-dark' } }
 		]
-	}
+	};
 
 	/** @type {import('svelte-exmarkdown').Plugin[]} */
 	const plugins = [
@@ -45,31 +45,20 @@
 			rehypePlugin: [
 				rehypeAutoLinkHeadings,
 				{
-					content: (
-						fromHtmlIsomorphic(linkSvg, { fragment: true }).children
-					)
+					content: fromHtmlIsomorphic(linkSvg, { fragment: true }).children
 				}
 			]
 		}
 	];
 </script>
 
-<div class="prose markdown-body">
+<article class="prose">
 	<Markdown {md} {plugins} {h1} {h2}></Markdown>
-</div>
+</article>
 
 <style>
-	.markdown-body {
-		box-sizing: border-box;
-		min-width: 200px;
-		max-width: 980px;
+	article {
+		scroll-margin-top: 4rem;
 		margin: 0 auto;
-		padding: 45px;
-	}
-
-	@media (max-width: 767px) {
-		.markdown-body {
-			padding: 15px;
-		}
 	}
 </style>

@@ -18,7 +18,7 @@ const config = {
 		prerender: {
 			handleHttpError: ({ path, message }) => {
 				// ignore deliberate link to shiny 404 page
-				if (path === '/dufs' || path === '/pending' || path.startsWith('/docs/')) {
+				if (path === '/dufs' || path === '/programming' || path.startsWith('/docs/')) {
 					return;
 				}
 
