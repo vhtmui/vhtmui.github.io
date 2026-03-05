@@ -15,7 +15,14 @@
 {/snippet}
 
 {#snippet h2(props)}
-	<h2 color="red" {...props}></h2>
+	{@const { children, style, class: className, ...rest } = props}
+	<h2
+		class={cn('btn', className)}
+		{style}
+		{...rest}
+	>
+		{@render children?.()}
+	</h2>
 {/snippet}
 
 {#snippet h3(props)}

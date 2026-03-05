@@ -1,7 +1,8 @@
-<script lang="ts">
-	import type { Plugin } from 'svelte-exmarkdown';
-	import { fromHtmlIsomorphic } from 'hast-util-from-html-isomorphic';
+<script>
 	import Markdown from 'svelte-exmarkdown';
+	import {gfmPlugin} from 'svelte-exmarkdown/gfm';
+
+	import { fromHtmlIsomorphic } from 'hast-util-from-html-isomorphic';
 	import rehypeSlug from 'rehype-slug';
 	import rehypeToc from '@jsdevtools/rehype-toc';
 	import rehypeAutoLinkHeadings from 'rehype-autolink-headings';
@@ -9,13 +10,12 @@
 	import { createHighlighterCoreSync } from 'shiki/core';
 	import { createJavaScriptRegexEngine } from 'shiki/engine/javascript';
 	import ts from 'shiki/langs/typescript.mjs';
+	import ps  from 'shiki/langs/powershell.mjs';
 	import rust from 'shiki/langs/rust.mjs';
-	import githubLight from 'shiki/themes/github-light.mjs';
-	import githubDark from 'shiki/themes/github-dark.mjs';
-	import 'github-markdown-css/github-markdown.css';
+	import slackDark from 'shiki/themes/slack-dark.mjs';
+	import slackOchin from 'shiki/themes/slack-ochin.mjs';
 
-	import '$lib/components/my/md/style.css';
-	import { h1 } from '$lib/components/my/md';
+	import { h1,h2 } from '$lib/components/my/md';
 
 	let { data } = $props();
 	let md = $derived(data.content);
@@ -27,14 +27,17 @@
 		rehypePlugin: [
 			rehypeShikiFromHighlighter,
 			createHighlighterCoreSync({
-				themes: [githubLight, githubDark],
-				langs: [ts, rust],
+				themes: [slackDark, slackOchin],
+				langs: [ts, rust,ps],
 				engine: createJavaScriptRegexEngine()
 			}),
-			{ themes: { light: 'github-light', dark: 'github-dark' } }
+			{ themes: { light: 'slack-ochin', dark: 'slack-dark' } }
 		]
-	} satisfies Plugin;
-	const plugins: Plugin[] = [
+	}
+
+	/** @type {import('svelte-exmarkdown').Plugin[]} */
+	const plugins = [
+		gfmPlugin(),
 		shikiPlugin,
 		{ rehypePlugin: [rehypeSlug] },
 		{ rehypePlugin: [rehypeToc] },
@@ -42,7 +45,7 @@
 			rehypePlugin: [
 				rehypeAutoLinkHeadings,
 				{
-					content: /** @type {Array<ElementContent>} */ (
+					content: (
 						fromHtmlIsomorphic(linkSvg, { fragment: true }).children
 					)
 				}
@@ -51,8 +54,8 @@
 	];
 </script>
 
-<div class="markdown-body">
-	<Markdown {md} {plugins} {h1}></Markdown>
+<div class="prose markdown-body">
+	<Markdown {md} {plugins} {h1} {h2}></Markdown>
 </div>
 
 <style>
@@ -67,12 +70,6 @@
 	@media (max-width: 767px) {
 		.markdown-body {
 			padding: 15px;
-		}
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.markdown-body {
-			background-color: #0d1117;
 		}
 	}
 </style>
