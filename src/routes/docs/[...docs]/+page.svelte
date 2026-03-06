@@ -15,7 +15,7 @@
 	import slackDark from 'shiki/themes/slack-dark.mjs';
 	import slackOchin from 'shiki/themes/slack-ochin.mjs';
 
-	import { h1, h2 } from '$lib/components/my/md';
+	import { h1, h2, pre } from '$lib/components/my/md';
 
 	let { data } = $props();
 	let md = $derived(data.content);
@@ -53,7 +53,7 @@
 </script>
 
 <article class="prose">
-	<Markdown {md} {plugins} {h1} {h2}></Markdown>
+	<Markdown {md} {plugins} {h1} {h2} {pre}></Markdown>
 </article>
 
 <style>
