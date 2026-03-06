@@ -58,7 +58,6 @@
 
 <Sidebar.Root bind:ref style="top: {top}px;">
 	<Sidebar.Trigger
-		variant="outline"
 		style="position: absolute; top: calc(50vh - 32px); {triggerStyle} width: 24px; height: 64px; border-radius: 12px; transition: all 0.3s ease;"
 	/>
 	{#if sb.option?.header}

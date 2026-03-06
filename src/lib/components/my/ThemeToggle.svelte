@@ -4,6 +4,7 @@
 
 	import { toggleMode, setTheme, theme } from 'mode-watcher';
 	import { Button } from '@ui/button';
+	import { onMount } from 'svelte';
 
 	function toggleTheme() {
 		toggleMode();
@@ -12,13 +13,19 @@
 		} else if (theme.current === 'dark') {
 			setTheme('light');
 		} else {
-			// If the theme is 'system', toggle to the opposite of the current system theme
 			const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
 				? 'dark'
 				: 'light';
 			setTheme(systemTheme === 'dark' ? 'light' : 'dark');
 		}
 	}
+
+	onMount(() => {
+		const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
+			? 'dark'
+			: 'light';
+		setTheme(systemTheme);
+	});
 </script>
 
 <Button onclick={toggleTheme} variant="ghost" size="icon">

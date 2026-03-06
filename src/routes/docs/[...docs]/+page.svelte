@@ -52,7 +52,7 @@
 	];
 </script>
 
-<article class="prose">
+<article class="prose dark:prose-invert">
 	<Markdown {md} {plugins} {h1} {h2} {pre}></Markdown>
 </article>
 
