@@ -3,7 +3,6 @@
 	import { cn } from '$lib/utils.js';
 	import PanelLeftIcon from '@lucide/svelte/icons/panel-left';
 	import { useSidebar } from './context.svelte.js';
-	import ChevronLeft from '@lucide/svelte/icons/chevron-left';
 
 	let { ref = $bindable(null), class: className, onclick, ...restProps } = $props();
 
@@ -23,6 +22,6 @@
 	}}
 	{...restProps}
 >
-	<ChevronLeft />
+	<PanelLeftIcon />
 	<span class="sr-only">Toggle Sidebar</span>
 </Button>

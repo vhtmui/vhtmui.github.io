@@ -5,7 +5,7 @@
 	import './layout.css';
 	import Header from '$lib/components/my/Header.svelte';
 	import * as Sidebar from '$lib/components/ui/sidebar';
-	import { GlobalSidebar } from '$lib/components/my/GlobalSidebar';
+	import { GlobalSidebarTrigger, GlobalSidebar } from '$lib/components/my/GlobalSidebar';
 
 	let { children } = $props();
 
@@ -36,10 +36,8 @@
 <Header top={headerTop} />
 <Sidebar.Provider class="pt-14 wrap-break-word">
 	{#if sidebarRef === null}
-		<Sidebar.Trigger
-			variant="outline"
-			class="opacity-90"
-			style="position:fixed; top: calc(50vh - 32px); transform: rotate(180deg); width: 24px; height: 64px; border-radius: 12px;"
+		<GlobalSidebarTrigger
+			class="fixed top-[calc(50vh-32px)] h-16 w-6 rotate-180 rounded-sm opacity-90"
 		/>
 	{/if}
 	<GlobalSidebar bind:ref={sidebarRef} top={headerTop + 56}></GlobalSidebar>

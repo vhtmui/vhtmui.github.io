@@ -4,6 +4,7 @@
 	import * as Collapsible from '@ui/collapsible/index.js';
 	import { sb } from './context.svelte.js';
 	import { useSidebar } from '@ui/sidebar/context.svelte.js';
+	import CustomTrigger from './CustomSidebarTrigger.svelte';
 
 	let { ref = $bindable(null), top } = $props();
 
@@ -50,11 +51,11 @@
 {/snippet}
 
 <Sidebar.Root bind:ref style="top: {top}px;">
-	<Sidebar.Trigger
+	<CustomTrigger
 		class="absolute top-[calc(50vh-32px)] right-1 h-16 w-6 rounded-md transition-none"
 		hidden={!sidebar.open}
 	/>
-	<Sidebar.Trigger
+	<CustomTrigger
 		class="absolute top-[calc(50vh-32px)] -right-7 h-16 w-6 rotate-180 rounded-md transition-none"
 		hidden={sidebar.open}
 	/>
