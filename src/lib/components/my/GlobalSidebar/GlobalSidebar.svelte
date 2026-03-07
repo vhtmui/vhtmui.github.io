@@ -1,4 +1,5 @@
 <script>
+	import { resolve } from '$app/paths';
 	import * as Sidebar from '@ui/sidebar/index.js';
 	import * as Collapsible from '@ui/collapsible/index.js';
 	import { sb } from './context.svelte.js';
@@ -7,17 +8,9 @@
 	let { ref = $bindable(null), top } = $props();
 
 	const sidebar = useSidebar();
-
-	let triggerStyle = $derived(
-		sidebar.open
-			? sidebar.openMobile
-				? 'display: none;'
-				: 'right: 0; transform: rotate(0deg);'
-			: 'right: -36px; transform: rotate(180deg);'
-	);
 </script>
 
-{#snippet mitem(/** @type {GlobalSidebarMenuItem} */ menuItem)}
+{#snippet mitem(/** @type {import('./context.svelte.js').GlobalSidebarMenuItem} */ menuItem)}
 	{#if menuItem.children.length > 0}
 		<Collapsible.Root bind:open={menuItem.open} class="group/collapsible">
 			<Sidebar.MenuItem>
@@ -44,7 +37,7 @@
 		<Sidebar.MenuItem>
 			<Sidebar.MenuButton>
 				{#snippet child({ props })}
-					<a href={menuItem.href} {...props}>
+					<a href={resolve(menuItem.href)} {...props}>
 						{#if menuItem.icon}
 							<menuItem.icon />
 						{/if}
@@ -58,7 +51,12 @@
 
 <Sidebar.Root bind:ref style="top: {top}px;">
 	<Sidebar.Trigger
-		style="position: absolute; top: calc(50vh - 32px); {triggerStyle} width: 24px; height: 64px; border-radius: 12px; transition: all 0.3s ease;"
+		class="absolute top-[calc(50vh-32px)] right-1 h-16 w-6 rounded-md transition-none"
+		hidden={!sidebar.open}
+	/>
+	<Sidebar.Trigger
+		class="absolute top-[calc(50vh-32px)] -right-7 h-16 w-6 rotate-180 rounded-md transition-none"
+		hidden={sidebar.open}
 	/>
 	{#if sb.option?.header}
 		<Sidebar.Header>
