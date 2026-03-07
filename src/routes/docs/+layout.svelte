@@ -16,9 +16,9 @@
 		const label = d.name.replace('.md', '');
 		const href = d.relativePath.replace('.md', '');
 		const open = true;
-		const icon = d.isDirectory ? (open ? FolderOpen : Folder) : null;
+		const Icon = d.isDirectory ? (open ? FolderOpen : Folder) : null;
 		const highlight = false;
-		const item = new GlobalSidebarMenuItem(path, label, href, icon, open, highlight);
+		const item = new GlobalSidebarMenuItem(path, label, href, Icon, open, highlight);
 		return item;
 	});
 
@@ -26,7 +26,7 @@
 
 	$effect(() =>
 		sb.itemData?.forEach((/** @type {GlobalSidebarMenuItem} */ item) => {
-			item.icon = item.icon ? (item.open ? FolderOpen : Folder) : null;
+			item.Icon = item.Icon ? (item.open ? FolderOpen : Folder) : null;
 		})
 	);
 	onDestroy(() => (sb.itemData = null));

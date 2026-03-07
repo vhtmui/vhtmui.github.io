@@ -3,7 +3,7 @@
 	import MoonIcon from '@lucide/svelte/icons/moon';
 
 	import { toggleMode, setTheme, theme } from 'mode-watcher';
-	import { Button } from '@ui/button';
+	import Button from '$lib/components/my/CsButton.svelte';
 	import { onMount } from 'svelte';
 
 	function toggleTheme() {
@@ -28,7 +28,7 @@
 	});
 </script>
 
-<Button onclick={toggleTheme} variant="ghost" size="icon">
+<Button onclick={toggleTheme}>
 	<SunIcon
 		class="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 !transition-all dark:scale-0 dark:-rotate-90"
 	/>

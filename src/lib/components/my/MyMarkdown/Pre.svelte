@@ -1,48 +1,37 @@
 <script>
 	import { cn } from '$lib/utils';
+	import Button from '$lib/components/my/CsButton.svelte';
+	import { Copy, Check } from '@lucide/svelte';
+	import { copyToClipboard } from '$lib/my-utils';
 
 	let { children, class: className, ...rest } = $props();
 
 	let codeText = $state();
 
-	async function copyToClipboard(text) {
-		if (navigator.clipboard) {
-			// 使用现代 Clipboard API
-			try {
-				await navigator.clipboard.writeText(text);
-			} catch (err) {
-				console.error('Failed to copy text: ', err);
-			}
-		} else {
-			// 降级到传统方法
-			const textArea = document.createElement('textarea');
-			textArea.value = text;
-			document.body.appendChild(textArea);
-			textArea.focus();
-			textArea.select();
-			try {
-				document.execCommand('copy');
-			} catch (err) {
-				console.error('Failed to copy text: ', err);
-			}
-			document.body.removeChild(textArea);
-		}
+	async function handleClick() {
+		if (buttonState.copied) return;
+		await copyToClipboard(codeText);
+		buttonState.copied = true;
+		setTimeout(() => {
+			buttonState.copied = false;
+		}, 2000);
 	}
 
-	function handleClick() {
-		copyToClipboard(codeText);
-	}
+	const buttonState = $state({
+		copied: false
+	});
+
+	const CopyIcon = $derived(buttonState.copied ? Check : Copy);
 </script>
 
 <pre
 	contenteditable="false"
 	bind:innerText={codeText}
-	class={cn('', className)}
-	{...rest}>{@render children?.()}</pre>
-<button onclick={handleClick}> copy </button>
-
-<style>
-	button {
-		background-color: red;
-	}
-</style>
+	class={cn('relative', className)}
+	{...rest}><Button
+		size="icon"
+		variant="ghost"
+		class="absolute top-2 right-2"
+		disabled={buttonState.copied}
+		onclick={handleClick}><CopyIcon /></Button
+	>{@render children?.()}</pre>

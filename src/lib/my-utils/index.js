@@ -16,7 +16,7 @@ export function formatUrl(url) {
 		return '/';
 	}
 
-    // 校验相对url
+	// 校验相对url
 	let normalized = url.replace(/\\/g, '/');
 	normalized = normalized.replace(/^https?:\/\//, '').replace(/^\/\//, '');
 	normalized = normalized.replace(/^[^/]*\//, '/');
@@ -27,4 +27,28 @@ export function formatUrl(url) {
 	}
 
 	return normalized || '/';
+}
+
+export async function copyToClipboard(text) {
+	if (navigator.clipboard) {
+		// 使用现代 Clipboard API
+		try {
+			await navigator.clipboard.writeText(text);
+		} catch (err) {
+			console.error('Failed to copy text: ', err);
+		}
+	} else {
+		// 降级到传统方法
+		const textArea = document.createElement('textarea');
+		textArea.value = text;
+		document.body.appendChild(textArea);
+		textArea.focus();
+		textArea.select();
+		try {
+			document.execCommand('copy');
+		} catch (err) {
+			console.error('Failed to copy text: ', err);
+		}
+		document.body.removeChild(textArea);
+	}
 }

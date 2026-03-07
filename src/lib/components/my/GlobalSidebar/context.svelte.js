@@ -30,7 +30,7 @@ export class GlobalSidebarMenuItem {
 		this.path = path;
 		this.label = label;
 		this.href = href;
-		this.icon = $state(icon);
+		this.Icon = $state(icon);
 		this.open = $state(open);
 		this.highlight = highlight;
 		this.children = [];

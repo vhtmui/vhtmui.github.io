@@ -67,9 +67,9 @@
 	</InputGroup.Root>
 	{#if cleanMac().length}
 		<ul>
-			{#each macExp as { name, nums, symbol }, i}
+			{#each macExp as { name, nums, symbol }, i (i)}
 				<li>
-					<CopyText text={macFormatter(cleanMac(), nums, symbol)} {delay} />
+					<CopyText textContent={macFormatter(cleanMac(), nums, symbol)} {delay} />
 				</li>
 				{#if i < macExp.length - 1}
 					<Separator />
@@ -85,13 +85,13 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		justify-content: center;
 		gap: calc(10 * 0.25rem);
 		padding: 5vw 10vw;
 		min-height: 100%;
 	}
 	h1 {
 		text-align: center;
+		padding-top: 10vh;
 	}
 	ul {
 		width: 90%;

@@ -4,7 +4,7 @@
 	import * as Collapsible from '@ui/collapsible/index.js';
 	import { sb } from './context.svelte.js';
 	import { useSidebar } from '@ui/sidebar/context.svelte.js';
-	import CustomTrigger from './CustomSidebarTrigger.svelte';
+	import CsSidebarTrigger from './CsSidebarTrigger.svelte';
 
 	let { ref = $bindable(null), top } = $props();
 
@@ -18,8 +18,8 @@
 				<Collapsible.Trigger>
 					{#snippet child({ props })}
 						<Sidebar.MenuButton {...props}>
-							{#if menuItem.icon}
-								<menuItem.icon />
+							{#if menuItem.Icon}
+								<menuItem.Icon />
 							{/if}
 							<span>{menuItem.label}</span>
 						</Sidebar.MenuButton>
@@ -39,8 +39,8 @@
 			<Sidebar.MenuButton>
 				{#snippet child({ props })}
 					<a href={resolve(menuItem.href)} {...props}>
-						{#if menuItem.icon}
-							<menuItem.icon />
+						{#if menuItem.Icon}
+							<menuItem.Icon />
 						{/if}
 						<span>{menuItem.label}</span>
 					</a>
@@ -51,11 +51,11 @@
 {/snippet}
 
 <Sidebar.Root bind:ref style="top: {top}px;">
-	<CustomTrigger
+	<CsSidebarTrigger
 		class="absolute top-[calc(50vh-32px)] right-1 h-16 w-6 rounded-md transition-none"
 		hidden={!sidebar.open}
 	/>
-	<CustomTrigger
+	<CsSidebarTrigger
 		class="absolute top-[calc(50vh-32px)] -right-7 h-16 w-6 rotate-180 rounded-md transition-none"
 		hidden={sidebar.open}
 	/>
