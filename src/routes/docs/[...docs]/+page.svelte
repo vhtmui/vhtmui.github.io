@@ -4,7 +4,7 @@
 
 	import { fromHtmlIsomorphic } from 'hast-util-from-html-isomorphic';
 	import rehypeSlug from 'rehype-slug';
-	import rehypeToc from '@jsdevtools/rehype-toc';
+	import rehypeToc from 'rehype-toc';
 	import rehypeAutoLinkHeadings from 'rehype-autolink-headings';
 	import rehypeShikiFromHighlighter from '@shikijs/rehype/core';
 	import { createHighlighterCoreSync } from 'shiki/core';
@@ -16,6 +16,7 @@
 	import slackOchin from 'shiki/themes/slack-ochin.mjs';
 
 	import * as MD from '$lib/components/my/MyMarkdown';
+	import Toc from '$lib/components/my/Toc.svelte';
 
 	let { data } = $props();
 	let md = $derived(data.content);
@@ -46,7 +47,9 @@
 		mdPlugin,
 		shikiPlugin,
 		{ rehypePlugin: [rehypeSlug] },
-		{ rehypePlugin: [rehypeToc] },
+		// {
+		// 	rehypePlugin: [rehypeToc]
+		// },
 		{
 			rehypePlugin: [
 				rehypeAutoLinkHeadings,
@@ -57,6 +60,8 @@
 		}
 	];
 </script>
+
+<Toc headings={data.headings} />
 
 <article class="prose dark:prose-invert">
 	<Markdown {md} {plugins} h1={MD.h1} h2={MD.h2}></Markdown>
