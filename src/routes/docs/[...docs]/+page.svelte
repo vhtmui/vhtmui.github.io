@@ -25,7 +25,7 @@
 
 	/** @type {import('svelte-exmarkdown').Plugin} */
 	const csPlugin = {
-		renderer: { pre: MD.Pre, li: MD.Li }
+		renderer: { pre: MD.Pre, nav: MD.Nav}
 	};
 
 	const shikiPlugin = {
