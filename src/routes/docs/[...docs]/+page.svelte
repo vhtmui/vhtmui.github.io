@@ -16,7 +16,6 @@
 	import slackOchin from 'shiki/themes/slack-ochin.mjs';
 
 	import * as MD from '$lib/components/my/MyMarkdown';
-	import Toc from '$lib/components/my/Toc.svelte';
 
 	let { data } = $props();
 	let md = $derived(data.content);
@@ -25,8 +24,8 @@
 		'<svg xmlns="http://www.w3.org/2000/svg" style="display: inline-block; vertical-align: middle; margin-right: 0.2em;" width="0.5em" height="0.5em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link-icon lucide-link"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
 
 	/** @type {import('svelte-exmarkdown').Plugin} */
-	const mdPlugin = {
-		renderer: { pre: MD.Pre }
+	const csPlugin = {
+		renderer: { pre: MD.Pre, li: MD.Li }
 	};
 
 	const shikiPlugin = {
@@ -44,12 +43,11 @@
 	/** @type {import('svelte-exmarkdown').Plugin[]} */
 	const plugins = [
 		gfmPlugin(),
-		mdPlugin,
 		shikiPlugin,
 		{ rehypePlugin: [rehypeSlug] },
-		// {
-		// 	rehypePlugin: [rehypeToc]
-		// },
+		{
+			rehypePlugin: [rehypeToc]
+		},
 		{
 			rehypePlugin: [
 				rehypeAutoLinkHeadings,
@@ -57,11 +55,10 @@
 					content: fromHtmlIsomorphic(linkSvg, { fragment: true }).children
 				}
 			]
-		}
+		},
+		csPlugin
 	];
 </script>
-
-<Toc headings={data.headings} />
 
 <article class="prose dark:prose-invert">
 	<Markdown {md} {plugins} h1={MD.h1} h2={MD.h2}></Markdown>

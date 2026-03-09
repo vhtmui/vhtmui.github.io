@@ -19,7 +19,7 @@ export function formatUrl(url) {
 	// 校验相对url
 	let normalized = url.replace(/\\/g, '/');
 	normalized = normalized.replace(/^https?:\/\//, '').replace(/^\/\//, '');
-	normalized = normalized.replace(/^[^/]*\//, '/');
+	// normalized = normalized.replace(/^[^/]*\//, '/');
 	normalized = normalized.replace(/\/+/g, '/');
 
 	if (!normalized.startsWith('/')) {
