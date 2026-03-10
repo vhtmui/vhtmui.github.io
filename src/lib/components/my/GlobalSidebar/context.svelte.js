@@ -1,4 +1,5 @@
 import { SvelteMap } from 'svelte/reactivity';
+import { formatUrl } from '$lib/my-utils';
 
 /**
  * 菜单项数据
@@ -19,11 +20,11 @@ export const sb = $state({
  */
 export class GlobalSidebarMenuItem {
 	/**
-	 * @param {string} path 路径
+	 * @param {string} path 树结构路径
 	 * @param {string} label 显示名称
-	 * @param {string} href 点击指向的链接
-	 * @param {any} icon 图标
-	 * @param {boolean} open 是否展开
+	 * @param {string} href <a>标签的href属性
+	 * @param {any} icon 图标，响应式渲染
+	 * @param {boolean} open 是否展开，绑定到组件的`open` prop
 	 * @param {boolean} highlight 是否高亮
 	 */
 	constructor(path, label, href, icon = null, open = true, highlight = false) {
@@ -38,9 +39,13 @@ export class GlobalSidebarMenuItem {
 }
 
 /**
- * 从GlobalSidebarMenuItem[] 更新菜单项的children，渲染时将以root为根节点渲染
+ * 从GlobalSidebarMenuItem[] 更新菜单项的children，构建Map结构设置sb.itemData
  * @param {GlobalSidebarMenuItem[]} itemProps 菜单项
- * @param {string} nameToRoot 根节点路径
+ * @param {string} nameToRoot 指定根节点的path，生成的Map中会将其key改为root
+ *
+ * * 生成的Map结构为：path => GlobalSidebarMenuItem，children为子菜单项数组
+ * * path格式为：path/to/file，无前导/尾导斜杠
+ * * 渲染时以root为根节点渲染
  */
 export function setSidebarMenuItems(itemProps, nameToRoot) {
 	let items = new SvelteMap();
@@ -50,9 +55,7 @@ export function setSidebarMenuItems(itemProps, nameToRoot) {
 			if (item.path.startsWith('/')) {
 				item.path = item.path.slice(1);
 			}
-			if (!item.href.startsWith('/')) {
-				item.href = '/' + item.href;
-			}
+			item.href = formatUrl(item.href);
 			return item;
 		})
 		.sort((a, b) => a.path.split('/').length - b.path.split('/').length)

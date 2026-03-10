@@ -8,7 +8,6 @@
 	let activeId = $state('');
 
 	const ast = getAstNode();
-	$inspect(ast);
 </script>
 
 <nav class={cn('not-prose', ClassName)} {...restProps}>
