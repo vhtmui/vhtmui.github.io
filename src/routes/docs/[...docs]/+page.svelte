@@ -2,10 +2,8 @@
 	import Markdown from 'svelte-exmarkdown';
 	import { gfmPlugin } from 'svelte-exmarkdown/gfm';
 
-	import { fromHtmlIsomorphic } from 'hast-util-from-html-isomorphic';
 	import rehypeSlug from 'rehype-slug';
 	import rehypeToc from 'rehype-toc';
-	import rehypeAutoLinkHeadings from 'rehype-autolink-headings';
 	import rehypeShikiFromHighlighter from '@shikijs/rehype/core';
 	import { createHighlighterCoreSync } from 'shiki/core';
 	import { createJavaScriptRegexEngine } from 'shiki/engine/javascript';
@@ -47,14 +45,6 @@
 		{ rehypePlugin: [rehypeSlug] },
 		{
 			rehypePlugin: [rehypeToc]
-		},
-		{
-			rehypePlugin: [
-				rehypeAutoLinkHeadings,
-				{
-					content: fromHtmlIsomorphic(linkSvg, { fragment: true }).children
-				}
-			]
 		},
 		csPlugin
 	];

@@ -11,6 +11,6 @@
 	$inspect(ast);
 </script>
 
-<nav class={cn('not-prose text-blue-800', ClassName)} {...restProps}>
+<nav class={cn('not-prose', ClassName)} {...restProps}>
 	{@render children?.()}
 </nav>
