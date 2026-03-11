@@ -5,53 +5,57 @@
 	import rehypeSlug from 'rehype-slug';
 	import rehypeToc from 'rehype-toc';
 	import rehypeShikiFromHighlighter from '@shikijs/rehype/core';
-	import { createHighlighterCoreSync } from 'shiki/core';
-	import { createJavaScriptRegexEngine } from 'shiki/engine/javascript';
-	import ts from 'shiki/langs/typescript.mjs';
-	import ps from 'shiki/langs/powershell.mjs';
-	import rust from 'shiki/langs/rust.mjs';
-	import slackDark from 'shiki/themes/slack-dark.mjs';
-	import slackOchin from 'shiki/themes/slack-ochin.mjs';
+	import { createOnigurumaEngine } from 'shiki';
+	import { createHighlighterCore } from 'shiki/core';
 
 	import * as MD from '$lib/components/my/MyMarkdown';
 
 	let { data } = $props();
 	let md = $derived(data.content);
 
-	const linkSvg =
-		'<svg xmlns="http://www.w3.org/2000/svg" style="display: inline-block; vertical-align: middle; margin-right: 0.2em;" width="0.5em" height="0.5em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link-icon lucide-link"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
+	const shikiPluginPromise = createHighlighterCore({
+		themes: [import('shiki/themes/slack-dark.mjs'), import('shiki/themes/slack-ochin.mjs')],
+		langs: [import('shiki/langs/rust.mjs')],
+		engine: createOnigurumaEngine(import('shiki/wasm'))
+	}).then((highlighter) => {
+		return {
+			rehypePlugin: [
+				rehypeShikiFromHighlighter,
+				highlighter,
+				{ themes: { light: 'slack-ochin', dark: 'slack-dark' } }
+			]
+		};
+	});
 
 	/** @type {import('svelte-exmarkdown').Plugin} */
 	const csPlugin = {
-		renderer: { pre: MD.Pre, nav: MD.Nav}
-	};
-
-	const shikiPlugin = {
-		rehypePlugin: [
-			rehypeShikiFromHighlighter,
-			createHighlighterCoreSync({
-				themes: [slackDark, slackOchin],
-				langs: [ts, rust, ps],
-				engine: createJavaScriptRegexEngine()
-			}),
-			{ themes: { light: 'slack-ochin', dark: 'slack-dark' } }
-		]
+		renderer: { pre: MD.Pre, nav: MD.Nav }
 	};
 
 	/** @type {import('svelte-exmarkdown').Plugin[]} */
 	const plugins = [
 		gfmPlugin(),
-		shikiPlugin,
 		{ rehypePlugin: [rehypeSlug] },
 		{
 			rehypePlugin: [rehypeToc]
 		},
 		csPlugin
 	];
+
+	const csSnippetPlugin = {
+		h1: MD.h1,
+		h2: MD.h2
+	};
 </script>
 
 <article class="prose dark:prose-invert">
-	<Markdown {md} {plugins} h1={MD.h1} h2={MD.h2}></Markdown>
+	{#await shikiPluginPromise}
+		<Markdown {md} {plugins} {...csSnippetPlugin} />
+	{:then shikiPlugin}
+		<Markdown {md} plugins={[shikiPlugin, ...plugins]} {...csSnippetPlugin} />
+	{:catch}
+		<Markdown {md} {plugins} {...csSnippetPlugin} />
+	{/await}
 </article>
 
 <style>

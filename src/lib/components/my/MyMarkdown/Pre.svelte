@@ -6,10 +6,12 @@
 
 	let { children, class: className, ...rest } = $props();
 
-	let codeText = $state();
+	/** @type {HTMLPreElement} */
+	let pre = $state();
 
 	async function handleClick() {
 		if (buttonState.copied) return;
+		const codeText = pre.textContent;
 		await copyToClipboard(codeText);
 		buttonState.copied = true;
 		setTimeout(() => {
@@ -24,14 +26,17 @@
 	const CopyIcon = $derived(buttonState.copied ? Check : Copy);
 </script>
 
-<pre
-	contenteditable="false"
-	bind:innerText={codeText}
-	class={cn('relative', className)}
-	{...rest}><Button
+<div class="relative">
+	<pre
+		contenteditable="false"
+		bind:this={pre}
+		class={cn('', className)}
+		{...rest}>{@render children?.()}</pre>
+	<Button
 		size="icon"
 		variant="ghost"
 		class="absolute top-2 right-2"
 		disabled={buttonState.copied}
 		onclick={handleClick}><CopyIcon /></Button
-	>{@render children?.()}</pre>
+	>
+</div>

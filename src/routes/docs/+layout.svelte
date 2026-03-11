@@ -11,6 +11,7 @@
 	let { data, children } = $props();
 
 	// set sidebar in docs layout
+	// svelte-ignore state_referenced_locally
 	const items = data.docItems.map((d) => {
 		const path = d.relativePath.replace('.md', '');
 		const label = d.name.replace('.md', '');
