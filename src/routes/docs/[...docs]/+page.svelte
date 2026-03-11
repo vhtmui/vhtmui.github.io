@@ -37,7 +37,15 @@
 		gfmPlugin(),
 		{ rehypePlugin: [rehypeSlug] },
 		{
-			rehypePlugin: [rehypeToc]
+			rehypePlugin: [
+				rehypeToc,
+				{
+					headings: ['h2', 'h3', 'h4', 'h5', 'h6'],
+					cssClasses: {
+						toc: MD.navFlagClass
+					}
+				}
+			]
 		},
 		csPlugin
 	];

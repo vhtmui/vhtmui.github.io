@@ -10,6 +10,5 @@
 	<Button {variant} class={className} href="/mac-converter">MAC Address Converter</Button>
 	<Button {variant} class={className} href="/dufs">Dufs</Button>
 	<Button {variant} class={className} href="/docs">Docs</Button>
-	<Button {variant} class={className} href="/docs2">Docs2</Button>
 	<Button {variant} class={className} href="/testpage">Test Page</Button>
 </div>
