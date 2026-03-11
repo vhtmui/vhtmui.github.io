@@ -1,15 +1,29 @@
 <script>
 	import { cn } from '$lib/utils';
 	import { getAstNode } from 'svelte-exmarkdown';
-	import { onMount } from 'svelte';
 
 	let { children, class: ClassName, ...restProps } = $props();
 
-	let activeId = $state('');
-
-	const ast = getAstNode();
+	const navAst = getAstNode().current;
+	$inspect(navAst);
 </script>
 
+{#snippet node(child)}
+	{#if (child.type = 'element')}
+		<svelte:element this={child.tagName}>
+			{#if child.children}
+				{#each child.children as subChild, index (index)}
+					{@render node(subChild)}
+				{/each}
+			{/if}
+		</svelte:element>
+	{:else if (child.type = 'text')}
+		{child.value}
+	{/if}
+{/snippet}
+
 <nav class={cn('not-prose', ClassName)} {...restProps}>
-	{@render children?.()}
+	{#each navAst.children as child, index (index)}
+		{@render node(child)}
+	{/each}
 </nav>
