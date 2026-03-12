@@ -17,7 +17,7 @@
 {#snippet h2(props)}
 	{@const { children, style, class: className, ...rest } = props}
 	<h2
-		class={cn('btn', className)}
+		class={cn('', className)}
 		{style}
 		{...rest}
 	>

@@ -28,6 +28,7 @@
 		"@types/node": "^22.19.15",
 		"bits-ui": "^2.16.3",
 		"clsx": "^2.1.1",
+		"daisyui": "^5.5.19",
 		"eslint": "^9.39.4",
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-svelte": "^3.15.0",

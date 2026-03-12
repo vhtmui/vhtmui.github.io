@@ -9,14 +9,29 @@
 	let { children, class: ClassName, ...restProps } = $props();
 
 	const navAst = getAstNode();
-	$inspect(navAst);
+
+	let activeHref = $state(null);
 </script>
 
 {#snippet node(child)}
 	{#if child.type === 'element'}
 		{@const { className, ...restProps } = child.properties || {}}
-		<svelte:element this={child.tagName} class={className} {...restProps}>
-			{#if child.children}
+		{@const csn = cn(className, className?.includes('toc-level-1') ? 'menu' : '')}
+		<svelte:element this={child.tagName === 'ol' ? 'ul' : child.tagName} class={csn} {...restProps}>
+			{#if child.tagName === 'li'}
+				{#if child.children.length > 1}
+					<details>
+						<summary>
+							{@render node(child.children[0])}
+						</summary>
+						{#each child.children.slice(1) as subChild, index (index)}
+							{@render node(subChild)}
+						{/each}
+					</details>
+				{:else if child.children.length === 1}
+					{@render node(child.children[0])}
+				{/if}
+			{:else}
 				{#each child.children as subChild, index (index)}
 					{@render node(subChild)}
 				{/each}
@@ -38,4 +53,12 @@
 {/if}
 
 <style>
+	details > ol {
+		padding-left: 1rem;
+	}
+
+	details > summary {
+		cursor: pointer;
+		list-style: none;
+	}
 </style>
