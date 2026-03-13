@@ -113,6 +113,7 @@
 			width: 100%;
 			max-height: none;
 			padding: 0;
+			margin-bottom: 2rem;
 			border-bottom: 1px solid var(--border);
 		}
 		.toc-holder {

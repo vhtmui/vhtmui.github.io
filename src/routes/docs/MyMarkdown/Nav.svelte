@@ -16,8 +16,12 @@
 {#snippet node(child)}
 	{#if child.type === 'element'}
 		{@const { className, ...restProps } = child.properties || {}}
-		{@const csn = cn(className, className?.includes('toc-level-1') ? 'menu' : '')}
+		{@const isTopLevel = className?.includes('toc-level-1')}
+		{@const csn = cn(className, isTopLevel ? 'menu' : '')}
 		<svelte:element this={child.tagName === 'ol' ? 'ul' : child.tagName} class={csn} {...restProps}>
+			{#if isTopLevel}
+				<li class="menu-title">OutLine</li>
+			{/if}
 			{#if child.tagName === 'li'}
 				{#if child.children.length > 1}
 					<details>
@@ -59,5 +63,19 @@
 	}
 	ul.toc-level-1 {
 		width: 100%;
+		border: none;
+		&::before {
+			display: none;
+		}
+	}
+	ul::before {
+		background-color: var(--color-base-content);
+		opacity: 0.1;
+		width: 1px;
+		content: '';
+		inset-inline-start: 0px;
+		position: absolute;
+		top: 0.75rem;
+		bottom: 0.75rem;
 	}
 </style>
