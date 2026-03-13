@@ -80,7 +80,7 @@
 		flex: 1;
 		min-width: 0;
 		max-width: 100%;
-		padding: 0 2rem;
+		padding: 0 2rem 0 4rem;
 	}
 
 	.toc-holder {
