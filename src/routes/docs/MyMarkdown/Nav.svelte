@@ -45,7 +45,7 @@
 {#if !navAst.current.properties?.className?.includes(navFlagClass)}
 	{@render children?.()}
 {:else}
-	<nav class={cn('not-prose', ClassName)} {...restProps}>
+	<nav class={cn('not-prose', ClassName, navAst.current.properties.className)} {...restProps}>
 		{#each navAst.current.children as child, index (index)}
 			{@render node(child)}
 		{/each}
@@ -53,12 +53,11 @@
 {/if}
 
 <style>
-	details > ol {
-		padding-left: 1rem;
+	nav {
+		scrollbar-width: thin;
+		scrollbar-gutter: stable;
 	}
-
-	details > summary {
-		cursor: pointer;
-		list-style: none;
+	ul.toc-level-1 {
+		width: 100%;
 	}
 </style>

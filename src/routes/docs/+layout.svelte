@@ -39,18 +39,6 @@
 
 <style>
 	.docs-layout {
-		padding: 1rem 1rem;
-	}
-
-	@media (min-width: 768px) {
-		.docs-layout {
-			padding: 1rem 2rem;
-		}
-	}
-
-	@media (min-width: 1024px) {
-		.docs-layout {
-			padding: 1rem 3rem;
-		}
+		min-width: 0;
 	}
 </style>

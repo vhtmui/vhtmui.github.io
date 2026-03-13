@@ -8,7 +8,7 @@
 	import { createOnigurumaEngine } from 'shiki';
 	import { createHighlighterCore } from 'shiki/core';
 
-	import * as MD from '$lib/components/my/MyMarkdown';
+	import * as MD from '../MyMarkdown/index.js';
 
 	let { data } = $props();
 	let md = $derived(data.content);
@@ -56,19 +56,67 @@
 	};
 </script>
 
-<article class="prose dark:prose-invert">
-	{#await shikiPluginPromise}
-		<Markdown {md} {plugins} {...csSnippetPlugin} />
-	{:then shikiPlugin}
-		<Markdown {md} plugins={[shikiPlugin, ...plugins]} {...csSnippetPlugin} />
-	{:catch}
-		<Markdown {md} {plugins} {...csSnippetPlugin} />
-	{/await}
-</article>
+<div class="doc-container">
+	<article class="prose dark:prose-invert">
+		{#await shikiPluginPromise}
+			<Markdown {md} {plugins} {...csSnippetPlugin} />
+		{:then shikiPlugin}
+			<Markdown {md} plugins={[shikiPlugin, ...plugins]} {...csSnippetPlugin} />
+		{:catch}
+			<Markdown {md} {plugins} {...csSnippetPlugin} />
+		{/await}
+	</article>
+	<div class="toc-holder" aria-hidden="true"></div>
+</div>
 
 <style>
+	.doc-container {
+		display: flex;
+		flex-direction: row;
+		width: 100%;
+	}
+
 	article {
-		scroll-margin-top: 4rem;
-		margin: 0 auto;
+		flex: 1;
+		min-width: 0;
+		max-width: 100%;
+		padding: 0 2rem;
+	}
+
+	.toc-holder {
+		flex: 0 0 300px;
+		width: 300px;
+		min-width: 300px;
+	}
+
+	:global(.vvvvvvvvvvvh) {
+		position: fixed;
+		right: 0;
+		top: 4rem;
+		bottom: 4rem;
+		width: 300px;
+		max-height: calc(100vh - 8rem);
+		overflow-y: auto;
+		padding: 1rem;
+		z-index: 10;
+	}
+
+	@media (min-width: 1280px) {
+	}
+
+	@media (max-width: 768px) {
+		article {
+			padding: 0 2rem;
+		}
+		:global(.vvvvvvvvvvvh) {
+			position: static;
+			width: 100%;
+			max-height: none;
+			padding: 0;
+			border-bottom: 1px solid var(--border);
+		}
+		.toc-holder {
+			display: none;
+		}
 	}
 </style>

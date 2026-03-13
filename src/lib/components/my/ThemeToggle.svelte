@@ -2,16 +2,16 @@
 	import SunIcon from '@lucide/svelte/icons/sun';
 	import MoonIcon from '@lucide/svelte/icons/moon';
 
-	import { toggleMode, setTheme, theme } from 'mode-watcher';
+	import { toggleMode, setTheme, mode } from 'mode-watcher';
 	import Button from '$lib/components/my/CsButton.svelte';
 	import { onMount } from 'svelte';
 
 	function toggleTheme() {
 		toggleMode();
-		if (theme.current === 'light') {
-			setTheme('dark');
-		} else if (theme.current === 'dark') {
+		if (mode.current === 'light') {
 			setTheme('light');
+		} else if (mode.current === 'dark') {
+			setTheme('dark');
 		} else {
 			const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
 				? 'dark'
