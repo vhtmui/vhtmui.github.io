@@ -1,28 +1,30 @@
 <script>
 	import { page } from '$app/state';
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb/index.js';
-	import { resolve } from '$app/paths';
-
-	let base = resolve('').replaceAll('/', '');
-	if (base === '') base = '/';
+	const githubUrl = 'vhtmui.github.io';
 
 	let pathName_items = $derived.by(() => {
-		let pn_array = ['/'].concat(page.url.pathname.split('/').filter(Boolean));
+		let pn_array = page.url.pathname.split('/').filter(Boolean);
 
-		if (base in pn_array) {
-			pn_array = [base].concat(pn_array.splice(0, pn_array.indexOf(base) + 1));
+		let hasGithubUrl = false;
+		if (pn_array.includes(githubUrl)) {
+			pn_array = pn_array.splice(pn_array.indexOf(githubUrl));
+			hasGithubUrl = true;
 		}
 
-		return pn_array.map((pathname, index) => {
-			let name = pathname === '/' ? 'Home' : pathname;
-			let href = pn_array
-				.map((v) => (v === '/' ? '' : v))
-				.slice(0, index + 1)
-				.join('/');
-			if (href === '') href = '/';
-			// 该href无需格式化或拼接
+		const pn = pn_array.map((pathname, index) => {
+			let name = pathname;
+			let href = '/' + pn_array.slice(0, index + 1).join('/');
 			return { name, href };
 		});
+
+		if (hasGithubUrl) {
+			pn[0] = { name: 'Home', href: '/' + githubUrl };
+		} else {
+			pn.unshift({ name: 'Home', href: '/' });
+		}
+
+		return pn;
 	});
 </script>
 

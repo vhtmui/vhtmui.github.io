@@ -1,7 +1,6 @@
 import adapter from '@sveltejs/adapter-static';
 
-// const base = process.argv.includes('dev') ? '' : '/vhtmui.github.io';
-export const base = '/vhtmui.github.io';
+const base = process.argv.includes('dev') ? '' : '/vhtmui.github.io';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
