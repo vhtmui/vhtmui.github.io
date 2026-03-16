@@ -5,6 +5,7 @@
 <script>
 	import { cn } from '$lib/utils';
 	import { getAstNode } from 'svelte-exmarkdown';
+	import { resolve } from '$app/paths';
 
 	let { children, class: ClassName, ...restProps } = $props();
 
@@ -15,10 +16,16 @@
 
 {#snippet node(child)}
 	{#if child.type === 'element'}
-		{@const { className, ...restProps } = child.properties || {}}
+		{@const { className, href, ...restProps } = child.properties || {}}
 		{@const isTopLevel = className?.includes('toc-level-1')}
 		{@const csn = cn(className, isTopLevel ? 'menu' : '')}
-		<svelte:element this={child.tagName === 'ol' ? 'ul' : child.tagName} class={csn} {...restProps}>
+		<svelte:element
+			this={child.tagName === 'ol' ? 'ul' : child.tagName}
+			class={csn}
+			{...restProps}
+			,
+			href={href ? resolve(href) : undefined}
+		>
 			{#if isTopLevel}
 				<li class="menu-title">OutLine</li>
 			{/if}
