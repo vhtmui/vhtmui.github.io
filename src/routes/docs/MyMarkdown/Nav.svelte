@@ -16,16 +16,10 @@
 
 {#snippet node(child)}
 	{#if child.type === 'element'}
-		{@const { className, href, ...restProps } = child.properties || {}}
+		{@const { className, ...restProps } = child.properties || {}}
 		{@const isTopLevel = className?.includes('toc-level-1')}
 		{@const csn = cn(className, isTopLevel ? 'menu' : '')}
-		<svelte:element
-			this={child.tagName === 'ol' ? 'ul' : child.tagName}
-			class={csn}
-			{...restProps}
-			,
-			href={href ? resolve(href) : undefined}
-		>
+		<svelte:element this={child.tagName === 'ol' ? 'ul' : child.tagName} class={csn} {...restProps}>
 			{#if isTopLevel}
 				<li class="menu-title">OutLine</li>
 			{/if}
