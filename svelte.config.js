@@ -26,6 +26,9 @@ const config = {
 				throw new Error(message);
 			},
 			handleMissingId: 'warn'
+		},
+		paths: {
+			base: process.argv.includes('dev') ? '' : process.env.BASE_PATH
 		}
 	}
 };
