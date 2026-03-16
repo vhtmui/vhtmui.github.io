@@ -5,7 +5,6 @@
 <script>
 	import { cn } from '$lib/utils';
 	import { getAstNode } from 'svelte-exmarkdown';
-	import { resolve } from '$app/paths';
 
 	let { children, class: ClassName, ...restProps } = $props();
 

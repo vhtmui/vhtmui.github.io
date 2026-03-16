@@ -1,5 +1,8 @@
 import adapter from '@sveltejs/adapter-static';
 
+// const base = process.argv.includes('dev') ? '' : '/vhtmui.github.io';
+export const base = '/vhtmui.github.io';
+
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	kit: {
@@ -18,7 +21,7 @@ const config = {
 		prerender: {
 			handleHttpError: ({ path, message }) => {
 				// ignore deliberate link to shiny 404 page
-				if (path === '/dufs' || path === '/programming' || path.startsWith('/docs/')) {
+				if (path.includes('/dufs') || path.includes('/programming') || path.includes('/docs/')) {
 					return;
 				}
 
@@ -28,7 +31,7 @@ const config = {
 			handleMissingId: 'warn'
 		},
 		paths: {
-			base: process.argv.includes('dev') ? '' : process.env.BASE_PATH
+			base: base
 		}
 	}
 };

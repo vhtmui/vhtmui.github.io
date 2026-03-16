@@ -1,5 +1,4 @@
 <script>
-	import { resolve } from '$app/paths';
 	import * as Sidebar from '@ui/sidebar/index.js';
 	import * as Collapsible from '@ui/collapsible/index.js';
 	import { sb } from './context.svelte.js';
@@ -38,7 +37,7 @@
 		<Sidebar.MenuItem>
 			<Sidebar.MenuButton>
 				{#snippet child({ props })}
-					<a href={resolve(menuItem.href)} {...props}>
+					<a href={menuItem.href} {...props}>
 						{#if menuItem.Icon}
 							<menuItem.Icon />
 						{/if}
