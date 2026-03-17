@@ -13,9 +13,29 @@
 	let { data } = $props();
 	let md = $derived(data.content);
 
-	const shikiPluginPromise = createHighlighterCore({
+	const docName = $derived(data.docName);
+
+	function getLangs() {
+		switch (true) {
+			case docName.match(/powershell/i) && true:
+				return [import('shiki/langs/powershell.mjs')];
+			case docName.match(/rust/i) && true:
+				return [import('shiki/langs/rust.mjs')];
+			case docName.match(/web/i) && true:
+				return [
+					import('shiki/langs/javascript.mjs'),
+					import('shiki/langs/html.mjs'),
+					import('shiki/langs/css.mjs')
+				];
+			default:
+				return [];
+		}
+	}
+	
+
+	const shikiPluginPromise = $derived(createHighlighterCore({
 		themes: [import('shiki/themes/slack-dark.mjs'), import('shiki/themes/slack-ochin.mjs')],
-		langs: [import('shiki/langs/rust.mjs')],
+		langs: [...getLangs()],
 		engine: createOnigurumaEngine(import('shiki/wasm'))
 	}).then((highlighter) => {
 		return {
@@ -25,7 +45,7 @@
 				{ themes: { light: 'slack-ochin', dark: 'slack-dark' } }
 			]
 		};
-	});
+	}));
 
 	/** @type {import('svelte-exmarkdown').Plugin} */
 	const csPlugin = {

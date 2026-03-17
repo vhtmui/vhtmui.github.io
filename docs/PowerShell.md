@@ -14,13 +14,13 @@ vscode中默认使用UTF8编码，powershell旧版本中默认使用系统编码
 
 输入Get-Help查找帮助时
 
-```Powershell
+```powershell
 Get-Help Get-FTPChildItem
 ```
 
 输出内容信息大多为空，此时应先导入PSFTP模块
 
-```Powershell
+```powershell
 Import-Module PSFTP
 ```
 

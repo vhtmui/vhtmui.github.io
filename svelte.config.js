@@ -1,6 +1,6 @@
 import adapter from '@sveltejs/adapter-static';
 
-const base = process.argv.includes('dev') ? '' : '/vhtmui.github.io';
+const base = process.argv.includes('dev') ? '' : process.env.BASE_PATH;
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {

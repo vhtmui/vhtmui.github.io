@@ -8,7 +8,7 @@
 
 带标签的模版形式如：
 
-```js
+```javascript
   `我需要做：
   ${todos}
   当前进度为：${progress}
@@ -17,7 +17,7 @@
 
 带标签的模板字面量是一个函数调用的语法糖，上文语法表示实际如下：
 
-```js
+```javascript
   fn`我需要做：
   ${todos}
   当前进度为：${progress}
@@ -52,7 +52,7 @@
   * `valuel`即迭代产生的值
 * 可使用生成器函数快速创建一个可迭代对象。如：
 
-  ```js
+  ```javascript
   //example1 生成器函数直接生成可迭代对象
   function* generator(i) {
     yield i;
@@ -129,7 +129,7 @@
 
 JS异步函数会立刻返回一个 `promise`，`promise`拥有一个状态。可以对返回的 `promise`对象调用 `then()`方法，`then()`方法接收一个函数，`promise`会用使用**原异步函数调用`resolve`函数的参数**作为参数调用这个函数。如*Example 1*：
 
-```js
+```javascript
 //Example 1
 // 使用Promise构造函数创建一个promise对象
 // resolve函数的参数"done"将在fulfillment时返回，并作为调用then方法的参数
@@ -141,7 +141,7 @@ promise.then((result) => {
 
 使用 `asycn`关键字注释的函数可以在函数内部使用 `await`关键字调用异步函数，使异步函数直接返回 `fulfillment`，而不是先返回 `promise`对象。`asycn\await`写法也更直观，看起来和同步函数一样。如*Example 2*:
 
-```js
+```javascript
 //Example 2
 function alarm(person, delay) {
   return new Promise((resolve, reject) => {
@@ -177,7 +177,7 @@ button.addEventListener("click", async () => {//使用async关键字
 2. 请求成功时存储数据库对象 `db = openRequest.result;`
 3. 创建数据库表，新建自增列：
 
-   ```JS
+   ```javascript
     const objectStore = db.createObjectStore("notes_os", {//创建一个新表命名为notes_os
       keyPath: "id",//创建自增列
       autoIncrement: true,
@@ -186,7 +186,7 @@ button.addEventListener("click", async () => {//使用async关键字
 
 4. 创建新的列字段,创建了 `title`和 `body`字段（列）。
 
-   ```js
+   ```javascript
    objectStore.createIndex("title", "title", { unique: false });
    objectStore.createIndex("body", "body", { unique: false });
    ```
@@ -209,7 +209,7 @@ button.addEventListener("click", async () => {//使用async关键字
 
 Proxy用于拦截一些操作，替换成自定义实现。如：
 
-```js
+```javascript
 const handler = {
   get(target, property){
     return name in target ? target[name] : 42;
@@ -226,7 +226,7 @@ proxy操作不是随意的，需要保持`不可拓展对象`和`不可配置属
 
 对象的原型为其`[[Propotype]]`属性，由构造器对象的`prototype`属性定义。即：
 
-```js
+```javascript
 let s = new String('a');
 Object.getPrototypeOf(s) === String.prototype;
 ```
@@ -243,7 +243,7 @@ Object.getPrototypeOf(s) === String.prototype;
 
 #### 组合选择器
 
-```CSS
+```css
 .a{
   .b {} /* 相当于 .a .b 即属于class="a"的子元素，且自身class="b"的元素 */
   &.b {} /* 相当于 .a.b 即class="a b"或"b a" */
@@ -256,7 +256,7 @@ Object.getPrototypeOf(s) === String.prototype;
 
 #### 后附嵌套选择器
 
-```CSS
+```css
 .a{
   .b& {} /* 相当于 .b.a 即class="a b"或"b a" */
   .b & {} /* 相当于 .b .a 即属于class="b"的子元素，且自身class="a"的元素 */
@@ -268,7 +268,7 @@ Object.getPrototypeOf(s) === String.prototype;
 
 ### 优先级
 
-一条CSS声明的优先级分三层判断
+一条css声明的优先级分三层判断
 
 * 来源，用户代理、用户样式、作者样式优先级从低到高按如下排序。
   1. 用户代理普通样式
@@ -588,7 +588,7 @@ sveltekit完成一次任务需要经过如下三步
 1. 安装静态设配器 `npm i -D @sveltejs/adapter-static`
 2. 配置根目录的svelte.config.js文件:
 
-   ```js
+   ```javascript
    import adapter from '@sveltejs/adapter-static';
 
    /** @type {import('@sveltejs/kit').Config} */
@@ -617,7 +617,7 @@ sveltekit完成一次任务需要经过如下三步
 
 3. 配置src文件夹下的+layout.js文件
 
-   ```js
+   ```javascript
    export const prerender = true;
    ```
 
@@ -699,7 +699,7 @@ sveltekit完成一次任务需要经过如下三步
 
 函数如下，函数接受`event`对象，`resolve`函数。返回一个`Response`。
 
-```js
+```javascript
   export async function handle({ event, resolve }) {
     return await resolve(event);
   }

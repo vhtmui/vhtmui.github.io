@@ -30,13 +30,28 @@
 	<pre
 		contenteditable="false"
 		bind:this={pre}
-		class={cn('', className)}
+		class={cn('border-2', className)}
 		{...rest}>{@render children?.()}</pre>
 	<Button
 		size="icon"
-		variant="ghost"
-		class="absolute top-2 right-2"
+		variant="outline"
+		class="local-btn absolute top-2 right-2"
 		disabled={buttonState.copied}
 		onclick={handleClick}><CopyIcon /></Button
 	>
 </div>
+
+<style>
+	pre {
+		padding-right: 3rem;
+		scrollbar-width: thin;
+	}
+
+	.relative:hover :global(.local-btn) {
+		display: inline-flex
+	}
+
+	.relative :global(.local-btn) {
+		display: none;
+	}
+</style>
