@@ -21,9 +21,12 @@
 	}
 
 	onMount(() => {
-		const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
-			? 'dark'
-			: 'light';
+		const systemTheme =
+			mode.current === 'light' || mode.current === 'dark'
+				? mode.current
+				: window.matchMedia('(prefers-color-scheme: dark)').matches
+					? 'dark'
+					: 'light';
 		setTheme(systemTheme);
 	});
 </script>
