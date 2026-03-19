@@ -1,4 +1,5 @@
 <script>
+	/* eslint-disable no-fallthrough */
 	import Markdown from 'svelte-exmarkdown';
 	import { gfmPlugin } from 'svelte-exmarkdown/gfm';
 
@@ -16,36 +17,40 @@
 	const docName = $derived(data.docName);
 
 	function getLangs() {
+		let langs = [];
 		switch (true) {
 			case docName.match(/powershell/i) && true:
-				return [import('shiki/langs/powershell.mjs')];
+				console.log('powershell');
+				langs.push(import('shiki/langs/powershell.mjs'));
 			case docName.match(/rust/i) && true:
-				return [import('shiki/langs/rust.mjs')];
+				langs.push(import('shiki/langs/rust.mjs'));
 			case docName.match(/web/i) && true:
-				return [
+				langs.push(
 					import('shiki/langs/javascript.mjs'),
 					import('shiki/langs/html.mjs'),
 					import('shiki/langs/css.mjs')
-				];
+				);
 			default:
-				return [];
+				// langs.push('text');
 		}
+		return langs;
 	}
-	
 
-	const shikiPluginPromise = $derived(createHighlighterCore({
-		themes: [import('shiki/themes/slack-dark.mjs'), import('shiki/themes/slack-ochin.mjs')],
-		langs: [...getLangs()],
-		engine: createOnigurumaEngine(import('shiki/wasm'))
-	}).then((highlighter) => {
-		return {
-			rehypePlugin: [
-				rehypeShikiFromHighlighter,
-				highlighter,
-				{ themes: { light: 'slack-ochin', dark: 'slack-dark' } }
-			]
-		};
-	}));
+	const shikiPluginPromise = $derived(
+		createHighlighterCore({
+			themes: [import('shiki/themes/slack-dark.mjs'), import('shiki/themes/slack-ochin.mjs')],
+			langs: [...getLangs()],
+			engine: createOnigurumaEngine(import('shiki/wasm'))
+		}).then((highlighter) => {
+			return {
+				rehypePlugin: [
+					rehypeShikiFromHighlighter,
+					highlighter,
+					{ themes: { light: 'slack-ochin', dark: 'slack-dark' } }
+				]
+			};
+		})
+	);
 
 	/** @type {import('svelte-exmarkdown').Plugin} */
 	const csPlugin = {

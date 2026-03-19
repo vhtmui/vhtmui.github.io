@@ -28,7 +28,7 @@ Import-Module PSFTP
 
 抛出错误默认显示powershell自动构建的位置和信息，如
 
-```Plain
+```txt
 CheckMaterial: 
 Line |
    3 |  CheckMaterial 'hhhh'
@@ -38,13 +38,13 @@ Line |
 
 通过传参可以显示其他消息，但前面的位置信息不会改变，如如下代码：
 
-```Plain
+```txt
 Write-Error -Message "`n{InvocationPosition}:`n$($_.InvocationInfo.PositionMessage)`n{Message}:`n$($_.Exception.Message)`n{ErrorId}:`n$($_.FullyQualifiedErrorId)" -ErrorAction Stop
 ```
 
 显示的错误如下：
 
-```Plain
+```txt
 CheckMaterial: 
 Line |
    3 |  CheckMaterial 'hhhh'
@@ -164,7 +164,7 @@ $thread.Start()
 
 1. 创建FTP请求
 
-   ```powerhsell
+   ```powershell
    [System.Net.FtpWebRequest]$Request = [System.Net.WebRequest]::Create($FTP_Uri)
    ```
 
