@@ -18,22 +18,33 @@ function DocsLayout() {
   const data = Route.useLoaderData()
 
   useEffect(() => {
-    const items: GlobalSidebarMenuItem[] = data.items.map((d) => {
-      const mdPath = d.relativePath.replace(/^docs\//, '').replace(/\.md$/, '')
-      const label = d.name.replace(/\.md$/, '')
-      const href = `/docs/${mdPath}`
-      const open = true
-      const Icon = d.isDirectory ? <FolderOpen /> : null
-      return {
-        path: mdPath,
-        label,
-        href,
-        Icon,
-        open,
+    const items: GlobalSidebarMenuItem[] = [
+      {
+        path: 'docs',
+        label: 'docs',
+        href: '/docs',
+        Icon: <FolderOpen />,
+        open: true,
         highlight: false,
         children: [],
-      }
-    })
+      },
+      ...data.items.map((d) => {
+        const path = d.relativePath.replace(/\.md$/, '')
+        const label = d.name.replace(/\.md$/, '')
+        const href = `/${path}`
+        const open = true
+        const Icon = d.isDirectory ? <FolderOpen /> : null
+        return {
+          path,
+          label,
+          href,
+          Icon,
+          open,
+          highlight: false,
+          children: [],
+        }
+      }),
+    ]
 
     setSidebarMenuItems(items, 'docs', setItemData)
 

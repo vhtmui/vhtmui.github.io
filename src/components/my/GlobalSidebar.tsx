@@ -128,12 +128,15 @@ export function GlobalSidebarTrigger({ className, ...rest }: { className?: strin
 // ============================================================================
 
 function CollapsibleMenuItem({ item }: { item: GlobalSidebarMenuItem }) {
-  const [open, setOpen] = useState(item.open)
+  const [userToggled, setUserToggled] = useState(false)
+  const [userOpen, setUserOpen] = useState(item.open)
   const isDirectory = item.Icon !== null && item.Icon !== undefined
+
+  const open = userToggled ? userOpen : item.open
 
   return (
     <SidebarMenuItem>
-      <SidebarMenuButton onClick={() => setOpen(!open)}>
+      <SidebarMenuButton onClick={() => { setUserOpen(!open); setUserToggled(true) }}>
         {isDirectory && (open ? <FolderOpen /> : <Folder />)}
         <span>{item.label}</span>
       </SidebarMenuButton>
@@ -171,6 +174,8 @@ export default function GlobalSidebar({ top }: { top?: number }) {
   const { itemData, option } = useGlobalSidebar()
   const { open } = useSidebar()
 
+  const rootItem = itemData?.get('root')
+
   return (
     <Sidebar style={{ top: top ? `${top}px` : undefined }}>
       <GlobalSidebarTrigger
@@ -187,8 +192,8 @@ export default function GlobalSidebar({ top }: { top?: number }) {
       )}
       <SidebarContent className="p-2">
         <SidebarMenu>
-          {itemData?.get('root') && (
-            <MenuItem item={itemData.get('root')!} />
+          {rootItem && (
+            <MenuItem key={rootItem.path} item={rootItem} />
           )}
         </SidebarMenu>
       </SidebarContent>

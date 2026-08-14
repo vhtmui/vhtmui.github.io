@@ -1,5 +1,5 @@
-import { Link } from '@tanstack/react-router'
-import { useLocation } from '@tanstack/react-router'
+import { Fragment } from 'react'
+import { Link, useLocation } from '@tanstack/react-router'
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -12,10 +12,19 @@ import {
 export default function Navigator() {
   const location = useLocation()
   const pathname = location.pathname
-  const parts = pathname.split('/').filter(Boolean)
+
+  // Split by '/' first, then decode each part.
+  // If a decoded part contains '/' (e.g. from %2F encoding), split it further.
+  const rawParts = pathname.split('/').filter(Boolean)
+  const parts: string[] = []
+  for (const part of rawParts) {
+    const decoded = decodeURIComponent(part)
+    const subParts = decoded.split('/')
+    parts.push(...subParts)
+  }
 
   const crumbs = parts.map((part, index) => {
-    const name = decodeURIComponent(part)
+    const name = part
     const href = '/' + parts.slice(0, index + 1).join('/')
     return { name, href }
   })
@@ -26,16 +35,18 @@ export default function Navigator() {
       <Breadcrumb>
         <BreadcrumbList>
           {crumbs.map((item, i) => (
-            <BreadcrumbItem key={item.href}>
-              {i === crumbs.length - 1 ? (
-                <BreadcrumbPage>{item.name}</BreadcrumbPage>
-              ) : (
-                <>
-                  <BreadcrumbLink render={<Link to={item.href as any}>{item.name}</Link>} />
-                  <BreadcrumbSeparator />
-                </>
-              )}
-            </BreadcrumbItem>
+            <Fragment key={item.href}>
+              <BreadcrumbItem>
+                {i === crumbs.length - 1 ? (
+                  <BreadcrumbPage>{item.name}</BreadcrumbPage>
+                ) : (
+                  <BreadcrumbLink
+                    render={<Link to={item.href}>{item.name}</Link>}
+                  />
+                )}
+              </BreadcrumbItem>
+              {i !== crumbs.length - 1 && <BreadcrumbSeparator />}
+            </Fragment>
           ))}
         </BreadcrumbList>
       </Breadcrumb>
