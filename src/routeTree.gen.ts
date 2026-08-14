@@ -10,7 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AboutRouteImport } from './routes/about'
+import { Route as DocsRouteImport } from './routes/docs'
 import { Route as DocsIndexRouteImport } from './routes/docs/index'
 import { Route as DocsSlugRouteImport } from './routes/docs/$slug'
 import { Route as DufsIndexRouteImport } from './routes/dufs/index'
@@ -23,20 +23,20 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
+const DocsRoute = DocsRouteImport.update({
+  id: '/docs',
+  path: '/docs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DocsIndexRoute = DocsIndexRouteImport.update({
-  id: '/docs/',
-  path: '/docs/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => DocsRoute,
 } as any)
 const DocsSlugRoute = DocsSlugRouteImport.update({
-  id: '/docs/$slug',
-  path: '/docs/$slug',
-  getParentRoute: () => rootRouteImport,
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => DocsRoute,
 } as any)
 const DufsIndexRoute = DufsIndexRouteImport.update({
   id: '/dufs/',
@@ -61,7 +61,7 @@ const TestpageIndexRoute = TestpageIndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/docs': typeof DocsRouteWithChildren
   '/docs/$slug': typeof DocsSlugRoute
   '/docs/': typeof DocsIndexRoute
   '/dufs/': typeof DufsIndexRoute
@@ -71,7 +71,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/docs/$slug': typeof DocsSlugRoute
   '/docs': typeof DocsIndexRoute
   '/dufs': typeof DufsIndexRoute
@@ -82,7 +81,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/docs': typeof DocsRouteWithChildren
   '/docs/$slug': typeof DocsSlugRoute
   '/docs/': typeof DocsIndexRoute
   '/dufs/': typeof DufsIndexRoute
@@ -94,7 +93,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/about'
+    | '/docs'
     | '/docs/$slug'
     | '/docs/'
     | '/dufs/'
@@ -104,7 +103,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/about'
     | '/docs/$slug'
     | '/docs'
     | '/dufs'
@@ -114,7 +112,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/about'
+    | '/docs'
     | '/docs/$slug'
     | '/docs/'
     | '/dufs/'
@@ -125,9 +123,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
-  DocsSlugRoute: typeof DocsSlugRoute
-  DocsIndexRoute: typeof DocsIndexRoute
+  DocsRoute: typeof DocsRouteWithChildren
   DufsIndexRoute: typeof DufsIndexRoute
   ErrorIndexRoute: typeof ErrorIndexRoute
   MacConverterIndexRoute: typeof MacConverterIndexRoute
@@ -143,26 +139,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
+    '/docs': {
+      id: '/docs'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof DocsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/docs/': {
       id: '/docs/'
-      path: '/docs'
+      path: '/'
       fullPath: '/docs/'
       preLoaderRoute: typeof DocsIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof DocsRoute
     }
     '/docs/$slug': {
       id: '/docs/$slug'
-      path: '/docs/$slug'
+      path: '/$slug'
       fullPath: '/docs/$slug'
       preLoaderRoute: typeof DocsSlugRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof DocsRoute
     }
     '/dufs/': {
       id: '/dufs/'
@@ -195,11 +191,21 @@ declare module '@tanstack/react-router' {
   }
 }
 
-const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
+interface DocsRouteChildren {
+  DocsSlugRoute: typeof DocsSlugRoute
+  DocsIndexRoute: typeof DocsIndexRoute
+}
+
+const DocsRouteChildren: DocsRouteChildren = {
   DocsSlugRoute: DocsSlugRoute,
   DocsIndexRoute: DocsIndexRoute,
+}
+
+const DocsRouteWithChildren = DocsRoute._addFileChildren(DocsRouteChildren)
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  DocsRoute: DocsRouteWithChildren,
   DufsIndexRoute: DufsIndexRoute,
   ErrorIndexRoute: ErrorIndexRoute,
   MacConverterIndexRoute: MacConverterIndexRoute,
