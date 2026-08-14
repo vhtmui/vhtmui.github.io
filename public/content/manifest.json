@@ -1,0 +1,5 @@
+[
+  { "slug": "编码心路历程--接口设计", "title": "接口设计", "path": "/content/blogs/编码心路历程--接口设计.md" },
+  { "slug": "光模块--单芯多芯对比", "title": "单芯（单纤）光模块与双纤光模块对比", "path": "/content/blogs/光模块--单芯多芯对比.md" },
+  { "slug": "rust理论--为什么rust需要Pin", "title": "为什么rust需要Pin?", "path": "/content/blogs/rust理论--为什么rust需要Pin.md" }
+]
