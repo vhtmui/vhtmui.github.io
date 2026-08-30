@@ -1,53 +1,13 @@
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="icon" href="/favicon.svg" />
-		<title>My Site</title>
-		<script>
-			// 与 mode-watcher 的 setInitialMode 相同，避免主题闪烁（FOUC）
-			(function setInitialMode({
-				defaultMode = 'system',
-				themeColors,
-				darkClassNames = ['dark'],
-				lightClassNames = [],
-				defaultTheme = '',
-				modeStorageKey = 'mode-watcher-mode',
-				themeStorageKey = 'mode-watcher-theme'
-			}) {
-				const rootEl = document.documentElement;
-				const mode = localStorage.getItem(modeStorageKey) ?? defaultMode;
-				const theme = localStorage.getItem(themeStorageKey) ?? defaultTheme;
-				const light =
-					mode === 'light' ||
-					(mode === 'system' && window.matchMedia('(prefers-color-scheme: light)').matches);
-				if (light) {
-					if (darkClassNames.length) rootEl.classList.remove(...darkClassNames.filter(Boolean));
-					if (lightClassNames.length) rootEl.classList.add(...lightClassNames.filter(Boolean));
-				} else {
-					if (lightClassNames.length) rootEl.classList.remove(...lightClassNames.filter(Boolean));
-					if (darkClassNames.length) rootEl.classList.add(...darkClassNames.filter(Boolean));
-				}
-				rootEl.style.colorScheme = light ? 'light' : 'dark';
-				if (theme) {
-					rootEl.setAttribute('data-theme', theme);
-					localStorage.setItem(themeStorageKey, theme);
-				}
-				localStorage.setItem(modeStorageKey, mode);
-			})({
-				defaultMode: 'system',
-				themeColors: undefined,
-				darkClassNames: ['dark'],
-				lightClassNames: [],
-				defaultTheme: '',
-				modeStorageKey: 'mode-watcher-mode',
-				themeStorageKey: 'mode-watcher-theme'
-			});
-		</script>
-	</head>
-	<body>
-		<div id="root"></div>
-		<script type="module" src="/src/main.jsx"></script>
-	</body>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>my_site</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
