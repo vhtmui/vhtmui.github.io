@@ -1,5 +1,5 @@
 import { Link, Outlet } from "react-router";
-import ThemeSelec from "../components/ThemeSelec";
+import ThemeSelector from "../components/ThemeSelector";
 
 const navLinks = [
   { to: "/", label: "Home" },
@@ -19,7 +19,7 @@ export default function AppLayout() {
             </Link>
           ))}
         </nav>
-        <ThemeSelec />
+        <ThemeSelector />
       </header>
       <main className="site-main">
         <Outlet />
