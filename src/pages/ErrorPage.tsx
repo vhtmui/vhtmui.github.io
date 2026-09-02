@@ -1,11 +1,8 @@
-import { Link, useRouteError } from 'react-router'
+import { Link, useRouteError } from "react-router";
 
-/**
- * 错误页（对应 SvelteKit 的 +error.svelte）
- */
 export default function ErrorPage() {
-  const error = useRouteError()
-  const message = error instanceof Error ? error.message : 'Unknown error'
+  const error = useRouteError();
+  const message = error instanceof Error ? error.message : "Unknown error";
 
   return (
     <div className="page">
@@ -16,5 +13,5 @@ export default function ErrorPage() {
       </p>
       <Link to="/">Back to Home</Link>
     </div>
-  )
+  );
 }

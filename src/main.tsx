@@ -1,16 +1,18 @@
+import "./main.css";
 import { StrictMode, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router/dom";
-import "./main.css";
-
 import { themeChange } from "theme-change";
 import { createBrowserRouter } from "react-router";
+
 import AppLayout from "./layouts/AppLayout";
-import Home from "./pages/Home";
+
+import HomePage from "./pages/Home";
 import DocsPage from "./pages/DocsPage";
-import MacConverterPage from "./pages/MacConverterPage";
-import TestPage from "./pages/TestPage";
+import MacConverter from "./pages/MacConverterPage";
 import ErrorPage from "./pages/ErrorPage";
+import ToolsPage from "./pages/ToolsPage";
+
 import { systemThemeChange } from "./components/ThemeSelector";
 
 const router = createBrowserRouter([
@@ -19,10 +21,15 @@ const router = createBrowserRouter([
     Component: AppLayout,
     errorElement: <ErrorPage />,
     children: [
-      { index: true, Component: Home },
+      { index: true, Component: HomePage },
       { path: "docs", Component: DocsPage },
-      { path: "testpage", Component: TestPage },
-      { path: "mac-converter", Component: MacConverterPage },
+      {
+        path: "tools",
+        children: [
+          { index: true, Component: ToolsPage },
+          { path: "mac-converter", Component: MacConverter },
+        ],
+      },
     ],
   },
   { path: "*", Component: ErrorPage },

@@ -1,3 +1,5 @@
+import { cn } from "../utils";
+
 const THEMES = [
   "system",
   "light",
@@ -62,7 +64,7 @@ export function systemThemeChange() {
   return () => mq.removeEventListener("change", apply);
 }
 
-export default function ThemeSelector() {
+export default function ThemeSelector({ className }: { className?: string }) {
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (e.target.value === "system") {
       applySystemTheme();
@@ -72,20 +74,23 @@ export default function ThemeSelector() {
   };
 
   return (
-    <label className="flex items-center gap-2 text-sm">
-      <span className="hidden sm:inline">Theme</span>
-      <select
-        data-set-theme
-        onChange={handleChange}
-        defaultValue={getInitialTheme()}
-        className="select select-bordered select-sm"
-      >
-        {THEMES.map((t) => (
-          <option key={t} value={t}>
-            {t}
-          </option>
-        ))}
-      </select>
-    </label>
+    <div className={cn(className)}>
+      <div className="dropdown dropdown-open dropdown-left dropdown-bottom">
+        <div tabIndex={0} role="button" className="btn m-1">
+          Hover
+        </div>
+        <div className="dropdown-content bg-base-200 max-h-[50vh] rounded-xs overflow-y-auto overflow-x-hidden p-2">
+          <ul tabIndex={-1} className="menu">
+            {THEMES.map((theme) => (
+              <li>
+                <button className="btn btn-ghost" data-set-theme={theme}>
+                  {theme}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
   );
 }
