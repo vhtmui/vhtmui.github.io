@@ -20,7 +20,9 @@ export default function AppLayout() {
               </Link>
             ))}
           </div>
-          <ThemeSelector className="navbar-end" />
+          <div className="navbar-end">
+            <ThemeSelector  />
+          </div>
         </nav>
       </header>
       <main className="site-main">

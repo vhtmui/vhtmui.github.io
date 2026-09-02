@@ -7,6 +7,7 @@ import {
   type KeyboardEvent,
 } from "react";
 import { cn } from "../utils";
+import { Monitor } from "lucide-react";
 
 const THEMES = [
   "light",
@@ -47,12 +48,20 @@ const THEMES = [
 
 const THEME_KEY = "theme";
 
+/**
+ * 返回系统偏好主题
+ * @returns 系统偏好主题，dark 或 light
+ */
 function systemTheme(): "dark" | "light" {
   return window.matchMedia("(prefers-color-scheme: dark)").matches
     ? "dark"
     : "light";
 }
 
+/**
+ * 返回实际应用的主题，并更新 document.documentElement.dataset.theme
+ * @param theme 要应用的主题，null 表示跟随系统
+ */
 function applyTheme(theme: string | null): string {
   const resolved = theme === "system" || !theme ? systemTheme() : theme;
   document.documentElement.dataset.theme = resolved;
@@ -62,16 +71,16 @@ function applyTheme(theme: string | null): string {
 applyTheme(localStorage.getItem(THEME_KEY));
 
 export default function ThemeSelector({ className }: { className?: string }) {
-  const [pref, setPref] = useState<string>(
+  const [localTheme, setLocaltheme] = useState<string>(
     () => localStorage.getItem(THEME_KEY) ?? "system",
   );
-  const [applied, setApplied] = useState<string>(
+  const [dataTheme, setDataTheme] = useState<string>(
     () => document.documentElement.dataset.theme ?? systemTheme(),
   );
 
   useEffect(() => {
     const el = document.documentElement;
-    const sync = () => setApplied(el.dataset.theme ?? systemTheme());
+    const sync = () => setDataTheme(el.dataset.theme ?? systemTheme());
     const mo = new MutationObserver(sync);
     mo.observe(el, { attributes: true, attributeFilter: ["data-theme"] });
     return () => mo.disconnect();
@@ -79,8 +88,8 @@ export default function ThemeSelector({ className }: { className?: string }) {
 
   const selectTheme = (theme: string) => {
     localStorage.setItem(THEME_KEY, theme);
-    setPref(theme);
-    setApplied(applyTheme(theme));
+    setLocaltheme(theme);
+    setDataTheme(applyTheme(theme));
   };
 
   const menuStyle = {
@@ -91,7 +100,8 @@ export default function ThemeSelector({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "dropdown dropdown-end dropdown-bottom dropdown-open",
+        "dropdown dropdown-hover dropdown-end dropdown-bottom",
+        "hover:before:absolute hover:before:top-8 hover:before:right-0 hover:before:w-52 hover:before:h-2",
         className,
       )}
     >
@@ -103,7 +113,7 @@ export default function ThemeSelector({ className }: { className?: string }) {
         className="btn btn-ghost btn-sm rounded-full px-2.5"
       >
         <span
-          data-theme={applied}
+          data-theme={dataTheme}
           aria-hidden
           className="size-3 rounded-full bg-primary ring-1 ring-base-content/40"
         />
@@ -131,35 +141,24 @@ export default function ThemeSelector({ className }: { className?: string }) {
           "rounded-box border border-base-300 bg-base-100 p-2 shadow-xl",
         )}
       >
-        <li className="menu-title">
-          <span className="text-base-content/60">选择主题</span>
+        <li className="menu-title menu-disabled">
+          <span className="text-base-content/60 text-xs">Theme</span>
         </li>
 
         {/* 跟随系统 */}
         <li>
           <button
             onClick={() => selectTheme("system")}
-            className={cn(pref === "system" && "menu-active")}
+            className={cn(
+              "flex w-full items-center justify-between gap-3",
+              localTheme === "system" && "menu-active",
+            )}
           >
-            <span className="flex w-full items-center justify-between gap-3">
-              <span className="flex min-w-0 items-center gap-2">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={1.8}
-                  aria-hidden
-                  className="size-4 opacity-70"
-                >
-                  <rect x="2.5" y="4" width="19" height="13" rx="2.5" />
-                  <path strokeLinecap="round" d="M8.5 21h7M12 17v4" />
-                </svg>
-                <span>跟随系统</span>
-              </span>
-              <span className="text-xs opacity-60">
-                {applied === "dark" ? "深色" : "浅色"}
-              </span>
+            <span className="flex items-center gap-2">
+              <Monitor size={16} />
+              <span>System</span>
             </span>
+            <span className="text-xs opacity-60">{systemTheme()}</span>
           </button>
         </li>
 
@@ -167,16 +166,17 @@ export default function ThemeSelector({ className }: { className?: string }) {
           <li key={theme}>
             <button
               onClick={() => selectTheme(theme)}
-              className={cn(pref === theme && "menu-active")}
+              className={cn(
+                "flex w-full items-center gap-3",
+                localTheme === theme && "menu-active",
+              )}
             >
-              <span className="flex w-full items-center justify-between gap-3">
-                <span
-                  data-theme={theme}
-                  aria-hidden
-                  className="pointer-events-none size-3 shrink-0 rounded-full bg-primary"
-                />
-                <span className="min-w-0 truncate capitalize">{theme}</span>
-              </span>
+              <span
+                data-theme={theme}
+                aria-hidden
+                className="pointer-events-none size-3 shrink-0 rounded-full bg-primary"
+              />
+              <span className="min-w-0 truncate capitalize">{theme}</span>
             </button>
           </li>
         ))}

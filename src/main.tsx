@@ -2,7 +2,6 @@ import "./main.css";
 import { StrictMode, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router/dom";
-import { themeChange } from "theme-change";
 import { createBrowserRouter } from "react-router";
 
 import AppLayout from "./layouts/AppLayout";
