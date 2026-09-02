@@ -37,7 +37,6 @@ const router = createBrowserRouter([
 
 function SetTheme() {
   useEffect(() => {
-    themeChange(false);
     systemThemeChange();
   }, []);
   return null;
