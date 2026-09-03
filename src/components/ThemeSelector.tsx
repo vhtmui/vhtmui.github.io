@@ -1,13 +1,6 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-  type CSSProperties,
-  type FocusEvent,
-  type KeyboardEvent,
-} from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { cn } from "../utils";
-import { Monitor } from "lucide-react";
+import { Monitor, ChevronDown } from "lucide-react";
 
 const THEMES = [
   "light",
@@ -70,7 +63,25 @@ function applyTheme(theme: string | null): string {
 
 applyTheme(localStorage.getItem(THEME_KEY));
 
-export default function ThemeSelector({ className }: { className?: string }) {
+type ThemeSelectorSize = "xs" | "sm" | "md" | "lg";
+
+const SIZE_STYLES: Record<
+  ThemeSelectorSize,
+  { btn: string; dot: string; chevron: string }
+> = {
+  xs: { btn: "btn-xs", dot: "size-2.5", chevron: "size-3" },
+  sm: { btn: "btn-sm", dot: "size-3", chevron: "size-3.5" },
+  md: { btn: "btn-md", dot: "size-3.5", chevron: "size-4" },
+  lg: { btn: "btn-lg", dot: "size-4", chevron: "size-5" },
+};
+
+export default function ThemeSelector({
+  className,
+  size = "sm",
+}: {
+  className?: string;
+  size?: ThemeSelectorSize;
+}) {
   const [localTheme, setLocaltheme] = useState<string>(
     () => localStorage.getItem(THEME_KEY) ?? "system",
   );
@@ -97,11 +108,13 @@ export default function ThemeSelector({ className }: { className?: string }) {
     "--menu-active-fg": "var(--color-primary-content)",
   } as CSSProperties;
 
+  const s = SIZE_STYLES[size];
+
   return (
     <div
       className={cn(
         "dropdown dropdown-hover dropdown-end dropdown-bottom",
-        "hover:before:absolute hover:before:top-8 hover:before:right-0 hover:before:w-52 hover:before:h-2",
+        "hover:before:absolute hover:before:top-full hover:before:right-0 hover:before:w-52 hover:before:h-2",
         className,
       )}
     >
@@ -110,23 +123,14 @@ export default function ThemeSelector({ className }: { className?: string }) {
         type="button"
         aria-haspopup="menu"
         aria-label="切换主题"
-        className="btn btn-ghost btn-sm rounded-full px-2.5"
+        className={cn("btn btn-ghost rounded-full", s.btn)}
       >
         <span
           data-theme={dataTheme}
           aria-hidden
-          className="size-3 rounded-full bg-primary ring-1 ring-base-content/40"
+          className={cn("rounded-full bg-primary ring-1 ring-base-content/40", s.dot)}
         />
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2}
-          aria-hidden
-          className="size-3 opacity-60"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="m6 9 6 6 6-6" />
-        </svg>
+        <ChevronDown className={s.chevron} />
       </button>
 
       {/* 弹出菜单 */}
