@@ -6,9 +6,6 @@ const cards = [
   { to: '/testpage', label: 'Test Page' },
 ]
 
-/**
- * 首页（对应 SvelteKit 的 +page.svelte）
- */
 export default function Home() {
   return (
     <div className="card-grid">

@@ -1,6 +1,7 @@
 import { Link, Outlet, useLocation } from "react-router";
 import ThemeSelector from "../components/ThemeSelector";
 import { cn } from "../utils";
+import { Brands } from "../components/Brands";
 
 export default function AppLayout() {
   return (
@@ -20,7 +21,9 @@ function Navbar() {
   const { pathname } = useLocation();
   return (
     <nav className="navbar border-b border-base-300">
-      <div className="navbar-start"></div>
+      <div className="navbar-start">
+       <Brands></Brands>
+      </div>
       <div className="navbar-center flex items-center gap-4">
         <div className="tabs tabs-border">
           {navLinks.map((item) => {
@@ -69,7 +72,7 @@ function Breadcrumb() {
         </ul>
       </div>
       <div className="navbar-end">
-        <ThemeSelector className="" size="xs"/>
+        <ThemeSelector className="" size="xs" />
       </div>
     </div>
   );
