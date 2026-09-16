@@ -4,6 +4,7 @@ const cards = [
   { to: '/docs', label: 'Docs' },
   { to: '/mac-converter', label: 'MAC Address Converter' },
   { to: '/testpage', label: 'Test Page' },
+  { to: '/dufs/常用软件/?noscript', label: 'Dufs' },
 ]
 
 export default function Home() {

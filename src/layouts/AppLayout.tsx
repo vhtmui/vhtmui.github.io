@@ -22,25 +22,27 @@ function Navbar() {
   return (
     <nav className="navbar border-b border-base-300">
       <div className="navbar-start">
-       <Brands></Brands>
-      </div>
-      <div className="navbar-center flex items-center gap-4">
-        <div className="tabs tabs-border">
+        <Brands></Brands>
+        <ul className="menu menu-horizontal">
           {navLinks.map((item) => {
             const active = isNavActive(pathname, item.to);
             return (
-              <Link
-                className={cn("tab font-medium", active && "tab-active")}
-                role="tab"
-                key={item.to}
-                to={item.to}
-                aria-current={active ? "page" : undefined}
-              >
-                {item.label}
-              </Link>
+              <li>
+                <Link
+                  className={cn("font-medium", active && "menu-active")}
+                  role="tab"
+                  key={item.to}
+                  to={item.to}
+                  aria-current={active ? "page" : undefined}
+                >
+                  {item.label}
+                </Link>
+              </li>
             );
           })}
-        </div>
+        </ul>
+      </div>
+      <div className="navbar-center flex items-center gap-4">
       </div>
       <div className="navbar-end"></div>
     </nav>
