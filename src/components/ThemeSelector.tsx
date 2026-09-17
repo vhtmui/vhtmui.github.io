@@ -97,11 +97,11 @@ export default function ThemeSelector({
     return () => mo.disconnect();
   }, []);
 
-  const selectTheme = (theme: string) => {
+  function selectTheme(theme: string) {
     localStorage.setItem(THEME_KEY, theme);
     setLocaltheme(theme);
     setDataTheme(applyTheme(theme));
-  };
+  }
 
   const menuStyle = {
     "--menu-active-bg": "var(--color-primary)",
@@ -113,8 +113,9 @@ export default function ThemeSelector({
   return (
     <div
       className={cn(
-        "dropdown dropdown-hover dropdown-end dropdown-bottom",
+        "dropdown dropdown-end dropdown-bottom",
         "hover:before:absolute hover:before:top-full hover:before:right-0 hover:before:w-52 hover:before:h-2",
+
         className,
       )}
     >
@@ -128,7 +129,10 @@ export default function ThemeSelector({
         <span
           data-theme={dataTheme}
           aria-hidden
-          className={cn("rounded-full bg-primary ring-1 ring-base-content/40", s.dot)}
+          className={cn(
+            "rounded-full bg-primary ring-1 ring-base-content/40",
+            s.dot,
+          )}
         />
         <ChevronDown className={s.chevron} />
       </button>
@@ -197,6 +201,6 @@ export function systemThemeChange() {
     }
   };
   mq.addEventListener("change", apply);
-  apply(); // 纠正 theme-change 在加载时可能误设的 data-theme="system"
+  apply();
   return () => mq.removeEventListener("change", apply);
 }

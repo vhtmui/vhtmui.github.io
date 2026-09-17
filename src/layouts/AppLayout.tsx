@@ -1,7 +1,10 @@
+import { useEffect, useRef } from "react";
+import { Menu as MenuIcon } from "lucide-react";
 import { Link, Outlet, useLocation } from "react-router";
 import ThemeSelector from "../components/ThemeSelector";
 import { cn } from "../utils";
 import { Brands } from "../components/Brands";
+import { NAV_LINKS, isNavActive } from "../config/links";
 
 export default function AppLayout() {
   return (
@@ -18,34 +21,93 @@ export default function AppLayout() {
 }
 
 function Navbar() {
-  const { pathname } = useLocation();
   return (
     <nav className="navbar border-b border-base-300">
       <div className="navbar-start">
-        <Brands></Brands>
-        <ul className="menu menu-horizontal">
-          {navLinks.map((item) => {
-            const active = isNavActive(pathname, item.to);
-            return (
-              <li>
-                <Link
-                  className={cn("font-medium", active && "menu-active")}
-                  role="tab"
-                  key={item.to}
-                  to={item.to}
-                  aria-current={active ? "page" : undefined}
-                >
-                  {item.label}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+        <div className="lg:hidden mr-1">
+          <MobileNavMenu />
+        </div>
+        <Brands href="/"></Brands>
+        <div className="hidden lg:block">
+          <NavMenu />
+        </div>
       </div>
-      <div className="navbar-center flex items-center gap-4">
-      </div>
+      <div className="navbar-center flex items-center gap-4"></div>
       <div className="navbar-end"></div>
     </nav>
+  );
+}
+
+function NavMenu({
+  orientation = "horizontal",
+  className,
+  onNavigate,
+}: {
+  orientation?: "horizontal" | "vertical";
+  className?: string;
+  onNavigate?: () => void;
+}) {
+  const { pathname } = useLocation();
+  return (
+    <ul
+      className={cn(
+        "menu",
+        orientation === "horizontal" ? "menu-horizontal" : "menu-vertical",
+        className,
+      )}
+    >
+      {NAV_LINKS.map((item) => {
+        const active = isNavActive(pathname, item.to);
+        return (
+          <li key={item.to}>
+            <Link
+              className={cn("font-medium", active && "menu-active")}
+              role="tab"
+              to={item.to}
+              aria-current={active ? "page" : undefined}
+              onClick={onNavigate}
+            >
+              {item.label}
+            </Link>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function MobileNavMenu() {
+  const detailsRef = useRef<HTMLDetailsElement>(null);
+
+  const close = () => {
+    if (detailsRef.current) detailsRef.current.open = false;
+  };
+
+  useEffect(() => {
+    function handlePointerDown(event: PointerEvent) {
+      const details = detailsRef.current;
+      if (details?.open && !details.contains(event.target as Node)) {
+        details.open = false;
+      }
+    }
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, []);
+
+  return (
+    <details ref={detailsRef} className="dropdown">
+      <summary
+        className="btn btn-ghost btn-square btn-sm"
+        aria-label="打开导航菜单"
+      >
+        <MenuIcon className="size-5" />
+      </summary>
+      <NavMenu
+        orientation="vertical"
+        onNavigate={close}
+        className="dropdown-content mt-2 w-52 rounded-box bg-base-100 p-2 shadow-sm"
+      />
+    </details>
   );
 }
 
@@ -78,15 +140,4 @@ function Breadcrumb() {
       </div>
     </div>
   );
-}
-
-const navLinks = [
-  { to: "/", label: "Home" },
-  { to: "/docs", label: "Docs" },
-  { to: "/tools", label: "Tools" },
-];
-
-function isNavActive(pathname: string, to: string) {
-  if (to === "/") return pathname === "/";
-  return pathname === to || pathname.startsWith(to + "/");
 }

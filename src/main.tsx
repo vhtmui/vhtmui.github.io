@@ -6,27 +6,28 @@ import { createBrowserRouter } from "react-router";
 
 import AppLayout from "./layouts/AppLayout";
 
-import HomePage from "./pages/Home";
+import HomePage from "./pages/HomePage";
 import DocsPage from "./pages/DocsPage";
 import MacConverter from "./pages/MacConverterPage";
 import ErrorPage from "./pages/ErrorPage";
 import ToolsPage from "./pages/ToolsPage";
 
 import { systemThemeChange } from "./components/ThemeSelector";
+import { ROUTES } from "./config/links";
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: ROUTES.home,
     Component: AppLayout,
     errorElement: <ErrorPage />,
     children: [
       { index: true, Component: HomePage },
-      { path: "docs", Component: DocsPage },
+      { path: ROUTES.docs, Component: DocsPage },
       {
-        path: "tools",
+        path: ROUTES.tools,
         children: [
           { index: true, Component: ToolsPage },
-          { path: "mac-converter", Component: MacConverter },
+          { path: ROUTES.macConverter, Component: MacConverter },
         ],
       },
     ],
