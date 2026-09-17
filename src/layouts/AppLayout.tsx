@@ -1,143 +1,190 @@
-import { useEffect, useRef } from "react";
+import { Fragment } from "react";
 import { Menu as MenuIcon } from "lucide-react";
 import { Link, Outlet, useLocation } from "react-router";
-import ThemeSelector from "../components/ThemeSelector";
-import { cn } from "../utils";
-import { Brands } from "../components/Brands";
-import { NAV_LINKS, isNavActive } from "../config/links";
+import { Brands } from "@/components/Brands";
+import SiteBackground from "@/components/site-background";
+import ThemeToggle from "@/components/theme-toggle";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { NAV_LINKS, ROUTES, isNavActive } from "@/config/links";
+import { cn } from "@/lib/utils";
 
 export default function AppLayout() {
   return (
-    <>
-      <header className="">
-        <Navbar />
-        <Breadcrumb />
+    <div className="flex min-h-svh flex-col">
+      <SiteBackground />
+
+      <header className="sticky top-0 z-40 border-b bg-background/70 backdrop-blur-sm">
+        <div className="mx-auto flex h-14 w-full max-w-5xl items-center gap-2 px-4">
+          <MobileNavMenu />
+          <Link
+            to={ROUTES.home}
+            aria-label="回到首页"
+            className="shrink-0 rounded-md focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+          >
+            <Brands className="h-7" />
+          </Link>
+          <nav className="hidden items-center gap-0.5 lg:flex">
+            {NAV_LINKS.map((item) => (
+              <DesktopNavItem key={item.to} to={item.to} label={item.label} />
+            ))}
+          </nav>
+          <div className="ml-auto flex items-center gap-1">
+            <ThemeToggle />
+          </div>
+        </div>
       </header>
-      <main className="site-main">
+
+      <BreadcrumbBar />
+
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">
         <Outlet />
       </main>
-    </>
+
+      <SiteFooter />
+    </div>
   );
 }
 
-function Navbar() {
-  return (
-    <nav className="navbar border-b border-base-300">
-      <div className="navbar-start">
-        <div className="lg:hidden mr-1">
-          <MobileNavMenu />
-        </div>
-        <Brands href="/"></Brands>
-        <div className="hidden lg:block">
-          <NavMenu />
-        </div>
-      </div>
-      <div className="navbar-center flex items-center gap-4"></div>
-      <div className="navbar-end"></div>
-    </nav>
-  );
-}
-
-function NavMenu({
-  orientation = "horizontal",
-  className,
-  onNavigate,
-}: {
-  orientation?: "horizontal" | "vertical";
-  className?: string;
-  onNavigate?: () => void;
-}) {
+function DesktopNavItem({ to, label }: { to: string; label: string }) {
   const { pathname } = useLocation();
+  const active = isNavActive(pathname, to);
+
   return (
-    <ul
-      className={cn(
-        "menu",
-        orientation === "horizontal" ? "menu-horizontal" : "menu-vertical",
-        className,
-      )}
+    <Button
+      variant="ghost"
+      size="sm"
+      nativeButton={false}
+      data-active={active || undefined}
+      className="text-muted-foreground data-[active]:bg-muted data-[active]:text-foreground"
+      render={
+        <Link to={to} aria-current={active ? "page" : undefined} />
+      }
     >
-      {NAV_LINKS.map((item) => {
-        const active = isNavActive(pathname, item.to);
-        return (
-          <li key={item.to}>
-            <Link
-              className={cn("font-medium", active && "menu-active")}
-              role="tab"
-              to={item.to}
-              aria-current={active ? "page" : undefined}
-              onClick={onNavigate}
-            >
-              {item.label}
-            </Link>
-          </li>
-        );
-      })}
-    </ul>
+      {label}
+    </Button>
   );
 }
 
 function MobileNavMenu() {
-  const detailsRef = useRef<HTMLDetailsElement>(null);
-
-  const close = () => {
-    if (detailsRef.current) detailsRef.current.open = false;
-  };
-
-  useEffect(() => {
-    function handlePointerDown(event: PointerEvent) {
-      const details = detailsRef.current;
-      if (details?.open && !details.contains(event.target as Node)) {
-        details.open = false;
-      }
-    }
-    document.addEventListener("pointerdown", handlePointerDown);
-    return () => document.removeEventListener("pointerdown", handlePointerDown);
-  }, []);
+  const { pathname } = useLocation();
 
   return (
-    <details ref={detailsRef} className="dropdown">
-      <summary
-        className="btn btn-ghost btn-square btn-sm"
-        aria-label="打开导航菜单"
+    <Sheet>
+      <SheetTrigger
+        render={
+          <Button
+            variant="ghost"
+            size="icon"
+            className="lg:hidden"
+            aria-label="打开导航菜单"
+          />
+        }
       >
-        <MenuIcon className="size-5" />
-      </summary>
-      <NavMenu
-        orientation="vertical"
-        onNavigate={close}
-        className="dropdown-content mt-2 w-52 rounded-box bg-base-100 p-2 shadow-sm"
-      />
-    </details>
+        <MenuIcon />
+      </SheetTrigger>
+      <SheetContent side="left" className="w-64">
+        <SheetHeader>
+          <SheetTitle>导航</SheetTitle>
+        </SheetHeader>
+        <nav className="flex flex-col gap-1 px-2">
+          {NAV_LINKS.map((item) => {
+            const active = isNavActive(pathname, item.to);
+            return (
+              <SheetClose
+                key={item.to}
+                nativeButton={false}
+                render={
+                  <Link
+                    to={item.to}
+                    aria-current={active ? "page" : undefined}
+                  />
+                }
+                className={cn(
+                  "rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted hover:text-foreground",
+                  active
+                    ? "bg-muted font-medium text-foreground"
+                    : "text-muted-foreground",
+                )}
+              >
+                {item.label}
+              </SheetClose>
+            );
+          })}
+        </nav>
+      </SheetContent>
+    </Sheet>
   );
 }
 
-function Breadcrumb() {
+function BreadcrumbBar() {
   const { pathname } = useLocation();
   const segments = pathname.split("/").filter(Boolean);
+
   return (
-    <div className="nav bg-base-200 border-b border-base-300 py-1 pl-4 text-sm font-light">
-      <div className="breadcrumbs navbar-start py-0">
-        <ul>
-          {segments.map((item, index) => {
-            const to = "/" + segments.slice(0, index + 1).join("/");
-            const isLast = index === segments.length - 1;
-            return (
-              <li key={to}>
-                {isLast ? (
-                  item
-                ) : (
-                  <Link to={to} className="hover:underline">
-                    {item}
-                  </Link>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-      <div className="navbar-end">
-        <ThemeSelector className="" size="xs" />
+    <div className="border-b bg-muted/30 backdrop-blur-sm">
+      <div className="mx-auto w-full max-w-5xl px-4 py-2">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink render={<Link to={ROUTES.home} />}>
+                home
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            {segments.map((segment, index) => {
+              const to = "/" + segments.slice(0, index + 1).join("/");
+              const isLast = index === segments.length - 1;
+              return (
+                <Fragment key={to}>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    {isLast ? (
+                      <BreadcrumbPage>{segment}</BreadcrumbPage>
+                    ) : (
+                      <BreadcrumbLink render={<Link to={to} />}>
+                        {segment}
+                      </BreadcrumbLink>
+                    )}
+                  </BreadcrumbItem>
+                </Fragment>
+              );
+            })}
+          </BreadcrumbList>
+        </Breadcrumb>
       </div>
     </div>
+  );
+}
+
+function SiteFooter() {
+  return (
+    <footer className="border-t">
+      <div className="mx-auto flex w-full max-w-5xl flex-col items-center justify-between gap-2 px-4 py-6 text-xs text-muted-foreground sm:flex-row">
+        <span>© {new Date().getFullYear()} useless technology</span>
+        <span className="flex items-center gap-3">
+          <Link className="transition-colors hover:text-foreground" to={ROUTES.docs}>
+            Docs
+          </Link>
+          <Link className="transition-colors hover:text-foreground" to={ROUTES.tools}>
+            Tools
+          </Link>
+        </span>
+      </div>
+    </footer>
   );
 }

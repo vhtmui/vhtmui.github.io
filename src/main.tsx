@@ -1,19 +1,18 @@
 import "./main.css";
-import { StrictMode, useEffect } from "react";
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router/dom";
 import { createBrowserRouter } from "react-router";
 
-import AppLayout from "./layouts/AppLayout";
+import ThemeProvider from "@/components/theme-provider";
+import AppLayout from "@/layouts/AppLayout";
+import { ROUTES } from "@/config/links";
 
-import HomePage from "./pages/HomePage";
-import DocsPage from "./pages/DocsPage";
-import MacConverter from "./pages/MacConverterPage";
-import ErrorPage from "./pages/ErrorPage";
-import ToolsPage from "./pages/ToolsPage";
-
-import { systemThemeChange } from "./components/ThemeSelector";
-import { ROUTES } from "./config/links";
+import DocsPage from "@/pages/DocsPage";
+import ErrorPage from "@/pages/ErrorPage";
+import HomePage from "@/pages/HomePage";
+import MacConverter from "@/pages/MacConverterPage";
+import ToolsPage from "@/pages/ToolsPage";
 
 const router = createBrowserRouter([
   {
@@ -35,16 +34,10 @@ const router = createBrowserRouter([
   { path: "*", Component: ErrorPage },
 ]);
 
-function SetTheme() {
-  useEffect(() => {
-    systemThemeChange();
-  }, []);
-  return null;
-}
-
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <SetTheme />
-    <RouterProvider router={router} />
+    <ThemeProvider>
+      <RouterProvider router={router} />
+    </ThemeProvider>
   </StrictMode>,
 );
