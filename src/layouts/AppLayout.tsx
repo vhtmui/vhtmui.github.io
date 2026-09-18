@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import { Menu as MenuIcon } from "lucide-react";
 import { Link, Outlet, useLocation } from "react-router";
-import { Brands } from "@/components/Brands";
+import { Logo } from "@/components/Brands";
 import SiteBackground from "@/components/site-background";
 import ThemeToggle from "@/components/theme-toggle";
 import {
@@ -21,8 +21,21 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { NAV_LINKS, ROUTES, isNavActive } from "@/config/links";
+import { ROUTES } from "@/config/links";
 import { cn } from "@/lib/utils";
+import PillNav from "@/components/PillNav";
+
+/** 顶部导航菜单 */
+const NAV_LINKS = [
+  { to: ROUTES.docs, label: "Docs" },
+  { to: ROUTES.tools, label: "Tools" },
+];
+
+/** 判断某个导航项在当前 pathname 下是否处于激活状态 */
+function isNavActive(pathname: string, to: string) {
+  if (to === ROUTES.home) return pathname === ROUTES.home;
+  return pathname === to || pathname.startsWith(to + "/");
+}
 
 export default function AppLayout() {
   return (
@@ -31,19 +44,24 @@ export default function AppLayout() {
 
       <header className="sticky top-0 z-40 border-b bg-background/70 backdrop-blur-sm">
         <div className="mx-auto flex h-14 w-full max-w-5xl items-center gap-2 px-4">
-          <MobileNavMenu />
-          <Link
-            to={ROUTES.home}
-            aria-label="回到首页"
-            className="shrink-0 rounded-md focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
-          >
-            <Brands className="h-7" />
-          </Link>
-          <nav className="hidden items-center gap-0.5 lg:flex">
-            {NAV_LINKS.map((item) => (
-              <DesktopNavItem key={item.to} to={item.to} label={item.label} />
-            ))}
-          </nav>
+          <PillNav
+            logo={<Logo />}
+            logoAlt="Company Logo"
+            items={[
+              { label: "Home", href: "/" },
+              { label: "About", href: "/about" },
+              { label: "Services", href: "/services" },
+              { label: "Contact", href: "/contact" },
+            ]}
+            activeHref="/"
+            className="custom-nav"
+            ease="power2.easeOut"
+            baseColor="#000000"
+            pillColor="#ffffff"
+            hoveredPillTextColor="#ffffff"
+            pillTextColor="#000000"
+            initialLoadAnimation
+          />
           <div className="ml-auto flex items-center gap-1">
             <ThemeToggle />
           </div>
@@ -72,9 +90,7 @@ function DesktopNavItem({ to, label }: { to: string; label: string }) {
       nativeButton={false}
       data-active={active || undefined}
       className="text-muted-foreground data-[active]:bg-muted data-[active]:text-foreground"
-      render={
-        <Link to={to} aria-current={active ? "page" : undefined} />
-      }
+      render={<Link to={to} aria-current={active ? "page" : undefined} />}
     >
       {label}
     </Button>
@@ -141,11 +157,6 @@ function BreadcrumbBar() {
       <div className="mx-auto w-full max-w-5xl px-4 py-2">
         <Breadcrumb>
           <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink render={<Link to={ROUTES.home} />}>
-                home
-              </BreadcrumbLink>
-            </BreadcrumbItem>
             {segments.map((segment, index) => {
               const to = "/" + segments.slice(0, index + 1).join("/");
               const isLast = index === segments.length - 1;
@@ -177,10 +188,16 @@ function SiteFooter() {
       <div className="mx-auto flex w-full max-w-5xl flex-col items-center justify-between gap-2 px-4 py-6 text-xs text-muted-foreground sm:flex-row">
         <span>© {new Date().getFullYear()} useless technology</span>
         <span className="flex items-center gap-3">
-          <Link className="transition-colors hover:text-foreground" to={ROUTES.docs}>
+          <Link
+            className="transition-colors hover:text-foreground"
+            to={ROUTES.docs}
+          >
             Docs
           </Link>
-          <Link className="transition-colors hover:text-foreground" to={ROUTES.tools}>
+          <Link
+            className="transition-colors hover:text-foreground"
+            to={ROUTES.tools}
+          >
             Tools
           </Link>
         </span>

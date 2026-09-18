@@ -1,9 +1,5 @@
 import { cn } from "@/lib/utils";
 
-/**
- * 品牌标识（只负责画图，导航语义由调用方包裹 Link 决定）。
- * 颜色使用 shadcn 主题令牌，随明暗主题自动切换。
- */
 export function Brands({ className }: { className?: string }) {
   return (
     <svg
@@ -30,7 +26,7 @@ export function Brands({ className }: { className?: string }) {
       {/* 品牌名 */}
       <text
         x="112"
-        y="56"
+        y="62"
         className="fill-primary"
         fontFamily="Geist, Arial, Helvetica, sans-serif"
         fontSize="56"
@@ -43,7 +39,7 @@ export function Brands({ className }: { className?: string }) {
       {/* 副标题 */}
       <text
         x="119"
-        y="84"
+        y="86"
         className="fill-muted-foreground"
         fontFamily="Arial, Helvetica, sans-serif"
         fontSize="14"
@@ -56,39 +52,26 @@ export function Brands({ className }: { className?: string }) {
   );
 }
 
-export function Logo() {
+export function Logo({ className }: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 160 160"
-      width="160"
-      height="160"
       role="img"
-      aria-label="useless 科技 logo"
+      aria-label="useless tech logo"
+      className={cn("h-full w-full shrink-0", className)}
     >
-      <defs>
-        <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#1E293B" />
-          <stop offset="1" stopColor="#0B1120" />
-        </linearGradient>
-        <linearGradient id="mark" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#FFFFFF" />
-          <stop offset="1" stopColor="#CBD5E1" />
-        </linearGradient>
-      </defs>
-
-      <rect width="160" height="160" rx="36" fill="url(#bg)" />
-
-      <path
-        d="M48 46 V88 A32 32 0 0 0 112 88 V46"
-        fill="none"
-        stroke="url(#mark)"
-        strokeWidth={17}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-
-      <circle cx="112" cy="46" r="12" fill="#3B82F6" />
+      <g>
+        <path
+          d="M48 46 V88 A32 32 0 0 0 112 88 V46"
+          fill="none"
+          className="stroke-foreground"
+          strokeWidth={17}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <circle cx="112" cy="46" r="12" className="fill-accent" />
+      </g>
     </svg>
   );
 }
