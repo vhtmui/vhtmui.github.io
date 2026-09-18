@@ -5,14 +5,14 @@ import { RouterProvider } from "react-router/dom";
 import { createBrowserRouter } from "react-router";
 
 import ThemeProvider from "@/components/theme-provider";
-import AppLayout from "@/layouts/AppLayout";
+import AppLayout from "@/layouts/app-layout";
 import { ROUTES } from "@/config/links";
 
-import DocsPage from "@/pages/DocsPage";
-import ErrorPage from "@/pages/ErrorPage";
-import HomePage from "@/pages/HomePage";
-import MacConverter from "@/pages/MacConverterPage";
-import ToolsPage from "@/pages/ToolsPage";
+import DocsPage from "@/pages/docs-page";
+import ErrorPage from "@/pages/error-page";
+import HomePage from "@/pages/home-page";
+import MacConverter from "@/pages/mac-converter-page";
+import ToolsPage from "@/pages/tools-page";
 
 const router = createBrowserRouter([
   {

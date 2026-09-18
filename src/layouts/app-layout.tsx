@@ -17,8 +17,8 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { Brands } from "@/components/Brands";
-import GlideSelect, { type GlideSelectOption } from "@/components/GlideSelect";
+import { Brands } from "@/components/brands";
+import GlideSelect, { type GlideSelectOption } from "@/components/glide-select";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useTheme, type Theme } from "@/hooks/use-theme";
 import { ROUTES } from "@/config/links";

@@ -1,5 +1,5 @@
 import { useTheme } from "@/hooks/use-theme";
-import ShapeGrid from "@/components/ShapeGrid";
+import ShapeGrid from "@/components/shape-grid";
 
 const GRID_COLORS = {
   light: {
