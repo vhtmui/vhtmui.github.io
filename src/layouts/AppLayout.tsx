@@ -1,9 +1,7 @@
 import { Fragment } from "react";
-import { Menu as MenuIcon } from "lucide-react";
 import { Link, Outlet, useLocation } from "react-router";
-import { Logo } from "@/components/Brands";
+import { Monitor, Moon, Sun } from "lucide-react";
 import SiteBackground from "@/components/site-background";
-import ThemeToggle from "@/components/theme-toggle";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,119 +10,97 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
 import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
+import { Brands } from "@/components/Brands";
+import GlideSelect, { type GlideSelectOption } from "@/components/GlideSelect";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { useTheme, type Theme } from "@/hooks/use-theme";
 import { ROUTES } from "@/config/links";
 import { cn } from "@/lib/utils";
-import PillNav from "@/components/PillNav";
 
-/** 顶部导航菜单 */
 const NAV_LINKS = [
   { to: ROUTES.docs, label: "Docs" },
   { to: ROUTES.tools, label: "Tools" },
 ];
 
-/** 判断某个导航项在当前 pathname 下是否处于激活状态 */
 function isNavActive(pathname: string, to: string) {
   if (to === ROUTES.home) return pathname === ROUTES.home;
   return pathname === to || pathname.startsWith(to + "/");
 }
 
-export default function AppLayout() {
+/** 主题选项：用 SVG 图标表示，文字仅供读屏 */
+const THEME_OPTIONS: GlideSelectOption[] = [
+  {
+    value: "light",
+    label: (
+      <>
+        <Sun className="size-4 block" />
+        <span className="sr-only">浅色</span>
+      </>
+    ),
+  },
+  {
+    value: "dark",
+    label: (
+      <>
+        <Moon className="size-4 block" />
+        <span className="sr-only">深色</span>
+      </>
+    ),
+  },
+  {
+    value: "system",
+    label: (
+      <>
+        <Monitor className="size-4 block" />
+        <span className="sr-only">跟随系统</span>
+      </>
+    ),
+  },
+];
+
+/** 主题选择：鼠标悬停或点击均可展开 */
+function ThemeSelect() {
+  const { theme, setTheme } = useTheme();
+
   return (
-    <div className="flex min-h-svh flex-col">
-      <SiteBackground />
-
-      <header className="sticky top-0 z-40 border-b bg-background/70 backdrop-blur-sm">
-        <div className="mx-auto flex h-14 w-full max-w-5xl items-center gap-2 px-4">
-          <PillNav
-            logo={<Logo />}
-            logoAlt="Company Logo"
-            items={[
-              { label: "Home", href: "/" },
-              { label: "About", href: "/about" },
-              { label: "Services", href: "/services" },
-              { label: "Contact", href: "/contact" },
-            ]}
-            activeHref="/"
-            className="custom-nav"
-            ease="power2.easeOut"
-            baseColor="#000000"
-            pillColor="#ffffff"
-            hoveredPillTextColor="#ffffff"
-            pillTextColor="#000000"
-            initialLoadAnimation
-          />
-          <div className="ml-auto flex items-center gap-1">
-            <ThemeToggle />
-          </div>
-        </div>
-      </header>
-
-      <BreadcrumbBar />
-
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">
-        <Outlet />
-      </main>
-
-      <SiteFooter />
-    </div>
+    <GlideSelect
+      options={THEME_OPTIONS}
+      value={theme}
+      onChange={(value) => setTheme(value as Theme)}
+      ariaLabel="切换主题"
+      align="right"
+      menuWidth={76}
+      openOnHover
+      showArrow={false}
+      ghost
+      closeOnSelect={false}
+      surfaceColor="var(--muted)"
+      highlightColor="var(--border)"
+      textColor="var(--foreground)"
+      accentColor="var(--primary)"
+    />
   );
 }
 
-function DesktopNavItem({ to, label }: { to: string; label: string }) {
-  const { pathname } = useLocation();
-  const active = isNavActive(pathname, to);
-
-  return (
-    <Button
-      variant="ghost"
-      size="sm"
-      nativeButton={false}
-      data-active={active || undefined}
-      className="text-muted-foreground data-[active]:bg-muted data-[active]:text-foreground"
-      render={<Link to={to} aria-current={active ? "page" : undefined} />}
-    >
-      {label}
-    </Button>
-  );
-}
-
-function MobileNavMenu() {
+/** 顶部主导航（放在 header 中间一栏） */
+function HeaderNav() {
   const { pathname } = useLocation();
 
   return (
-    <Sheet>
-      <SheetTrigger
-        render={
-          <Button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden"
-            aria-label="打开导航菜单"
-          />
-        }
-      >
-        <MenuIcon />
-      </SheetTrigger>
-      <SheetContent side="left" className="w-64">
-        <SheetHeader>
-          <SheetTitle>导航</SheetTitle>
-        </SheetHeader>
-        <nav className="flex flex-col gap-1 px-2">
-          {NAV_LINKS.map((item) => {
-            const active = isNavActive(pathname, item.to);
-            return (
-              <SheetClose
-                key={item.to}
-                nativeButton={false}
+    <NavigationMenu>
+      <NavigationMenuList>
+        {NAV_LINKS.map((item) => {
+          const active = isNavActive(pathname, item.to);
+          return (
+            <NavigationMenuItem key={item.to}>
+              <NavigationMenuLink
                 render={
                   <Link
                     to={item.to}
@@ -132,19 +108,18 @@ function MobileNavMenu() {
                   />
                 }
                 className={cn(
-                  "rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted hover:text-foreground",
-                  active
-                    ? "bg-muted font-medium text-foreground"
-                    : "text-muted-foreground",
+                  navigationMenuTriggerStyle(),
+                  "no-underline",
+                  active && "bg-muted text-foreground",
                 )}
               >
                 {item.label}
-              </SheetClose>
-            );
-          })}
-        </nav>
-      </SheetContent>
-    </Sheet>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+          );
+        })}
+      </NavigationMenuList>
+    </NavigationMenu>
   );
 }
 
@@ -182,26 +157,39 @@ function BreadcrumbBar() {
   );
 }
 
-function SiteFooter() {
+export default function AppLayout() {
+  const showBrandName = useMediaQuery("(min-width: 640px)");
+
   return (
-    <footer className="border-t">
-      <div className="mx-auto flex w-full max-w-5xl flex-col items-center justify-between gap-2 px-4 py-6 text-xs text-muted-foreground sm:flex-row">
-        <span>© {new Date().getFullYear()} useless technology</span>
-        <span className="flex items-center gap-3">
-          <Link
-            className="transition-colors hover:text-foreground"
-            to={ROUTES.docs}
-          >
-            Docs
-          </Link>
-          <Link
-            className="transition-colors hover:text-foreground"
-            to={ROUTES.tools}
-          >
-            Tools
-          </Link>
-        </span>
-      </div>
-    </footer>
+    <div className="flex min-h-svh flex-col">
+      <SiteBackground />
+
+      {/* 固定在顶部，不随页面滚动；背景透明 */}
+      <header className="sticky top-0 z-40">
+        <div className="mx-auto grid h-14 w-full max-w-5xl grid-cols-[1fr_auto_1fr] items-center gap-4 px-4">
+          {/* 左：商标 + 导航 */}
+          <div className="flex items-center gap-3 justify-self-start">
+            <Link to={ROUTES.home} aria-label="返回首页">
+              <Brands showName={showBrandName} />
+            </Link>
+            <HeaderNav />
+          </div>
+
+          {/* 中：暂为空，不占宽度 */}
+          <div />
+
+          {/* 右：主题切换等 */}
+          <div className="flex items-center gap-1 justify-self-end">
+            <ThemeSelect />
+          </div>
+        </div>
+      </header>
+
+      <BreadcrumbBar />
+
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">
+        <Outlet />
+      </main>
+    </div>
   );
 }
