@@ -1,6 +1,14 @@
-import { Fragment } from "react";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { Link, Outlet, useLocation } from "react-router";
 import { Monitor, Moon, Sun } from "lucide-react";
+import { gsap } from "gsap";
 import SiteBackground from "@/components/site-background";
 import {
   Breadcrumb,
@@ -19,6 +27,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Brands } from "@/components/brands";
 import GlideSelect, { type GlideSelectOption } from "@/components/glide-select";
+import SplitText, { type SplitTextProps } from "@/components/split-text";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useTheme, type Theme } from "@/hooks/use-theme";
 import { ROUTES } from "@/config/links";
@@ -89,18 +98,86 @@ function ThemeSelect() {
   );
 }
 
-/** 顶部主导航（放在 header 中间一栏） */
+/** 顶部主导航：激活态用一块会滑动的底色表示 */
 function HeaderNav() {
   const { pathname } = useLocation();
+  const listRef = useRef<HTMLUListElement>(null);
+  const linkRefs = useRef<Array<HTMLElement | null>>([]);
+  const pillRef = useRef<HTMLSpanElement>(null);
+  const firstRef = useRef(true);
+
+  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+
+  const activeIndex = NAV_LINKS.findIndex((item) =>
+    isNavActive(pathname, item.to),
+  );
+  /** 色块位置：优先跟随鼠标悬停项，移开后回到激活项 */
+  const pillIndex = hoverIndex ?? activeIndex;
+
+  /** 把底色块对齐到目标项 */
+  const syncPill = useCallback(() => {
+    const list = listRef.current;
+    const pill = pillRef.current;
+    if (!list || !pill) return;
+
+    const link = pillIndex >= 0 ? linkRefs.current[pillIndex] : null;
+    if (!link) {
+      pill.style.opacity = "0";
+      return;
+    }
+
+    const listRect = list.getBoundingClientRect();
+    const linkRect = link.getBoundingClientRect();
+
+    // 首次定位直接落位，避免从左上角滑入
+    if (firstRef.current) pill.style.transition = "none";
+    pill.style.opacity = "1";
+    pill.style.width = `${linkRect.width}px`;
+    pill.style.height = `${linkRect.height}px`;
+    pill.style.transform = `translate(${linkRect.left - listRect.left}px, ${
+      linkRect.top - listRect.top
+    }px)`;
+    if (firstRef.current) {
+      void pill.offsetWidth;
+      pill.style.transition = "";
+      firstRef.current = false;
+    }
+  }, [pillIndex]);
+
+  useLayoutEffect(() => {
+    syncPill();
+    document.fonts.ready.then(syncPill).catch(() => {});
+  }, [syncPill]);
+
+  useEffect(() => {
+    window.addEventListener("resize", syncPill);
+    return () => window.removeEventListener("resize", syncPill);
+  }, [syncPill]);
 
   return (
     <NavigationMenu>
-      <NavigationMenuList>
-        {NAV_LINKS.map((item) => {
+      <NavigationMenuList
+        ref={listRef}
+        className="relative"
+        onPointerLeave={() => setHoverIndex(null)}
+      >
+        {/* 滑动的激活底色：位移/宽度都参与过渡，节奏与 GlideSelect 一致 */}
+        <span
+          ref={pillRef}
+          aria-hidden="true"
+          className="pointer-events-none absolute top-0 left-0 z-0 rounded-lg bg-muted opacity-0 transition-[transform,width,height,opacity] duration-220 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none"
+        />
+        {NAV_LINKS.map((item, i) => {
           const active = isNavActive(pathname, item.to);
           return (
             <NavigationMenuItem key={item.to}>
               <NavigationMenuLink
+                ref={(el: HTMLElement | null) => {
+                  linkRefs.current[i] = el;
+                }}
+                onPointerEnter={(e) => {
+                  if (e.pointerType === "mouse") setHoverIndex(i);
+                }}
                 render={
                   <Link
                     to={item.to}
@@ -109,8 +186,9 @@ function HeaderNav() {
                 }
                 className={cn(
                   navigationMenuTriggerStyle(),
-                  "no-underline",
-                  active && "bg-muted text-foreground",
+                  // 底色交给滑动的色块，不要自带 hover / focus 背景
+                  "relative z-1 no-underline hover:bg-transparent focus:bg-transparent",
+                  active && "text-foreground",
                 )}
               >
                 {item.label}
@@ -123,35 +201,119 @@ function HeaderNav() {
   );
 }
 
+/** 面包屑逐字动画参数（进/出节奏一致） */
+const BREADCRUMB_SPLIT = {
+  tag: "span",
+  textAlign: "left",
+  delay: 20,
+  duration: 0.45,
+  ease: "power2.out",
+  from: { opacity: 0, y: -10 },
+  to: { opacity: 1, y: 0 },
+  threshold: 0,
+  rootMargin: "0px",
+} satisfies Partial<SplitTextProps>;
+
+/** 面包屑展开 / 收起耗时 */
+const BREADCRUMB_COLLAPSE_MS = 320;
+
 function BreadcrumbBar() {
   const { pathname } = useLocation();
+  const isWide = useMediaQuery("(min-width: 640px)");
+  /** 仅宽屏且非首页显示 */
+  const visible = isWide && pathname !== ROUTES.home;
   const segments = pathname.split("/").filter(Boolean);
 
+  const [mounted, setMounted] = useState(visible);
+  const [expanded, setExpanded] = useState(false);
+  const bodyRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (visible) {
+      setMounted(true);
+      // 收起动画被打断时，把字符复位（否则会停在透明状态）
+      const chars = bodyRef.current?.querySelectorAll(".split-char");
+      if (chars?.length) {
+        gsap.killTweensOf(chars);
+        gsap.set(chars, { clearProps: "opacity,transform" });
+      }
+      // 下一帧再展开，保证折叠动画从 0fr 起步
+      const frame = requestAnimationFrame(() => setExpanded(true));
+      return () => cancelAnimationFrame(frame);
+    }
+
+    // 收起：字符逐字向上消失，容器同时向上折叠，折叠完成后卸载（不占空间）
+    const chars = bodyRef.current?.querySelectorAll(".split-char");
+    if (chars?.length) {
+      gsap.to(chars, {
+        opacity: 0,
+        y: -10,
+        duration: 0.24,
+        ease: "power2.in",
+        stagger: 0.012,
+        overwrite: true,
+      });
+    }
+    setExpanded(false);
+    const timer = setTimeout(
+      () => setMounted(false),
+      BREADCRUMB_COLLAPSE_MS,
+    );
+    return () => clearTimeout(timer);
+  }, [visible]);
+
+  if (!mounted) return null;
+
   return (
-    <div className="border-b bg-muted/30 backdrop-blur-sm">
-      <div className="mx-auto w-full max-w-5xl px-4 py-2">
-        <Breadcrumb>
-          <BreadcrumbList>
-            {segments.map((segment, index) => {
-              const to = "/" + segments.slice(0, index + 1).join("/");
-              const isLast = index === segments.length - 1;
-              return (
-                <Fragment key={to}>
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem>
-                    {isLast ? (
-                      <BreadcrumbPage>{segment}</BreadcrumbPage>
-                    ) : (
-                      <BreadcrumbLink render={<Link to={to} />}>
-                        {segment}
-                      </BreadcrumbLink>
-                    )}
-                  </BreadcrumbItem>
-                </Fragment>
-              );
-            })}
-          </BreadcrumbList>
-        </Breadcrumb>
+    <div
+      className={cn(
+        "grid overflow-hidden transition-[grid-template-rows] duration-300 ease-linear",
+        expanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+      )}
+    >
+      <div ref={bodyRef} className="min-h-0">
+        <div className="mx-auto w-full max-w-5xl px-4 pb-2">
+          <Breadcrumb>
+            <BreadcrumbList>
+              {segments.map((segment, index) => {
+                const to = "/" + segments.slice(0, index + 1).join("/");
+                const isLast = index === segments.length - 1;
+                return (
+                  <Fragment key={to}>
+                    {/* 首项前同样保留分隔符 */}
+                    <BreadcrumbSeparator>
+                      <SplitText
+                        {...BREADCRUMB_SPLIT}
+                        key={`sep-${index}-${pathname}`}
+                        text="/"
+                        className="select-none text-muted-foreground/50"
+                      />
+                    </BreadcrumbSeparator>
+                    <BreadcrumbItem>
+                      {isLast ? (
+                        <BreadcrumbPage>
+                          <SplitText
+                            {...BREADCRUMB_SPLIT}
+                            key={`item-${to}`}
+                            text={segment}
+                          />
+                        </BreadcrumbPage>
+                      ) : (
+                        <BreadcrumbLink render={<Link to={to} />}>
+                          <SplitText
+                            {...BREADCRUMB_SPLIT}
+                            key={`item-${to}`}
+                            text={segment}
+                          />
+                        </BreadcrumbLink>
+                      )}
+                    </BreadcrumbItem>
+                  </Fragment>
+                );
+              })}
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
       </div>
     </div>
   );
