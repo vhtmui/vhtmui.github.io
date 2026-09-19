@@ -1,4 +1,4 @@
-import PageHeader from "@/components/page-header";
+import PageHeader from "@/components/custom/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default function DocsPage() {

@@ -1,6 +1,6 @@
 import { Wrench } from "lucide-react";
 import { Link } from "react-router";
-import PageHeader from "@/components/page-header";
+import PageHeader from "@/components/custom/page-header";
 import {
   Card,
   CardDescription,

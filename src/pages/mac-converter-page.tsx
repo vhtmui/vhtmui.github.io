@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import PageHeader from "@/components/page-header";
+import PageHeader from "@/components/custom/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ROUTES } from "@/config/links";

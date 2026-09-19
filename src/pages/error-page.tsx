@@ -1,5 +1,5 @@
 import { Link, isRouteErrorResponse, useRouteError } from "react-router";
-import SiteBackground from "@/components/site-background";
+import SiteBackground from "@/components/custom/site-background";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/links";
 

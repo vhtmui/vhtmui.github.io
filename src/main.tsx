@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router/dom";
 import { createBrowserRouter } from "react-router";
 
-import ThemeProvider from "@/components/theme-provider";
+import ThemeProvider from "@/components/custom/theme-provider";
 import AppLayout from "@/layouts/app-layout";
 import { ROUTES } from "@/config/links";
 
