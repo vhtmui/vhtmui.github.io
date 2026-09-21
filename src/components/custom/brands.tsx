@@ -16,17 +16,19 @@ export function Brands({
       className={cn("h-8 w-auto shrink-0", className)}
     >
       {/* 图标：与 logo 同源 */}
-      <g transform="translate(10 10) scale(0.5)">
-        <rect width="160" height="160" rx="36" className="fill-primary" />
+      <g transform="translate(10 15) scale(0.6)">
+        <rect width="120" height="120" rx="28" fill="#8b008b" />
+
         <path
-          d="M48 46 V88 A32 32 0 0 0 112 88 V46"
+          d="M 38 34 V 66 A 22 22 0 0 0 82 66 V 60"
+          stroke="#FFFFFF"
+          stroke-width="12"
+          stroke-linecap="round"
+          stroke-linejoin="round"
           fill="none"
-          className="stroke-primary-foreground"
-          strokeWidth={17}
-          strokeLinecap="round"
-          strokeLinejoin="round"
         />
-        <circle cx="112" cy="46" r="12" className="fill-accent" />
+
+        <rect x="76" y="28" width="12" height="20" rx="6" fill="#111111" />
       </g>
 
       {showName && (
