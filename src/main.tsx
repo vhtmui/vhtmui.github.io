@@ -13,6 +13,7 @@ import ErrorPage from "@/pages/error-page";
 import HomePage from "@/pages/home-page";
 import MacConverter from "@/pages/mac-converter-page";
 import ToolsPage from "@/pages/tools-page";
+import PlaygroundPage from "@/pages/playground-page";
 
 const router = createBrowserRouter([
   {
@@ -29,6 +30,7 @@ const router = createBrowserRouter([
           { path: ROUTES.macConverter, Component: MacConverter },
         ],
       },
+      { path: ROUTES.playground, Component: PlaygroundPage },
     ],
   },
   { path: "*", Component: ErrorPage },

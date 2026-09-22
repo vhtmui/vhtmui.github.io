@@ -4,6 +4,7 @@ export const ROUTES = {
   docs: "/docs",
   tools: "/tools",
   macConverter: "/tools/mac-converter",
+  playground: "/playground",
 } as const;
 
 /** 站外资源路径 */

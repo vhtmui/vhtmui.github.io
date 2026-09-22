@@ -24,7 +24,7 @@
 @theme inline {
   --font-heading: var(--font-sans);
   --font-sans:
-    "Geist Variable", "Geist Mono Variable", ui-sans-serif, system-ui,
+    "Geist Mono Variable", "Geist Variable", ui-sans-serif, system-ui,
     sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
     "Noto Color Emoji";
   --color-sidebar-ring: var(--sidebar-ring);

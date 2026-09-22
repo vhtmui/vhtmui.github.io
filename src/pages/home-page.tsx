@@ -1,12 +1,3 @@
-import { ArrowUpRight } from "lucide-react";
-import { Link } from "react-router";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { ROUTES, STATIC_PATHS } from "@/config/links";
 
 /** 首页入口卡片 */

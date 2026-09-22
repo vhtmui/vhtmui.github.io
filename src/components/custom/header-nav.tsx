@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 const NAV_LINKS = [
   { to: ROUTES.docs, label: "Docs" },
   { to: ROUTES.tools, label: "Tools" },
+  { to: ROUTES.playground, label: "Playground" },
 ];
 
 function isNavActive(pathname: string, to: string) {
