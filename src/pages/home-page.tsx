@@ -17,9 +17,5 @@ const HOME_LINKS = [
 ];
 
 export default function HomePage() {
-  return (
-    <div className="typeset typeset-docs flex flex-col gap-10">
-      <h1>Hello</h1>
-    </div>
-  );
+  return <h1>Hello</h1>;
 }

@@ -14,21 +14,16 @@ export default function AppLayout() {
     <div className="flex min-h-svh flex-col">
       <SiteBackground />
 
-      {/* 固定在顶部，不随页面滚动；背景透明 */}
       <header className="sticky top-0 z-40">
         <div className="mx-auto grid h-14 w-full max-w-5xl grid-cols-[1fr_auto_1fr] items-center gap-4 px-4">
-          {/* 左：商标 + 导航 */}
           <div className="flex items-center gap-3 justify-self-start">
             <Link to={ROUTES.home} aria-label="返回首页">
               <Brands showName={showBrandName} />
             </Link>
             <HeaderNav />
           </div>
-
           {/* 中：暂为空，不占宽度 */}
           <div />
-
-          {/* 右：主题切换等 */}
           <div className="flex items-center gap-1 justify-self-end">
             <ThemeSelect />
           </div>
@@ -37,7 +32,7 @@ export default function AppLayout() {
 
       <BreadcrumbBar />
 
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">
+      <main className="typeset typeset-docs mx-auto w-full max-w-5xl flex-1 px-4 py-8">
         <Outlet />
       </main>
     </div>

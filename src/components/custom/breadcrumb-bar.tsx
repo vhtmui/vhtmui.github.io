@@ -20,7 +20,7 @@ const BREADCRUMB_SPLIT = {
   textAlign: "left",
   delay: 20,
   duration: 0.45,
-  ease: "power2.out",
+  ease: "power3.out",
   from: { opacity: 0, y: -10 },
   to: { opacity: 1, y: 0 },
   threshold: 0,
@@ -90,7 +90,7 @@ export default function BreadcrumbBar() {
           <Breadcrumb>
             <BreadcrumbList>
               {segments.map((segment, index) => {
-                const to = "/" + segments.slice(0, index + 1).join("/");
+                const to = ">" + segments.slice(0, index + 1).join(">");
                 const isLast = index === segments.length - 1;
                 return (
                   <Fragment key={to}>
@@ -99,7 +99,7 @@ export default function BreadcrumbBar() {
                       <SplitText
                         {...BREADCRUMB_SPLIT}
                         key={`sep-${index}-${pathname}`}
-                        text="/"
+                        text=">"
                         className="select-none text-muted-foreground/50"
                       />
                     </BreadcrumbSeparator>
