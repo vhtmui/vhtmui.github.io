@@ -67,10 +67,8 @@ export interface FlipCharsProps {
   collapseDuration?: number;
   /** 翻转的透视距离（px），越小越夸张 */
   perspective?: number;
-  /** 字符之间的错峰（秒） */
+  /** 字符之间的错峰（秒），传 0 表示全部字符一起翻 */
   stagger?: number;
-  /** 全部字符同时播放动画（忽略 stagger），默认 false */
-  simultaneous?: boolean;
   /** 翻入的起始延迟（秒） */
   delay?: number;
   /** 挂载后自动翻入，默认 true */
@@ -343,7 +341,6 @@ export default function FlipChars({
   collapseDuration = 0.6,
   perspective = 600,
   stagger = 0.035,
-  simultaneous = false,
   delay = 0,
   autoPlay = true,
   className,
@@ -386,9 +383,6 @@ export default function FlipChars({
       aliveRef.current = false;
     };
   }, []);
-
-  /** 字符之间的实际错峰：simultaneous 时归零，全部字符一起动 */
-  const gap = simultaneous ? 0 : stagger;
 
   /** 让位时长（新增占位 / 换字换宽时，未变字符挪开的时长） */
   const shiftTime = shiftDuration;
@@ -564,10 +558,10 @@ export default function FlipChars({
           enterCbRef.current?.();
         },
       });
-      targets.forEach((el, i) => tl.add(flipIn(el, flipAnim), i * gap));
+      targets.forEach((el, i) => tl.add(flipIn(el, flipAnim), i * stagger));
       return tl;
     },
-    [delay, flipAnim, gap],
+    [delay, flipAnim, stagger],
   );
 
   /** 摘掉一个字符，并顺手清掉空掉的单词包裹（含为它临时补回的空格） */
@@ -696,7 +690,7 @@ export default function FlipChars({
           flipOut(el, flipAnim, () => {
             pendingRef.current.push(el);
           }),
-          step * gap,
+          step * stagger,
         );
         step++;
       };
@@ -725,7 +719,7 @@ export default function FlipChars({
           if (op.type === "insert") {
             slot = makeSlot(ch);
             // 先让位、再翻入：新字要等邻居让开（让位滑移结束）才开始翻转，避免叠在一起
-            tl.add(flipIn(slot, flipAnim), step * gap + shiftTime);
+            tl.add(flipIn(slot, flipAnim), step * stagger + shiftTime);
             step++;
           } else {
             slot = op.el;
@@ -733,7 +727,7 @@ export default function FlipChars({
               slot.dataset.char = op.char;
               tl.add(
                 flipSwap(slot, op.char, flipAnim, (mutate) => glide(measure(), mutate)),
-                step * gap,
+                step * stagger,
               );
               step++;
             }
@@ -850,7 +844,7 @@ export default function FlipChars({
     },
     [
       flipAnim,
-      gap,
+      stagger,
       glide,
       measure,
       scheduleCollapse,
@@ -873,9 +867,9 @@ export default function FlipChars({
         };
         waitersRef.current.add(done);
         const tl = gsap.timeline({ onComplete: done });
-        targets.forEach((el, i) => tl.add(flipOut(el, flipAnim), i * gap));
+        targets.forEach((el, i) => tl.add(flipOut(el, flipAnim), i * stagger));
       }),
-    [flipAnim, gap],
+    [flipAnim, stagger],
   );
 
   /** 取出待删除的字符，同时把它们移出「在场队列」，并发调用不会重复选中 */
