@@ -65,6 +65,7 @@ function FlipDemo() {
         as="p"
         flip={axis}
         stagger={0.05}
+        simultaneous
         className="m-0 min-h-9 text-2xl leading-tight font-medium tracking-tight sm:text-3xl"
       />
 

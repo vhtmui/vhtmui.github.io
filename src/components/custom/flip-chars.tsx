@@ -358,6 +358,12 @@ export default function FlipChars({
   const leavingRef = useRef<HTMLElement[]>([]);
   /** 等待离场动画结束的调用，卸载时统一放行，避免 Promise 悬挂 */
   const waitersRef = useRef(new Set<() => void>());
+  /**
+   * 整段离场的旧单词包裹 → 随它一起搬回来的空格节点。
+   * 这些空格是为了让离场字符（和它后面的字符）保持原来的排版位置而临时补的，
+   * 所以单词摘除时必须一起摘掉，否则合拢后会多出空格。
+   */
+  const wordGapRef = useRef(new Map<HTMLElement, ChildNode[]>());
   const aliveRef = useRef(true);
   /** 已经渲染到 DOM 上的文本 */
   const appliedRef = useRef<string | null>(null);
@@ -564,7 +570,7 @@ export default function FlipChars({
     [delay, flipAnim, gap],
   );
 
-  /** 摘掉一个字符，并顺手清掉空掉的单词包裹 */
+  /** 摘掉一个字符，并顺手清掉空掉的单词包裹（含为它临时补回的空格） */
   const drop = useCallback((char: HTMLElement) => {
     const parent = char.parentElement;
     gsap.killTweensOf(char);
@@ -572,6 +578,11 @@ export default function FlipChars({
     leavingRef.current = leavingRef.current.filter((el) => el !== char);
     if (parent?.classList.contains(WORDS_CLASS) && parent.childNodes.length === 0) {
       parent.remove();
+      const gaps = wordGapRef.current.get(parent);
+      if (gaps) {
+        wordGapRef.current.delete(parent);
+        gaps.forEach((gap) => gap.remove());
+      }
     }
   }, []);
 
@@ -633,7 +644,16 @@ export default function FlipChars({
       }
       const slots = new Map<
         HTMLElement,
-        { at: number; left: Element | null; right: Element | null }
+        {
+          at: number;
+          left: Element | null;
+          right: Element | null;
+          /** 旧单词包裹；离场字符直接挂在外壳上时为 null */
+          word: HTMLElement | null;
+          /** 旧单词包裹前后的空格节点，整段离场时随单词一起搬回来 */
+          gapBefore: ChildNode | null;
+          gapAfter: ChildNode | null;
+        }
       >();
       for (const el of [...prevEls, ...leavingRef.current]) {
         // 只认同一个单词包裹内的邻居：nextElementSibling / previousElementSibling 不会跨过空格，
@@ -642,7 +662,17 @@ export default function FlipChars({
         while (right && !kept.has(right as HTMLElement)) right = right.nextElementSibling;
         let left: Element | null = el.previousElementSibling;
         while (left && !kept.has(left as HTMLElement)) left = left.previousElementSibling;
-        slots.set(el, { at: pos(el), left, right });
+        const parent = el.parentElement;
+        const word =
+          parent && parent !== shell && parent.classList.contains(WORDS_CLASS) ? parent : null;
+        slots.set(el, {
+          at: pos(el),
+          left,
+          right,
+          word,
+          gapBefore: word?.previousSibling ?? null,
+          gapAfter: word?.nextSibling ?? null,
+        });
       }
 
       // 重建会把复用中的槽位摘进 fragment（此时 offsetLeft 会变成 0），所以旧位置必须在这之前量好。
@@ -725,24 +755,84 @@ export default function FlipChars({
        * 必须在读新布局（FLIP 的第二次测量）之前完成：否则这些"洞"会被算成位移量，
        * 右边的字符会被多推出去一段，换行点变化时下面整行还会被推下去。
        *
-       * 锚点只用「这一轮会复用的槽位」：它们一定在新树里、一定连在树上，所以没有先后依赖。
-       * 两批分开处理，保证同一锚点上的多个离场字符仍按原顺序排列。
+       * 分三类贴回（同一处的多个离场字符仍按原顺序排列）：
+       * 1. 旧单词里还有复用的槽位：「这一轮会复用的槽位」一定在新树里、一定连在树上，
+       *    以它为锚点插回去即可，没有先后依赖；
+       * 2. 旧单词整段都离场了（一个复用槽位都没有）：旧单词在重建后根本不存在，
+       *    没有锚点可贴。这时按旧坐标把整个「旧单词包裹」连它两侧的空格搬回新树里对应的
+       *    空档 —— 否则只能随便找个地方塞，看起来就像离场字符先跑到整段文字末尾再翻转；
+       * 3. 连旧坐标都没得用时兜底追加。
        */
       const placeLeavers = () => {
         const at = (el: HTMLElement) => slots.get(el)?.at ?? 0;
-        const leaving = [...leavingRef.current];
         const byAt = (a: HTMLElement, b: HTMLElement) => at(a) - at(b);
+        const leaving = [...leavingRef.current];
+        /** 已经回到新树里、并且带着旧坐标的元素，供整段离场的旧单词找落点 */
+        const anchors = [...kept].map((el) => ({ el, at: at(el) }));
+
         // 有右侧锚点的：从左到右依次插到锚点之前 → 天然保持原顺序
         for (const el of leaving.filter((item) => slots.get(item)?.right).sort(byAt)) {
           slots.get(el)?.right?.before(el);
+          anchors.push({ el, at: at(el) });
         }
         // 只剩左侧锚点（原本在包裹末尾）的：从右到左贴在锚点之后 → 同样保持原顺序
         for (const el of leaving
           .filter((item) => !slots.get(item)?.right)
           .sort((a, b) => byAt(b, a))) {
           const left = slots.get(el)?.left;
-          if (left?.isConnected) left.after(el);
-          else (word ?? shell).append(el);
+          if (!left?.isConnected) continue;
+          left.after(el);
+          anchors.push({ el, at: at(el) });
+        }
+
+        // 整段离场的旧单词：按旧坐标搬到新树里对应的空档上
+        const ghosts = new Map<HTMLElement, HTMLElement[]>();
+        for (const el of leaving) {
+          const slot = slots.get(el);
+          if (!slot || slot.right || slot.left?.isConnected) continue;
+          // 离场字符直接挂在外壳上时（没有单词包裹）就搬它自己
+          const unit = slot.word?.contains(el) ? slot.word : el;
+          const group = ghosts.get(unit);
+          if (group) group.push(el);
+          else ghosts.set(unit, [el]);
+        }
+        const ordered = [...ghosts].sort(
+          (a, b) => Math.min(...a[1].map(at)) - Math.min(...b[1].map(at)),
+        );
+        for (const [ghost, items] of ordered) {
+          const index = Math.min(...items.map(at));
+          const { gapBefore = null, gapAfter = null } = slots.get(items[0]) ?? {};
+          /** 为了对齐排版临时插入的空格，单词摘除时要一起摘掉（见 drop） */
+          const gaps: ChildNode[] = [];
+          // 紧跟其后的那个元素（复用槽位或已贴回的离场字符）在新树里的位置就是落点
+          let next: { el: HTMLElement; at: number } | null = null;
+          for (const anchor of anchors) {
+            if (anchor.at > index && (!next || anchor.at < next.at)) next = anchor;
+          }
+          if (next) {
+            // 贴到锚点所在单词之前：前面的空格沿用新树里的，后面的空格随旧单词一起补回
+            const box = next.el.parentElement;
+            const before = box && box !== shell ? box : next.el;
+            before.before(ghost);
+            if (gapAfter) {
+              before.before(gapAfter);
+              gaps.push(gapAfter);
+            }
+          } else {
+            // 后面没有锚点了（原本就在末尾）：跟在最后一格之后，前面的空格按需补回
+            const tail = shell.lastChild;
+            if (gapBefore && tail && tail.nodeType !== Node.TEXT_NODE) {
+              shell.append(gapBefore);
+              gaps.push(gapBefore);
+            }
+            shell.append(ghost);
+            if (gapAfter) {
+              shell.append(gapAfter);
+              gaps.push(gapAfter);
+            }
+          }
+          if (gaps.length) wordGapRef.current.set(ghost, gaps);
+          anchors.push({ el: ghost, at: index });
         }
       };
 
