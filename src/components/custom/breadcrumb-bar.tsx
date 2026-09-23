@@ -25,7 +25,7 @@ const BREADCRUMB_FLIP = {
 } satisfies Partial<FlipCharsProps>;
 
 /** 展开 / 收起耗时 */
-const BREADCRUMB_COLLAPSE_MS = 320;
+const BREADCRUMB_COLLAPSE_MS = 100;
 /** 某一级离场后，后面的项滑过去补位的时长（秒） */
 const BREADCRUMB_SLIDE = 0.32;
 
@@ -210,7 +210,7 @@ export default function BreadcrumbBar() {
   return (
     <div
       className={cn(
-        "grid overflow-hidden transition-[grid-template-rows] duration-300 ease-linear",
+        "grid overflow-hidden transition-[grid-template-rows] duration-100 ease-linear",
         expanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
       )}
     >
