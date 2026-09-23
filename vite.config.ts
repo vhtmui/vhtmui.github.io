@@ -6,6 +6,7 @@ import { fileURLToPath, URL } from "node:url";
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: "/my_site_zzy",
   plugins: [
     tailwindcss(),
     react(),

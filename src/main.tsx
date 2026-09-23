@@ -15,26 +15,31 @@ import MacConverter from "@/pages/mac-converter-page";
 import ToolsPage from "@/pages/tools-page";
 import PlaygroundPage from "@/pages/playground-page";
 
-const router = createBrowserRouter([
-  {
-    path: ROUTES.home,
-    Component: AppLayout,
-    errorElement: <ErrorPage />,
-    children: [
-      { index: true, Component: HomePage },
-      { path: ROUTES.docs, Component: DocsPage },
-      {
-        path: ROUTES.tools,
-        children: [
-          { index: true, Component: ToolsPage },
-          { path: ROUTES.macConverter, Component: MacConverter },
-        ],
-      },
-      { path: ROUTES.playground, Component: PlaygroundPage },
-    ],
-  },
-  { path: "*", Component: ErrorPage },
-]);
+const basename = import.meta.env.BASE_URL.replace(/\/+$/, "");
+
+const router = createBrowserRouter(
+  [
+    {
+      path: ROUTES.home,
+      Component: AppLayout,
+      errorElement: <ErrorPage />,
+      children: [
+        { index: true, Component: HomePage },
+        { path: ROUTES.docs, Component: DocsPage },
+        {
+          path: ROUTES.tools,
+          children: [
+            { index: true, Component: ToolsPage },
+            { path: ROUTES.macConverter, Component: MacConverter },
+          ],
+        },
+        { path: ROUTES.playground, Component: PlaygroundPage },
+      ],
+    },
+    { path: "*", Component: ErrorPage },
+  ],
+  { basename },
+);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

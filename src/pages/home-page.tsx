@@ -17,7 +17,7 @@ export default function HomePage() {
   return (
     <div className="grid justify-items-center gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {HOME_LINKS.map((value) => (
-        <PixelCard key={value.to}>
+        <PixelCard key={value.to} gap={5}>
           {value.static ? (
             // 站外/静态目录：整页跳转，不走 SPA 路由
             <a href={value.to} className={CARD_LINK}>
