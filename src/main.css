@@ -100,6 +100,10 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  /* PixelCard：亮色主题用深灰像素，否则在浅背景上看不见 */
+  --pixel-card-background: transparent;
+  --pixel-card-active-color: oklch(0.87 0 0);
+  --pixel-card-colors: #3f3f46, #52525b, #71717a;
 }
 
 .dark {
@@ -134,6 +138,10 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  /* PixelCard：暗色主题保持原来的浅灰像素 */
+  --pixel-card-background: transparent;
+  --pixel-card-active-color: oklch(0.145 0 0);
+  --pixel-card-colors: #f8fafc, #f1f5f9, #cbd5e1;
 }
 
 @layer base {

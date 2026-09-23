@@ -3,7 +3,7 @@
 set SOURCE_DIR=dist
 set DEST_USER=zzy
 set DEST_HOST=10.50.3.98
-set DEST_PATH=/var/www/html/ttt
+set DEST_PATH=/var/www/html/my_site_zzy
 
 :: 使用 scp 命令复制文件
 scp -r "%SOURCE_DIR%\*" "%DEST_USER%@%DEST_HOST%:%DEST_PATH%"
