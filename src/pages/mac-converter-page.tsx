@@ -1,13 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import ClipboardJS from "clipboard";
 import { Check, Copy } from "lucide-react";
-import { Link } from "react-router";
 import FlipChars from "@/components/custom/flip-chars";
-import PageHeader from "@/components/custom/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { ROUTES } from "@/config/links";
 import { cn } from "@/lib/utils";
 
 /** 复制成功后对勾停留时长（ms） */
