@@ -34,7 +34,7 @@ export default function HomePage() {
         <FlipCard
           key={value.to}
           title={value.label}
-          duration={250}
+          duration={350}
           description={value.description}
         >
           {value.static ? (

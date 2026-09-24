@@ -18,6 +18,7 @@
     "@hugeicons/react": "^1.1.10",
     "@tailwindcss/vite": "^4.3.3",
     "class-variance-authority": "^0.7.1",
+    "clipboard": "^2.0.11",
     "clsx": "^2.1.1",
     "cn": "^0.3.0",
     "gsap": "^3.15.0",
