@@ -1,5 +1,5 @@
 import { ROUTES, STATIC_PATHS } from "@/config/links";
-import FlipCard from "@/components/custom/flip-card";
+import ScrollCard from "@/components/custom/scroll-card";
 import { Link } from "react-router";
 
 /** 首页入口卡片 */
@@ -31,10 +31,9 @@ export default function HomePage() {
   return (
     <div className="grid justify-items-center gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {HOME_LINKS.map((value) => (
-        <FlipCard
+        <ScrollCard
           key={value.to}
           title={value.label}
-          duration={350}
           description={value.description}
         >
           {value.static ? (
@@ -43,7 +42,7 @@ export default function HomePage() {
           ) : (
             <Link to={value.to} aria-label={value.label} className={CARD_LINK} />
           )}
-        </FlipCard>
+        </ScrollCard>
       ))}
     </div>
   );

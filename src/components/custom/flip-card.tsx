@@ -4,6 +4,9 @@ import { cn } from "@/lib/utils";
 /** 翻转触发方式 */
 export type FlipCardTrigger = "hover" | "click";
 
+/** 翻转方向：horizontal 左右翻（绕 Y 轴）/ vertical 上下翻（绕 X 轴） */
+export type FlipCardDirection = "horizontal" | "vertical";
+
 export interface FlipCardProps {
   /** 正面：居中大字标题 */
   title: ReactNode;
@@ -11,6 +14,8 @@ export interface FlipCardProps {
   description?: ReactNode;
   /** hover 悬停翻转（默认）/ click 点击或聚焦翻转 */
   trigger?: FlipCardTrigger;
+  /** 翻转方向，默认 horizontal（左右翻）；vertical 为上下翻 */
+  direction?: FlipCardDirection;
   /** 翻转时长（ms） */
   duration?: number;
   className?: string;
@@ -23,21 +28,45 @@ const FACE =
   "absolute inset-0 rounded-[25px] [backface-visibility:hidden] transform-3d";
 
 /**
+ * 两个方向对应的完整类名（写全字面量，Tailwind 才能扫描到）：
+ * horizontal 绕 Y 轴左右翻，vertical 绕 X 轴上下翻。
+ */
+const FLIP = {
+  horizontal: {
+    rest: "transform-[rotateY(0deg)]",
+    turned: "transform-[rotateY(180deg)]",
+    hover:
+      "group-hover:transform-[rotateY(180deg)] group-focus-within:transform-[rotateY(180deg)]",
+    back: "transform-[rotateY(180deg)]",
+  },
+  vertical: {
+    rest: "transform-[rotateX(0deg)]",
+    turned: "transform-[rotateX(180deg)]",
+    hover:
+      "group-hover:transform-[rotateX(180deg)] group-focus-within:transform-[rotateX(180deg)]",
+    back: "transform-[rotateX(180deg)]",
+  },
+} as const;
+
+/**
  * 翻转卡片：正面大字标题，翻转后标题退到左上角、中间显示说明。
  *
  * 默认 hover 翻转（含键盘 focus-within）；`trigger="click"` 改为点击 / 回车切换。
+ * `direction` 控制翻转轴：horizontal 左右翻（默认）、vertical 上下翻。
  * 自身不含背景色，是透明卡片；把 <Link> / <a> 作为 children 传进来即可整卡跳转。
  */
 export default function FlipCard({
   title,
   description,
   trigger = "hover",
+  direction = "horizontal",
   duration = 500,
   className,
   children,
 }: FlipCardProps) {
   const [flipped, setFlipped] = useState(false);
   const clickMode = trigger === "click";
+  const flip = FLIP[direction];
 
   const toggle = () => setFlipped((value) => !value);
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -61,11 +90,7 @@ export default function FlipCard({
       <div
         className={cn(
           "relative h-full w-full transition-transform ease-[cubic-bezier(0.5,1,0.89,1)] transform-3d motion-reduce:transition-none",
-          clickMode
-            ? flipped
-              ? "transform-[rotateY(180deg)]"
-              : "transform-[rotateY(0deg)]"
-            : "group-hover:transform-[rotateY(180deg)] group-focus-within:transform-[rotateY(180deg)]",
+          clickMode ? (flipped ? flip.turned : flip.rest) : flip.hover,
         )}
         style={{ transitionDuration: `${duration}ms` }}
       >
@@ -76,8 +101,8 @@ export default function FlipCard({
           </span>
         </div>
         {/* 背面：标题靠左上角，说明居中 */}
-        <div className={cn(FACE, "transform-[rotateY(180deg)]")}>
-          <span className="absolute top-4 left-5 text-sm font-medium text-foreground">
+        <div className={cn(FACE, flip.back)}>
+          <span className="absolute top-6 left-8 text-sm font-medium text-foreground">
             {title}
           </span>
           {description ? (

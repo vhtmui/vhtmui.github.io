@@ -8,10 +8,6 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /*
-   * 中文回退栈：Geist 没有 CJK 字形，中文交给各平台自带的界面黑体，无需额外下载。
-   * 顺序按覆盖率和字形接近度排：苹果 → 华为 → 小米 → Windows → 老 macOS → Android/Linux。
-   */
   --font-cjk:
     "PingFang SC", "HarmonyOS Sans SC", "MiSans", "Microsoft YaHei UI",
     "Microsoft YaHei", "Hiragino Sans GB", "Noto Sans CJK SC",
