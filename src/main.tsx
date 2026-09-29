@@ -26,6 +26,8 @@ const router = createBrowserRouter(
       children: [
         { index: true, Component: HomePage },
         { path: ROUTES.docs, Component: DocsPage },
+        // 文档详情：通配参数直接对应 content/ 的目录结构，无需逐篇声明路由
+        { path: `${ROUTES.docs}/*`, Component: DocsPage },
         {
           path: ROUTES.tools,
           children: [
