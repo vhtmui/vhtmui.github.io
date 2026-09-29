@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import WakeSlider from "@/components/WakeSlider";
+import { cn } from "@/lib/utils";
 
 /** 指针移动超过这个距离就不算"点击"，避免想拖动时误开合章节导航 */
 const CLICK_SLOP = 6;
@@ -47,8 +48,13 @@ export default function ReadingProgress({
         event.preventDefault();
         onToggle();
       }}
-      // text 色给到 currentColor：WakeSlider 的填充/轨道都用它取色
-      className="fixed bottom-4 left-1/2 z-40 w-[min(88vw,26rem)] -translate-x-1/2 rounded-full border bg-background/70 px-3 py-1 text-foreground/70 shadow-sm backdrop-blur-sm"
+      // text 色给到 currentColor：WakeSlider 的填充/轨道都用它取色。
+      // 不加底色，靠两端渐变遮罩（mask）淡出，条子直接融进页面背景。
+      className={cn(
+        "fixed bottom-4 left-1/2 z-40 w-[min(88vw,26rem)] -translate-x-1/2 text-foreground/70",
+        "[-webkit-mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]",
+        "[mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]",
+      )}
     >
       <WakeSlider
         value={value}
@@ -59,7 +65,8 @@ export default function ReadingProgress({
         restHeight={7}
         gap={3}
         fillColor="currentColor"
-        trackColor="color-mix(in oklab, currentColor 16%, transparent)"
+        // 轨道稍微加深一点补上少掉的底色，未读部分仍看得出形状
+        trackColor="color-mix(in oklab, currentColor 22%, transparent)"
         // 只是进度展示 + 点一下开合导航，不要显示成可拖拽手柄
         className="[&>div]:cursor-pointer"
       />
