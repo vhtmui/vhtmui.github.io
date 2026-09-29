@@ -1,14 +1,12 @@
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import { Link, useParams } from "react-router";
+import { Link } from "react-router";
 import PageHeader from "@/components/custom/page-header";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { ROUTES } from "@/config/links";
-import { DOC_GROUPS, findDoc, type DocEntry } from "@/lib/content";
+import { DOC_GROUPS } from "@/lib/content";
 
-/** 目录页：按 content/ 的分类把文档列出来 */
-function DocIndex() {
+/**
+ * 文档目录页：按 content/ 的分类把文档列出来。
+ * 详情见 docs-detail-page.tsx（挂在 `docs/*` 上）。
+ */
+export default function DocsPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
@@ -40,63 +38,4 @@ function DocIndex() {
       ))}
     </div>
   );
-}
-
-/** 正文页 */
-function DocDetail({ doc }: { doc: DocEntry }) {
-  return (
-    <div className="flex flex-col gap-6">
-      <PageHeader title={doc.title} description={doc.segments.join(" / ")}>
-        <Button
-          variant="outline"
-          size="sm"
-          nativeButton={false}
-          render={<Link to={ROUTES.docs} />}
-        >
-          返回目录
-        </Button>
-      </PageHeader>
-
-      <article className="typeset typeset-docs max-w-none">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{doc.body}</ReactMarkdown>
-      </article>
-    </div>
-  );
-}
-
-/** 路径对不上任何文件时的兜底 */
-function DocNotFound({ splat }: { splat: string }) {
-  return (
-    <div className="flex flex-col gap-6">
-      <PageHeader title="没有这篇文档" description={`content/${splat}.md`} />
-      <Card className="bg-card/60 backdrop-blur-sm">
-        <CardContent className="flex flex-col items-start gap-3 text-sm text-muted-foreground">
-          <p>对应文件不存在，检查一下路径或文件名。</p>
-          <Button
-            variant="outline"
-            size="sm"
-            nativeButton={false}
-            render={<Link to={ROUTES.docs} />}
-          >
-            回到文档目录
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-/**
- * 文档页：列表和详情共用这一个组件。
- *
- * `/docs` 没有通配参数，展示目录；`/docs/分类/文件名` 由 `/docs/*` 路由接住，
- * 通配参数就是 content/ 下的相对路径，页面据此查出对应的 markdown 渲染。
- */
-export default function DocsPage() {
-  const splat = useParams()["*"] ?? "";
-
-  if (!splat) return <DocIndex />;
-
-  const doc = findDoc(splat);
-  return doc ? <DocDetail doc={doc} /> : <DocNotFound splat={splat} />;
 }

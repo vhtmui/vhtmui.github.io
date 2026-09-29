@@ -18,7 +18,7 @@ function subscribeSystemTheme(onChange: () => void) {
  * 用 `.dark` 类驱动 shadcn 的明暗主题：
  * - 偏好与解析结果都放在 context 里，组件通过 useTheme() 读取；
  * - 系统偏好变化时（system 模式）自动跟随；
- * - index.html 的内联脚本负责首屏避免闪烁，这里负责后续同步。
+ * - 首屏防闪烁由 root.tsx 的内联脚本负责，这里负责挂载后的同步。
  */
 export default function ThemeProvider({
   children,
@@ -29,9 +29,14 @@ export default function ThemeProvider({
   defaultTheme?: Theme;
   storageKey?: string;
 }) {
-  const [theme, setThemeState] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme | null) ?? defaultTheme,
-  );
+  // 首帧固定用 defaultTheme：服务端读不到 localStorage，客户端首帧必须与之一致才不会水合失败；
+  // 真实偏好等挂载后再同步，观感由内联脚本先行处理。
+  const [theme, setThemeState] = useState<Theme>(defaultTheme);
+
+  useEffect(() => {
+    const stored = localStorage.getItem(storageKey) as Theme | null;
+    if (stored) setThemeState(stored);
+  }, [storageKey]);
 
   const systemPrefersDark = useSyncExternalStore(
     subscribeSystemTheme,

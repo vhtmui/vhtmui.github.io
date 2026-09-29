@@ -4,9 +4,12 @@
     "target": "es2023",
     "lib": ["ES2023", "DOM"],
     "module": "esnext",
-    "types": ["vite/client"],
+    "types": ["vite/client", "@react-router/node"],
     "allowArbitraryExtensions": true,
     "skipLibCheck": true,
+
+    /* 框架在 .react-router/types 生成路由模块类型，靠 rootDirs 让 ./+types/xxx 能解析到 */
+    "rootDirs": [".", "./.react-router/types"],
 
     /* Path alias（shadcn + 组件内部统一用 @/ 引用 src；无需 baseUrl，路径相对本文件解析） */
     "paths": {
@@ -27,5 +30,7 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"]
+  "include": ["src", ".react-router/types/**/*"],
+  /* .server 文件只在构建期跑，归到 tsconfig.node.json 里检查（那边有 node 类型） */
+  "exclude": ["src/**/*.server.ts", "src/**/*.server.tsx"]
 }

@@ -1,6 +1,6 @@
 @echo off
 :: 设置变量
-set SOURCE_DIR=dist
+set SOURCE_DIR=build\client\my_site_zzy
 set DEST_USER=zzy
 set DEST_HOST=10.50.3.98
 set DEST_PATH=/var/www/html/my_site_zzy
