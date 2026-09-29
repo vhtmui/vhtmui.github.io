@@ -1,5 +1,6 @@
-import { readdirSync, renameSync, rmSync } from "node:fs";
+import { readdirSync, renameSync } from "node:fs";
 import { resolve } from "node:path";
+import { stash } from "./stash.mjs";
 
 /**
  * 构建后整理产物（`pnpm build` 在 react-router build 之后自动调用）。
@@ -47,7 +48,8 @@ for (const entry of readdirSync(CLIENT_DIR, { withFileTypes: true })) {
     entry.name === "index.html" ? "__spa-fallback.html" : entry.name,
   );
 
-  rmSync(target, { recursive: true, force: true });
+  // emptyOutDir 关掉后这里可能残留上一次的同名目录，挪走而不是删除
+  stash(target);
   renameSync(resolve(CLIENT_DIR, entry.name), target);
 }
 

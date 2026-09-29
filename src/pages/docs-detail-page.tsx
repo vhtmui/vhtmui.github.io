@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import ClipboardJS from "clipboard";
 import { Link, useLoaderData } from "react-router";
 import PageHeader from "@/components/custom/page-header";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,9 @@ import { ROUTES } from "@/config/links";
 import { readDocSource } from "@/lib/content.server";
 import { renderMarkdown } from "@/lib/markdown.server";
 import type { TocItem } from "@/lib/markdown.server";
+
+/** 复制代码后对勾停留时长（ms） */
+const COPY_FEEDBACK = 1200;
 
 /** 把 `/docs/*` 的通配参数拆成路径段（可能带 URL 编码） */
 function toSegments(splat: string | undefined) {
@@ -83,6 +87,53 @@ export default function DocsDetailPage() {
   useEffect(() => {
     const id = window.location.hash.slice(1);
     if (id) document.getElementById(id)?.scrollIntoView({ block: "start" });
+  }, []);
+
+  // 代码块复制：按钮是构建期写好的静态 HTML，这里用事件委托接管，
+  // 代码内容从 DOM 现取，不需要在 HTML 里再存一份文本。
+  useEffect(() => {
+    const clipboard = new ClipboardJS("[data-copy-code]", {
+      text: (trigger) => {
+        const pre = trigger.closest(".code-block")?.querySelector("pre");
+        if (!pre) return "";
+
+        // shiki 把每一行放在 .line 里、行间没有换行文本节点，得自己拼回来
+        const lines = pre.querySelectorAll(".line");
+        if (lines.length > 0) {
+          return [...lines].map((line) => line.textContent ?? "").join("\n");
+        }
+
+        return pre.textContent ?? "";
+      },
+    });
+
+    const timers = new Map<Element, number>();
+
+    clipboard.on("success", (event) => {
+      const button = event.trigger;
+      button.setAttribute("data-copied", "true");
+
+      const previous = timers.get(button);
+      if (previous) window.clearTimeout(previous);
+
+      timers.set(
+        button,
+        window.setTimeout(() => {
+          button.removeAttribute("data-copied");
+          timers.delete(button);
+        }, COPY_FEEDBACK),
+      );
+    });
+
+    clipboard.on("error", (event) => {
+      console.error("Failed to copy code: ", event.action);
+    });
+
+    return () => {
+      clipboard.destroy();
+      timers.forEach((timer) => window.clearTimeout(timer));
+      timers.clear();
+    };
   }, []);
 
   return (

@@ -12,6 +12,8 @@ export default defineConfig({
   // 与 react-router.config.ts 的 basename 保持一致，末尾斜杠不能省
   base: "/my_site_zzy/",
   plugins: [tailwindcss(), reactRouter()],
+  // 不要清理 outDir：构建目录由框架管理，重复清理与本机的安全删除机制冲突会直接中断构建
+  build: { emptyOutDir: false },
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
