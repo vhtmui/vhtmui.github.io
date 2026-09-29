@@ -84,8 +84,15 @@ export default function HeaderNav() {
     return () => window.removeEventListener("resize", syncPill);
   }, [syncPill]);
 
+  /**
+   * 窄屏下三个药丸放不进顶栏：与其让整页横向溢出（移动端会因此缩放页面），
+   * 不如让导航自己横向滚动。min-w-0 + overflow-x-auto 把这一层的最小宽度降到 0，
+   * 顶栏因此永远撑不出屏幕；px-1 / py-1 是给 focus 环留的余量（overflow 在 padding
+   * 边界裁剪，不留边就会被切）。滚动条隐藏：能滚动就够了，不必占掉药丸下方的空间。
+   * （不用 IDE 提示的 scrollbar-none：装的是 tailwindcss 4.3.3，没有这个工具类）
+   */
   return (
-    <NavigationMenu>
+    <NavigationMenu className="min-w-0 overflow-x-auto px-1 py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       <NavigationMenuList
         ref={listRef}
         className="relative"
@@ -118,6 +125,8 @@ export default function HeaderNav() {
                   navigationMenuTriggerStyle(),
                   // 底色交给滑动的色块，不要自带 hover / focus 背景
                   "relative z-1 no-underline hover:bg-transparent focus:bg-transparent",
+                  // 320px 这类极窄屏再收紧药丸内边距，三个标签才都能露出来（不至于只剩滚动）
+                  "max-[360px]:px-1.5",
                   active && "text-foreground",
                 )}
               >

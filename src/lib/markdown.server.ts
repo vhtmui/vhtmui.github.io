@@ -1,5 +1,8 @@
-import type { Element, Parents, Root as HastRoot, Text } from "hast";
+import type { Element, ElementContent, Parents, Root as HastRoot, Text } from "hast";
+import { Check, Copy } from "lucide-react";
 import type { Heading, Root, RootContent } from "mdast";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import rehypeStringify from "rehype-stringify";
 import remarkGfm from "remark-gfm";
 import remarkParse from "remark-parse";
@@ -138,23 +141,17 @@ function nodeText(node: Element): string {
     .join("");
 }
 
-function svg(className: string, d: string): Element {
-  return {
-    type: "element",
-    tagName: "svg",
-    properties: {
-      xmlns: "http://www.w3.org/2000/svg",
-      viewBox: "0 0 24 24",
-      fill: "none",
-      stroke: "currentColor",
-      strokeWidth: "2",
-      strokeLinecap: "round",
-      strokeLinejoin: "round",
-      className: [className],
-      ariaHidden: "true",
-    },
-    children: [{ type: "element", tagName: "path", properties: { d }, children: [] }],
-  };
+/**
+ * 图标直接用 lucide：按钮是构建期写进 HTML 的静态节点，不进 React 树也不参与
+ * 水合，所以这里用 react-dom/server 把组件渲染成 SVG 字符串，形状与站内其他
+ * 按钮（如 mac-converter 的 Copy / Check）保持一致。
+ */
+const COPY_ICON = renderToStaticMarkup(createElement(Copy, { className: "code-copy-icon" }));
+const CHECK_ICON = renderToStaticMarkup(createElement(Check, { className: "code-check-icon" }));
+
+/** 包成 raw 节点（hast 的半标准节点，类型由 mdast-util-to-hast 注册），交给 to-html 原样输出 */
+function rawHtml(value: string): ElementContent {
+  return { type: "raw", value };
 }
 
 /** 复制按钮：静态 HTML，两个图标用 CSS 按 data-copied 切换 */
@@ -168,10 +165,7 @@ function copyButton(): Element {
       dataCopyCode: "",
       "aria-label": "复制代码",
     },
-    children: [
-      svg("code-copy-icon", "M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"),
-      svg("code-check-icon", "M20 6 9 17l-5-5"),
-    ],
+    children: [rawHtml(COPY_ICON), rawHtml(CHECK_ICON)],
   };
 }
 
@@ -245,6 +239,29 @@ function rehypeCodeBlocks() {
   };
 }
 
+/**
+ * 表格：套一层横向滚动容器。
+ *
+ * 表格自己的 `max-width: 100%` 拦不住内容宽度 —— 表头是 nowrap，列一多最小
+ * 宽度就超过容器，窄屏下整页都会被撑出横向滚动条。typeset 里约定了
+ * `.typeset-scroll` 这个包装：由它接管 overflow-x 和块级外边距，表格退化成
+ * `width: max-content` 在容器里横滑，不再顶着版面往外跑。
+ */
+function rehypeTableScroll() {
+  return (tree: HastRoot) => {
+    visit(tree, "element", (node, index, parent) => {
+      if (node.tagName !== "table" || typeof index !== "number" || !parent) return;
+
+      parent.children[index] = {
+        type: "element",
+        tagName: "div",
+        properties: { className: ["typeset-scroll"] },
+        children: [node],
+      };
+    });
+  };
+}
+
 /* --------------------------------- 出口 ---------------------------------- */
 
 /** 渲染一篇文档的正文，返回 HTML 与章节目录 */
@@ -254,7 +271,10 @@ export async function renderMarkdown(body: string) {
     .use(remarkGfm)
     .use(remarkRehype)
     .use(rehypeCodeBlocks)
-    .use(rehypeStringify);
+    .use(rehypeTableScroll)
+    // 代码块栏里的图标是现成的 SVG 片段（raw 节点），需要放行；正文里的
+    // 原始 HTML 会被 remark-rehype 丢掉（非危险模式），不会跟着漏到这里
+    .use(rehypeStringify, { allowDangerousHtml: true });
 
   const tree = processor.parse(body) as Root;
   const toc = collectToc(tree);

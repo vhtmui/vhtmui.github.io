@@ -43,10 +43,22 @@ interface LeavingCrumb extends Crumb {
   wasCurrent: boolean;
 }
 
-/** 路径 → 各级（含前缀路径） */
+/**
+ * 路径段还原成可读文字：URL 里的中文是百分号编码（%E5%85%B6%E4%BB%96），
+ * 直接显示就是一串转义符号。段里本来就有 `%` 时解码会抛错，原样返回即可。
+ */
+function decodeSegment(segment: string) {
+  try {
+    return decodeURIComponent(segment);
+  } catch {
+    return segment;
+  }
+}
+
+/** 路径 → 各级（含前缀路径）：文字解码后展示，链接仍用原始（已编码）的路径段 */
 function toCrumbs(prefixes: string[]): Crumb[] {
   return prefixes.map((text, level) => ({
-    text,
+    text: decodeSegment(text),
     path: "/" + prefixes.slice(0, level + 1).join("/"),
   }));
 }
@@ -99,7 +111,7 @@ export default function BreadcrumbBar() {
     setLeaving(
       seen.length > prefixes.length
         ? seen.slice(prefixes.length).map((text, index) => ({
-            text,
+            text: decodeSegment(text),
             path: "/" + seen.slice(0, prefixes.length + index + 1).join("/"),
             level: prefixes.length + index,
             wasCurrent: prefixes.length + index === seen.length - 1,

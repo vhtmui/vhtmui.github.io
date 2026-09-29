@@ -1,0 +1,53 @@
+import { useEffect, type RefObject } from "react";
+
+/**
+ * 顶栏随滚动收起 / 露出。
+ *
+ * 位移量跟滚动距离一一对应：往下滚多少就往上让多少（滚多少走多少），
+ * 往上滚多少就露多少，最多把顶栏整个推出视口；回到页面顶部一定完全露出。
+ * 也就是说，滚动方向反过来时，顶栏会把刚才"欠下"的位移原样还回来 —— 不是
+ * 单纯按阈值切换显隐，所以在深度滚动处往回滚也能立刻看到顶栏。
+ *
+ * 位移每帧直接写 transform：页面的滚动本身是逐帧的，顶栏跟着同样的距离走
+ * 才是"同步"；如果再加过渡，反而会比页面慢半拍、看起来像浮在上面。
+ *
+ * @param ref 顶栏元素
+ */
+export function useHideOnScroll(ref: RefObject<HTMLElement | null>) {
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    /** 上一次的滚动位置，用来算这一帧滚了多少 */
+    let lastY = window.scrollY;
+    /** 当前位移（负数，0 表示完全露出） */
+    let offset = 0;
+    let frame = 0;
+
+    const sync = () => {
+      frame = 0;
+      const y = window.scrollY;
+      const limit = el.offsetHeight;
+
+      // 往下滚 y 变大 → offset 变小（往上藏）；往上滚则原样还回来
+      offset = Math.min(0, Math.max(-limit, offset - (y - lastY)));
+      lastY = y;
+      // 到顶必然完全露出（锚点跳转、回顶、橡皮筋回弹都走这条路）
+      if (y <= 0) offset = 0;
+
+      el.style.transform = offset === 0 ? "" : `translate3d(0, ${offset}px, 0)`;
+    };
+
+    const onScroll = () => {
+      frame ||= requestAnimationFrame(sync);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frame) cancelAnimationFrame(frame);
+      el.style.transform = "";
+    };
+  }, [ref]);
+}
