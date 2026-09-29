@@ -160,9 +160,9 @@
   }
 }
 
-/* 章节锚点跳转时给 sticky 头部留出空间（typeset 只留了 1.25em） */
+/* 章节锚点跳转时给 sticky 那块（顶栏 3.5rem + 面包屑 ≈2rem）留出空间 */
 .typeset-docs :where(h1, h2, h3, h4, h5, h6)[id] {
-  scroll-margin-block-start: 5rem;
+  scroll-margin-block-start: 6.5rem;
 }
 
 /* -------------------------------- 代码块 --------------------------------- */

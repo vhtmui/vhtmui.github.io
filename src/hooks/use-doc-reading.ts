@@ -2,10 +2,10 @@ import { useEffect, useState, type RefObject } from "react";
 import type { TocItem } from "@/lib/markdown.server";
 
 /**
- * 判定线（px，视口顶部往下）：sticky 顶栏 3.5rem 与锚点留白 5rem 之间，
- * 这样从章节导航跳过去之后，落点标题正好算作"当前"。
+ * 判定线（px，视口顶部往下）：sticky 那块（顶栏 + 面包屑 ≈88px）之下、
+ * 锚点留白 6.5rem（104px）再往下一点，这样从章节导航跳过去之后，落点标题正好算作"当前"。
  */
-const ACTIVE_LINE = 96;
+const ACTIVE_LINE = 120;
 
 /**
  * 阅读位置：当前位置最细标题的 id + 阅读进度（0–100）。

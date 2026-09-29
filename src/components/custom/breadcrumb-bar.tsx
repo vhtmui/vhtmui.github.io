@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useLayoutEffect, useRef, useState, type Ref } from "react";
 import { Link, useLocation } from "react-router";
 import { gsap } from "gsap";
 import {
@@ -75,7 +75,14 @@ const itemKey = (level: number, round: number) => `item-${level}-${round}`;
  * - 路径变长 → 只有新增的分隔符 / 那一级翻入，前面没变的不动；
  * - 收起（回首页 / 窄屏）→ 全部层级都算离场，原地翻出的同时容器向上折叠。
  */
-export default function BreadcrumbBar() {
+export default function BreadcrumbBar({
+  wide = false,
+  ref,
+}: {
+  wide?: boolean;
+  /** 交给顶栏的滚动隐藏逻辑：这是"不许移出视口"的那一块 */
+  ref?: Ref<HTMLDivElement>;
+}) {
   const { pathname } = useLocation();
   const isWide = useMediaQuery("(min-width: 640px)");
   /** 仅宽屏且非首页显示 */
@@ -221,13 +228,24 @@ export default function BreadcrumbBar() {
 
   return (
     <div
+      ref={ref}
       className={cn(
         "grid overflow-hidden transition-[grid-template-rows] duration-100 ease-linear",
         expanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
       )}
     >
       <div className="min-h-0">
-        <div className="mx-auto w-full max-w-5xl px-4 pb-2">
+        {/*
+          和顶栏同一栏宽：docs 体系铺满屏幕、其余页面 5xl 居中，于是面包屑的左边线
+          正好落在顶栏 logo 那条竖线上；条目本身按默认的靠左排布，宽度变化与顶栏同节奏。
+        */}
+        <div
+          className={cn(
+            "mx-auto w-full px-4 pb-2",
+            "transition-[max-width] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none",
+            wide ? "max-w-full" : "max-w-5xl",
+          )}
+        >
           <Breadcrumb>
             <BreadcrumbList ref={listRef}>
               {levels.map(({ crumb, level, leaving: isLeaving, current }) => {

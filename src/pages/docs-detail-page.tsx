@@ -31,7 +31,7 @@ const DOC_COLUMN =
  * 13rem 宽 + 16px 右边距 = 1280px（xl）刚好放得下，所以断点取 xl：
  * 再窄就装不进正文两侧，改成底部悬浮卡片。
  */
-const TOC_ASIDE = "fixed top-20 left-[calc(50%+24rem+2rem)] z-30 hidden w-52";
+const TOC_ASIDE = "fixed top-24 left-[calc(50%+24rem+2rem)] z-30 hidden w-52";
 const TOC_CARD =
   "fixed inset-x-3 bottom-24 z-40 mx-auto flex max-h-[80svh] max-w-md flex-col overflow-hidden rounded-xl border bg-popover/95 shadow-lg backdrop-blur-sm xl:hidden";
 
@@ -163,7 +163,7 @@ export default function DocsDetailPage() {
         aria-label="章节导航"
         className={cn(
           TOC_ASIDE,
-          "max-h-[calc(100svh-7rem)] overflow-y-auto",
+          "max-h-[calc(100svh-8rem)] overflow-y-auto",
           tocOpen ? "xl:hidden" : "xl:block",
         )}
       >
