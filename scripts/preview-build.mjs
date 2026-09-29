@@ -28,15 +28,28 @@ const TYPES = {
 
 const fallback = join(ROOT, BASENAME, "__spa-fallback.html");
 
-createServer((req, res) => {
-  const urlPath = decodeURIComponent((req.url ?? "/").split("?")[0]);
-  let file = join(ROOT, urlPath);
-
-  // 目录请求取它下面的 index.html（预渲染产物就是这种结构）
-  if (existsSync(file) && statSync(file).isDirectory()) {
-    file = join(file, "index.html");
+/** 目录请求取它下面的 index.html；原始路径与解码后的路径都试一遍 */
+function resolveFile(urlPath) {
+  let decoded = urlPath;
+  try {
+    decoded = decodeURIComponent(urlPath);
+  } catch {
+    // 保持原样
   }
-  if (!existsSync(file)) file = fallback;
+
+  for (const candidate of new Set([urlPath, decoded])) {
+    let file = join(ROOT, candidate);
+    if (existsSync(file) && statSync(file).isDirectory()) {
+      file = join(file, "index.html");
+    }
+    if (existsSync(file)) return file;
+  }
+
+  return null;
+}
+
+createServer((req, res) => {
+  const file = resolveFile((req.url ?? "/").split("?")[0]) ?? fallback;
 
   if (!existsSync(file)) {
     res.statusCode = 404;

@@ -37,7 +37,8 @@ export function Layout({ children }: { children: ReactNode }) {
       </head>
       <body>
         {children}
-        <ScrollRestoration />
+        {/* getKey 用 pathname：否则同页内的 #hash 跳转会被当成新位置，滚动位置被重置回顶部 */}
+        <ScrollRestoration getKey={(location) => location.pathname} />
         <Scripts />
       </body>
     </html>

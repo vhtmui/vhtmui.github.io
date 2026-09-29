@@ -1,12 +1,19 @@
-import { Link } from "react-router";
+import { Link, useLoaderData } from "react-router";
 import PageHeader from "@/components/custom/page-header";
-import { DOC_GROUPS } from "@/lib/content";
+import { listDocGroups } from "@/lib/content.server";
 
 /**
- * 文档目录页：按 content/ 的分类把文档列出来。
- * 详情见 docs-detail-page.tsx（挂在 `docs/*` 上）。
+ * 目录页的数据：只有元信息（分组 / 标题 / 路径），
+ * 正文不进 loader 返回值，否则会被序列化进 HTML。
  */
+export function loader() {
+  return { groups: listDocGroups() };
+}
+
+/** 文档目录页：按 content/ 的分类把文档列出来 */
 export default function DocsPage() {
+  const { groups } = useLoaderData<typeof loader>();
+
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
@@ -14,7 +21,7 @@ export default function DocsPage() {
         description="路由与 content/ 的目录结构一一对应，丢进来的 markdown 会自动出现在这里。"
       />
 
-      {DOC_GROUPS.map((group) => (
+      {groups.map((group) => (
         <section key={group.name} className="flex flex-col gap-2">
           <h2 className="font-heading text-sm font-medium text-muted-foreground">
             {group.name || "未分类"}

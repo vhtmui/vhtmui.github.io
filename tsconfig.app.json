@@ -4,7 +4,8 @@
     "target": "es2023",
     "lib": ["ES2023", "DOM"],
     "module": "esnext",
-    "types": ["vite/client", "@react-router/node"],
+    /* .server 模块（loader 依赖）会被路由模块间接触发类型检查，所以这里也要有 node 类型 */
+    "types": ["vite/client", "@react-router/node", "node"],
     "allowArbitraryExtensions": true,
     "skipLibCheck": true,
 

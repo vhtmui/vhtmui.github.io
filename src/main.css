@@ -159,3 +159,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* 章节锚点跳转时给 sticky 头部留出空间（typeset 只留了 1.25em） */
+.typeset-docs :where(h1, h2, h3, h4, h5, h6)[id] {
+  scroll-margin-block-start: 5rem;
+}
