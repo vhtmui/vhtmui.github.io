@@ -11,10 +11,14 @@ import { useEffect, type RefObject } from "react";
  * 位移每帧直接写 transform：页面的滚动本身是逐帧的，跟着同样的距离走
  * 才是"同步"；如果再加过渡，反而会比页面慢半拍、看起来像浮在上面。
  *
- * @param ref 装着顶栏与面包屑的容器。上移上限取它第一个子元素（顶栏）的高度：
- *   顶栏整条让出视口后面包屑正好停在视口顶，之后"欠账"封顶，所以再往回滚
- *   一定立刻开始露出。
+ * @param ref 装着顶栏与面包屑的容器。上移上限取它第一个子元素（顶栏）的高度再减去
+ *   KEEP_GAP：顶栏让出视口后面包屑停在视口顶下方 KEEP_GAP 处，不会贴住上边缘。
+ *   之后"欠账"封顶，所以再往回滚一定立刻开始露出。
  */
+
+/** 顶栏让位后给面包屑留出的上边距（px） */
+const KEEP_GAP = 8;
+
 export function useHideOnScroll<T extends HTMLElement>(ref: RefObject<T | null>) {
   useEffect(() => {
     const el = ref.current;
@@ -30,10 +34,11 @@ export function useHideOnScroll<T extends HTMLElement>(ref: RefObject<T | null>)
       frame = 0;
       const y = window.scrollY;
 
-      // 上移上限 = 顶栏（容器第一个子元素）的高度，也就是"最多能藏多少"：
-      // 顶栏移出视口后，下面的面包屑正好停在视口顶。容器为空时退回整块高度。
+      // 上移上限 = 顶栏（容器第一个子元素）的高度 - KEEP_GAP，也就是"最多能藏多少"：
+      // 顶栏让出视口后，下面的面包屑停在视口顶下方 KEEP_GAP 处，不贴住上边缘。
+      // 容器为空时退回整块高度。
       const top = el.firstElementChild as HTMLElement | null;
-      const limit = top ? top.offsetHeight : el.offsetHeight;
+      const limit = Math.max(0, (top ? top.offsetHeight : el.offsetHeight) - KEEP_GAP);
 
       // 往下滚 y 变大 → offset 变小（往上藏）；往上滚则原样还回来
       offset = Math.min(0, Math.max(-limit, offset - (y - lastY)));

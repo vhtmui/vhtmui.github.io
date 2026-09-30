@@ -242,8 +242,7 @@ export default function BreadcrumbBar({ wide = false }: { wide?: boolean }) {
         */}
         <div
           className={cn(
-            // pt-2：顶栏滚走、面包屑贴住视口顶之后，不至于压在视口上边缘
-            "mx-auto w-full px-5 pt-2 pb-2",
+            "mx-auto w-full px-5 pb-2",
             "transition-[max-width] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none",
             wide ? "max-w-full" : "max-w-5xl",
           )}
