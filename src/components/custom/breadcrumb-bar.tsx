@@ -163,6 +163,13 @@ export default function BreadcrumbBar({
   /**
    * 项级 FLIP：某一级变宽 / 变窄，或离场项被摘掉时，后面的项滑过去补位。
    * 字符级的滑移由 FlipChars 自己负责，这里只管 <li> 这一层。
+   *
+   * 坐标一律取「相对列表自身」的位置。li 是 static 定位，offsetParent 落在 body
+   * 那一级，直接读 offsetLeft 会把容器自己的移动也算进来 —— 顶栏与面包屑在 docs
+   * 体系下铺满、其余页面 5xl 居中，max-width 之间还有 300ms 过渡，于是
+   * "容器挪完位"之后的下一次渲染会读到一整段居中距离的差，被当成元素位移，
+   * 让面包屑先闪回旧位置再滑过来。减掉列表自身偏移后只留下列表内部的相对位置，
+   * 容器怎么动都不再干扰（跨 offsetParent 时两边共享的常量偏差也会被抵消）。
    */
   const placedRef = useRef(new Map<Element, { x: number; y: number }>());
   useLayoutEffect(() => {
@@ -171,10 +178,12 @@ export default function BreadcrumbBar({
       placedRef.current.clear();
       return;
     }
+    const baseX = list.offsetLeft;
+    const baseY = list.offsetTop;
     const next = new Map<Element, { x: number; y: number }>();
     for (const item of [...list.children]) {
       const el = item as HTMLElement;
-      next.set(el, { x: el.offsetLeft, y: el.offsetTop });
+      next.set(el, { x: el.offsetLeft - baseX, y: el.offsetTop - baseY });
     }
     for (const [item, from] of placedRef.current) {
       const el = item as HTMLElement;
