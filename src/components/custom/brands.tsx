@@ -50,7 +50,7 @@ export function Brands({
           <text
             x="119"
             y="86"
-            className="fill-muted-foreground"
+            className="fill-primary"
             fontFamily="Arial, Helvetica, sans-serif"
             fontSize="14"
             fontWeight="600"

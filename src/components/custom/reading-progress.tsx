@@ -48,9 +48,9 @@ export default function ReadingProgress({
         event.preventDefault();
         onToggle();
       }}
-      // text 色给到 currentColor：WakeSlider 的填充/轨道都用它取色。不加底色、
-      // 压到十几像素高、只靠两端渐变遮罩（mask）淡出，条子直接融进页面背景：
-      // 不特意看基本注意不到，压过正文也不至于和正文叠成两行。
+      // text 色给到 currentColor：WakeSlider 的轨道用它取色，保持原来那层灰白底色；
+      // 进度填充单独走主题色 primary（见下面的 fillColor）。不加底色、压到十几像素高、
+      // 只靠两端渐变遮罩（mask）淡出，条子直接融进页面背景；压过正文也不至于和正文叠成两行。
       // pt 只是把点击区垫到 24px（看不见），条子本身仍贴住视口底边。
       className={cn(
         "fixed bottom-0 left-1/2 z-40 w-[min(88vw,26rem)] -translate-x-1/2 pt-2.5 text-foreground/60",
@@ -66,8 +66,8 @@ export default function ReadingProgress({
         height={14}
         restHeight={3}
         gap={2}
-        fillColor="currentColor"
-        // 轨道稍微加深一点补上少掉的底色，未读部分仍看得出形状
+        fillColor="var(--primary)"
+        // 轨道沿用外面给的灰白 currentColor，稍微加深一点补上少掉的底色，未读部分仍看得出形状
         trackColor="color-mix(in oklab, currentColor 22%, transparent)"
         // 只是进度展示 + 点一下开合导航，不要显示成可拖拽手柄；
         // min-h-0 抵掉轨道自带的 44px 触摸高度，条子才能真的贴在底边上
