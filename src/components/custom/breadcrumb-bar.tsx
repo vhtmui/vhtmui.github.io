@@ -241,7 +241,7 @@ export default function BreadcrumbBar({
         */}
         <div
           className={cn(
-            "mx-auto w-full px-4 pb-2",
+            "mx-auto w-full px-5 pb-2",
             "transition-[max-width] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none",
             wide ? "max-w-full" : "max-w-5xl",
           )}

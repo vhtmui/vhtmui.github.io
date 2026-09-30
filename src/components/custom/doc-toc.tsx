@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { TocItem } from "@/lib/markdown.server";
@@ -47,6 +47,62 @@ function mapRoots(roots: TocNode[]) {
   return map;
 }
 
+/** 最近的可滚动祖先：目录在宽屏是 fixed 侧栏、窄屏是卡片里的 div，位置不固定 */
+function findScroller(from: HTMLElement) {
+  let node = from.parentElement;
+
+  while (node) {
+    const { overflowY } = getComputedStyle(node);
+    if (/(auto|scroll)/.test(overflowY) && node.scrollHeight > node.clientHeight) {
+      return node;
+    }
+    node = node.parentElement;
+  }
+
+  return null;
+}
+
+/**
+ * 把当前高亮项带到目录容器的中线。
+ *
+ * 长目录在容器里自己滚动，阅读位置往前走时高亮会滑出可视区，所以要跟着挪；
+ * 偏差不到容器四分之一高时不动，免得相邻标题来回切换时目录跟着抖。
+ * 首次（含带 #hash 直接打开）用瞬时定位，之后才走平滑滚动。
+ */
+function useCenterActive(currentId: string | null) {
+  const navRef = useRef<HTMLElement>(null);
+  const isFirstRef = useRef(true);
+
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav || !currentId) return;
+
+    const current = nav.querySelector<HTMLElement>(`[data-active-id="${currentId}"]`);
+    if (!current) return;
+
+    const scroller = findScroller(current);
+    if (!scroller) return;
+
+    const currentRect = current.getBoundingClientRect();
+    const scrollerRect = scroller.getBoundingClientRect();
+    const drift =
+      currentRect.top - scrollerRect.top - (scroller.clientHeight - currentRect.height) / 2;
+
+    const first = isFirstRef.current;
+    isFirstRef.current = false;
+
+    if (!first && Math.abs(drift) < scroller.clientHeight / 4) return;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    scroller.scrollTo({
+      top: scroller.scrollTop + drift,
+      behavior: first || reduceMotion ? "auto" : "smooth",
+    });
+  }, [currentId]);
+
+  return navRef;
+}
+
 /** 一条正文标题：三级及以下都是可点的锚点，再深一层再多缩进一档 */
 function TocLeaf({
   node,
@@ -64,6 +120,8 @@ function TocLeaf({
       <a
         href={`#${node.id}`}
         aria-current={activeId === node.id ? "location" : undefined}
+        // 自动居中靠它定位当前项（见 useCenterActive）
+        data-active-id={activeId === node.id ? node.id : undefined}
         onClick={(event) => {
           event.preventDefault();
           onJump(node.id);
@@ -127,10 +185,13 @@ export default function DocToc({ items, activeId, onNavigate }: DocTocProps) {
     onNavigate?.();
   };
 
+  // 阅读位置变了就把当前项带进容器中线
+  const navRef = useCenterActive(activeId);
+
   if (!roots.length) return null;
 
   return (
-    <nav aria-label="章节导航" className="flex flex-col gap-0.5 text-sm">
+    <nav ref={navRef} aria-label="章节导航" className="flex flex-col gap-0.5 text-sm">
       {roots.map((root) => {
         const hasKids = root.children.length > 0;
         const open = openId === root.id;
@@ -149,6 +210,7 @@ export default function DocToc({ items, activeId, onNavigate }: DocTocProps) {
               <button
                 type="button"
                 aria-expanded={open}
+                data-active-id={activeId === root.id ? root.id : undefined}
                 onClick={() =>
                   setManual({ at: activeRootId, rootId: open ? null : root.id })
                 }
@@ -166,6 +228,7 @@ export default function DocToc({ items, activeId, onNavigate }: DocTocProps) {
             ) : (
               <a
                 href={`#${root.id}`}
+                data-active-id={activeId === root.id ? root.id : undefined}
                 onClick={(event) => {
                   event.preventDefault();
                   jump(root.id);

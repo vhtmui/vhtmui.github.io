@@ -1,14 +1,13 @@
-import { readdirSync, renameSync } from "node:fs";
+import { readdirSync, renameSync, rmSync } from "node:fs";
 import { resolve } from "node:path";
-import { stash } from "./stash.mjs";
 
 /**
  * 构建后整理产物（`pnpm build` 在 react-router build 之后自动调用）。
  *
  * 做两件事：
- * 1. 框架把页面写到 build/client/my_site_zzy/，而 Vite 的 assets 与 public 资源
- *    落在 build/client 根下；两者 URL 前缀都带 /my_site_zzy/，分开部署会 404，
- *    所以统一归到 basename 目录里，让 build/client/my_site_zzy 就是站点根。
+ * 1. 框架把页面写到 <build>/client/my_site_zzy/，而 Vite 的 assets 与 public 资源
+ *    落在 <build>/client 根下；两者 URL 前缀都带 /my_site_zzy/，分开部署会 404，
+ *    所以统一归到 basename 目录里，让它直接就是站点根。
  * 2. 预渲染直接把 URL 片段当目录名，中文会保留成 %E5%85%B6%E4%BB%96 这种编码形式，
  *    而 nginx 之类会先把请求 URL 解码再找文件，对不上就 404，这里还原成中文。
  *
@@ -48,11 +47,11 @@ for (const entry of readdirSync(CLIENT_DIR, { withFileTypes: true })) {
     entry.name === "index.html" ? "__spa-fallback.html" : entry.name,
   );
 
-  // emptyOutDir 关掉后这里可能残留上一次的同名目录，挪走而不是删除
-  stash(target);
+  // 关掉 emptyOutDir 后这里可能残留上一次的同名内容，直接清掉再放新的
+  rmSync(target, { recursive: true, force: true });
   renameSync(resolve(CLIENT_DIR, entry.name), target);
 }
 
 decodeDirNames(SITE_DIR);
 
-console.log(`postbuild: 产物已整理到 build/client/${SITE_NAME}/`);
+console.log(`postbuild: 产物已整理到 ${SITE_DIR}`);
