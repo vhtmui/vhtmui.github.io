@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useLayoutEffect, useRef, useState, type Ref } from "react";
+import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
 import { gsap } from "gsap";
 import {
@@ -75,14 +75,7 @@ const itemKey = (level: number, round: number) => `item-${level}-${round}`;
  * - 路径变长 → 只有新增的分隔符 / 那一级翻入，前面没变的不动；
  * - 收起（回首页 / 窄屏）→ 全部层级都算离场，原地翻出的同时容器向上折叠。
  */
-export default function BreadcrumbBar({
-  wide = false,
-  ref,
-}: {
-  wide?: boolean;
-  /** 交给顶栏的滚动隐藏逻辑：这是"不许移出视口"的那一块 */
-  ref?: Ref<HTMLDivElement>;
-}) {
+export default function BreadcrumbBar({ wide = false }: { wide?: boolean }) {
   const { pathname } = useLocation();
   const isWide = useMediaQuery("(min-width: 640px)");
   /** 仅宽屏且非首页显示 */
@@ -237,7 +230,6 @@ export default function BreadcrumbBar({
 
   return (
     <div
-      ref={ref}
       className={cn(
         "grid overflow-hidden transition-[grid-template-rows] duration-100 ease-linear",
         expanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
@@ -250,7 +242,8 @@ export default function BreadcrumbBar({
         */}
         <div
           className={cn(
-            "mx-auto w-full px-5 pb-2",
+            // pt-2：顶栏滚走、面包屑贴住视口顶之后，不至于压在视口上边缘
+            "mx-auto w-full px-5 pt-2 pb-2",
             "transition-[max-width] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none",
             wide ? "max-w-full" : "max-w-5xl",
           )}

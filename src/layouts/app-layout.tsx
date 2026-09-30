@@ -19,12 +19,10 @@ export default function AppLayout() {
   const showBrandName = useMediaQuery("(min-width: 640px)");
   const { pathname } = useLocation();
   const headerRef = useRef<HTMLDivElement>(null);
-  /** 面包屑：向上滚时它贴住视口上边界就停住，不跟着整块滚出屏幕 */
-  const crumbRef = useRef<HTMLDivElement>(null);
   /** docs 体系里顶栏与面包屑都铺满屏幕，正文仍按 5xl 居中 */
   const wideHeader = isDocsRoute(pathname);
 
-  useHideOnScroll(headerRef, crumbRef);
+  useHideOnScroll(headerRef);
 
   return (
     <div className="flex min-h-svh flex-col">
@@ -32,7 +30,8 @@ export default function AppLayout() {
 
       {/*
         顶栏和面包屑装在同一个 sticky 容器里：useHideOnScroll 位移的是这一整块，
-        两者始终同步滚入滚出；收起距离取容器自身高度，面包屑收起来时会自动变短。
+        两者始终同步滚入滚出；上移上限取顶栏（容器第一个子元素）的高度，
+        顶栏整条让出视口后面包屑正好停在视口顶。
       */}
       <div ref={headerRef} className="sticky top-0 z-40">
         <header>
@@ -63,7 +62,7 @@ export default function AppLayout() {
           </div>
         </header>
 
-        <BreadcrumbBar wide={wideHeader} ref={crumbRef} />
+        <BreadcrumbBar wide={wideHeader} />
       </div>
 
       <main className="typeset typeset-docs mx-auto w-full max-w-5xl flex-1 px-4 py-8">
