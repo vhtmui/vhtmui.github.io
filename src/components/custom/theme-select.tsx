@@ -1,5 +1,5 @@
 import { Monitor, Moon, Sun } from "lucide-react";
-import GlideSelect, { type GlideSelectOption } from "@/components/glide-select";
+import GlideSelect, { type GlideSelectOption } from "@/components/GlideSelect";
 import { useTheme, type Theme } from "@/hooks/use-theme";
 
 /** 主题选项：用 SVG 图标表示，文字仅供读屏 */
