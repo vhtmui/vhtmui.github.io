@@ -53,19 +53,19 @@ export default function ReadingProgress({
       // 只靠两端渐变遮罩（mask）淡出，条子直接融进页面背景；压过正文也不至于和正文叠成两行。
       // pt 只是把点击区垫到 24px（看不见），条子本身仍贴住视口底边。
       className={cn(
-        "fixed bottom-0 left-1/2 z-40 w-[min(88vw,26rem)] -translate-x-1/2 pt-2.5 text-foreground/60",
-        "[-webkit-mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]",
-        "[mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]",
+        "fixed bottom-0 left-1/2 z-40 w-[min(68vw,20rem)] -translate-x-1/2 pt-2.5 text-foreground/60",
+        // "[-webkit-mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]",
+        // "[mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]",
       )}
     >
       <WakeSlider
         value={value}
         ariaLabel="阅读进度"
         formatValue={(v) => `已读 ${Math.round(v)}%`}
-        bars={40}
+        bars={50}
         height={14}
-        restHeight={3}
-        gap={2}
+        restHeight={12}
+        gap={4}
         fillColor="var(--primary)"
         // 轨道沿用外面给的灰白 currentColor，稍微加深一点补上少掉的底色，未读部分仍看得出形状
         trackColor="color-mix(in oklab, currentColor 22%, transparent)"

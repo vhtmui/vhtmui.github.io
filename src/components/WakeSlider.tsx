@@ -201,7 +201,7 @@ const WakeSlider: React.FC<WakeSliderProps> = ({
         ref={el => {
           barEls.current[i] = el;
         }}
-        className="relative h-[var(--ws-height)] min-w-0 flex-1 origin-center rounded-full bg-[var(--ws-track)] [transform:scaleY(var(--ws-rest))] [transition:background-color_120ms_ease] data-[on=true]:bg-[var(--ws-fill)] group-data-[instant=true]:[transition-duration:0ms] motion-reduce:[transform:scaleY(var(--ws-rest))]!"
+        className="relative h-[var(--ws-height)] min-w-0 flex-1 origin-center bg-[var(--ws-track)] [transform:scaleY(var(--ws-rest))] [transition:background-color_120ms_ease] data-[on=true]:bg-[var(--ws-fill)] group-data-[instant=true]:[transition-duration:0ms] motion-reduce:[transform:scaleY(var(--ws-rest))]!"
       >
         {crestColor ? (
           <span
