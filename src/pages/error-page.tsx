@@ -1,5 +1,4 @@
 import { Link, isRouteErrorResponse, useRouteError } from "react-router";
-import SiteBackground from "@/components/custom/site-background";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/links";
 
@@ -14,7 +13,6 @@ export default function ErrorPage() {
 
   return (
     <div className="mx-auto flex min-h-svh w-full max-w-md flex-col items-center justify-center gap-4 px-4 text-center">
-      <SiteBackground />
       <p className="font-heading text-5xl font-semibold tracking-tight">
         {notFound ? "404" : "Oops!"}
       </p>

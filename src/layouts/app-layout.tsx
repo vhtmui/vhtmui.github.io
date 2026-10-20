@@ -3,7 +3,6 @@ import { Link, Outlet, useLocation } from "react-router";
 import { Brands } from "@/components/custom/brands";
 import BreadcrumbBar from "@/components/custom/breadcrumb-bar";
 import HeaderNav from "@/components/custom/header-nav";
-import SiteBackground from "@/components/custom/site-background";
 import ThemeSelect from "@/components/custom/theme-select";
 import { useHideOnScroll } from "@/hooks/use-hide-on-scroll";
 import { useMediaQuery } from "@/hooks/use-media-query";
@@ -26,7 +25,6 @@ export default function AppLayout() {
 
   return (
     <div className="flex min-h-svh flex-col">
-      <SiteBackground />
 
       {/*
         顶栏和面包屑装在同一个 sticky 容器里：useHideOnScroll 位移的是这一整块，
