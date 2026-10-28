@@ -41,6 +41,19 @@ export interface DocGroup {
   docs: DocMeta[];
 }
 
+/**
+ * 侧栏导航用的树节点：目录就是目录，文档就是文档，层级与 content/ 一一对应
+ * （books → 代码整洁之道 → 各章），不为了界面的层级限制去压平。
+ */
+export interface DocTreeNode {
+  /** 目录用路径段拼成，文档用站内路径，都是唯一的 */
+  id: string;
+  label: string;
+  /** 只有文档节点有站内路径 */
+  path?: string;
+  children: DocTreeNode[];
+}
+
 /** 递归列出 content 下所有 markdown 的路径段（不含 .md 后缀） */
 export function listDocSegments(dir = CONTENT_DIR, prefix: string[] = []): string[][] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -127,4 +140,35 @@ export function listDocGroups(): DocGroup[] {
   groups.sort((a, b) => a.name.localeCompare(b.name));
 
   return groups;
+}
+
+/**
+ * content/ 的目录树：目录节点在前、文档节点在后，各自按名字排。
+ * 文档标题要读文件才知道，所以这里和 listDocGroups 一样会打开每篇文档。
+ */
+export function listDocTree(dir = CONTENT_DIR, prefix: string[] = []): DocTreeNode[] {
+  const dirs: DocTreeNode[] = [];
+  const docs: DocTreeNode[] = [];
+
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    if (entry.isDirectory()) {
+      dirs.push({
+        id: [...prefix, entry.name].join("/"),
+        label: entry.name,
+        children: listDocTree(join(dir, entry.name), [...prefix, entry.name]),
+      });
+      continue;
+    }
+
+    if (!entry.name.toLowerCase().endsWith(".md")) continue;
+
+    const source = readDocSource([...prefix, entry.name.replace(/\.md$/i, "")]);
+    docs.push({ id: source.path, label: source.title, path: source.path, children: [] });
+  }
+
+  // id 里带着文件名，按它排就是按文件名排（第 10 章不会跑到第 2 章前面）
+  dirs.sort((a, b) => a.id.localeCompare(b.id));
+  docs.sort((a, b) => a.id.localeCompare(b.id));
+
+  return [...dirs, ...docs];
 }
