@@ -3,6 +3,7 @@ import {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
   type RefCallback,
@@ -56,6 +57,16 @@ function pathTo(nodes: DocsNavNode[], activePath: string, trail: string[] = []):
     return deeper.length > next.length ? deeper : next;
   }
   return [];
+}
+
+/** 所有可折叠的分支 id（一键展开/收起用） */
+function branchIdsOf(nodes: DocsNavNode[], ids: string[] = []) {
+  for (const node of nodes) {
+    if (!node.children?.length) continue;
+    ids.push(node.id);
+    branchIdsOf(node.children, ids);
+  }
+  return ids;
 }
 
 const ROW =
@@ -168,6 +179,32 @@ export default function DocsNavTree({ nodes, activePath }: DocsNavTreeProps) {
     }
   }, [activePath]);
 
+  /** 分支全集；判断"是不是全展开"和"一键展开"都用它 */
+  const branchIds = useMemo(() => branchIdsOf(nodes), [nodes]);
+  const allOpen = branchIds.length > 0 && branchIds.every((id) => open.has(id));
+
+  const toggleAll = useCallback(() => {
+    if (allOpen) {
+      setOpen(new Set<string>());
+      return;
+    }
+
+    setOpen(new Set(branchIds));
+
+    // 全展开后列表会很长，当前文档很可能被翻到看不见：等展开动画结束再拉回视野
+    setTimeout(() => {
+      const row = rows.current.get(activePath);
+      const nav = navRef.current;
+      if (!row?.isConnected || !nav) return;
+
+      const rowBox = row.getBoundingClientRect();
+      const navBox = nav.getBoundingClientRect();
+      if (rowBox.top < navBox.top || rowBox.bottom > navBox.bottom) {
+        row.scrollIntoView({ block: "nearest" });
+      }
+    }, 340);
+  }, [activePath, allOpen, branchIds]);
+
   const toggle = useCallback(
     (id: string) =>
       setOpen((prev) => {
@@ -180,27 +217,51 @@ export default function DocsNavTree({ nodes, activePath }: DocsNavTreeProps) {
   );
 
   return (
-    <div ref={navRef} className="relative h-full overflow-y-auto pr-1">
-      <span
-        ref={pillRef}
-        aria-hidden="true"
-        className="pointer-events-none absolute top-0 left-0 z-0 rounded-md bg-muted opacity-0 transition-[transform,width,height,opacity] duration-220 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none"
-      />
+    <div className="flex h-full flex-col">
+      {/*
+        一键展开/收起放在滚动区之外：书有二十多章，全展开后列表比导航高得多，
+        按钮跟着滚走就点不到了。展开时按钮同时换成「收起」的图标。
+      */}
+      <div className="mb-1 flex items-center justify-between px-1.5">
+        <span className="text-[11px] text-muted-foreground/70">目录</span>
+        <button
+          type="button"
+          onClick={toggleAll}
+          title={allOpen ? "全部收起" : "全部展开"}
+          aria-label={allOpen ? "全部收起" : "全部展开"}
+          aria-expanded={allOpen}
+          className="rounded-md px-1.5 py-0.5 text-[11px] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+        >
+          {allOpen ? "收起" : "展开"}
+        </button>
+      </div>
 
-      <ul ref={listRef} className="relative flex flex-col" onPointerLeave={() => setHoverId(null)}>
-        {nodes.map((node) => (
-          <NodeItem
-            key={node.id}
-            node={node}
-            open={open}
-            activePath={activePath}
-            hoverId={hoverId}
-            onToggle={toggle}
-            onHover={setHoverId}
-            registerRow={registerRow}
-          />
-        ))}
-      </ul>
+      <div ref={navRef} className="relative min-h-0 flex-1 overflow-y-auto pr-1">
+        <span
+          ref={pillRef}
+          aria-hidden="true"
+          className="pointer-events-none absolute top-0 left-0 z-0 rounded-md bg-muted opacity-0 transition-[transform,width,height,opacity] duration-220 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none"
+        />
+
+        <ul
+          ref={listRef}
+          className="relative flex flex-col"
+          onPointerLeave={() => setHoverId(null)}
+        >
+          {nodes.map((node) => (
+            <NodeItem
+              key={node.id}
+              node={node}
+              open={open}
+              activePath={activePath}
+              hoverId={hoverId}
+              onToggle={toggle}
+              onHover={setHoverId}
+              registerRow={registerRow}
+            />
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
