@@ -158,6 +158,61 @@
   scroll-margin-block-start: 6.5rem;
 }
 
+/* ------------------------------- docs 版面 -------------------------------- */
+
+/*
+ * 正文栏宽、栏间距、两侧导航栏宽都收在这一组变量里，两侧导航的定位直接由它们
+ * 算出来，改一个数字三栏就一起动，不会出现"正文变宽了导航还钉在老位置"。
+ *
+ * - --docs-article：正文栏最大宽度，随视口变宽（48rem → 66rem）。窄屏仍是原来的
+ *   48rem 阅读宽度，2K/4K 下才放宽，不至于整屏只有中间一条；
+ * - --docs-gap：正文与两侧导航之间按比例增长的间距（1.5rem → 6rem），
+ *   屏越宽导航离正文越远，不会粘在正文边上；
+ * - --docs-shift：正文栏的水平偏移。默认 0（三栏时正文居中，两侧对称）；
+ *   左侧目录树收起的区间里（xl ~ 1440px）改成向左挪半个「间距 + 右侧导航宽」，
+ *   让「正文 + 章节导航」这一整块在视口里居中，而不是正文居中、导航挂在右边外面。
+ */
+:root {
+  --docs-article: clamp(48rem, 50vw, 66rem);
+  --docs-gap: clamp(1.5rem, 2.5vw, 6rem);
+  --docs-rail-left: 14rem;
+  --docs-rail-right: 13rem;
+  --docs-shift: 0px;
+}
+
+/*
+ * 左侧目录树已经收起、右侧章节导航还在（80rem ~ 90rem，与组件的 xl / 1440px
+ * 断点保持一致）：整组左移，使 正文 + 间距 + 章节导航 的总宽居中。
+ * 偏移量是负值，两个媒体边界用 rem 与组件的 rem 断点严格对齐。
+ */
+@media (width >= 80rem) and (width < 90rem) {
+  :root {
+    --docs-shift: calc((var(--docs-gap) + var(--docs-rail-right)) / -2);
+  }
+}
+
+/* 左侧目录树：从视口中线往左量，太窄兜回 1rem，保证不出屏 */
+.docs-rail-left {
+  left: max(
+    1rem,
+    calc(50% - var(--docs-article) / 2 - var(--docs-gap) - var(--docs-rail-left) + var(--docs-shift))
+  );
+}
+
+/* 右侧章节导航：从视口中线往右量（跟着正文栏一起偏移，间距保持不变） */
+.docs-rail-right {
+  left: calc(50% + var(--docs-article) / 2 + var(--docs-gap) + var(--docs-shift));
+}
+
+/*
+ * 正文栏本体：用 relative + left 做偏移，不用 transform —— transform 会让 fixed
+ * 子元素（章节导航、进度条）改以这一栏为定位基准，滚动时就不再钉在视口上了。
+ */
+.docs-column {
+  position: relative;
+  left: var(--docs-shift);
+}
+
 /* -------------------------------- 代码块 --------------------------------- */
 
 /* 容器承担边框、圆角与外边距；pre 自身的内边距/圆角交给它 */

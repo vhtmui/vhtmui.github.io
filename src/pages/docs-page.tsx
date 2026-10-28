@@ -16,10 +16,10 @@ export default function DocsPage() {
 
   return (
     /*
-      和详情页一样收在 48rem 一栏里：左侧文档树是按视口中线往左量的，
-      目录页若铺满 5xl 就会顶到树上去（1280～1500 这一段窄的不只是留白）。
+      和详情页共用同一个正文宽度变量（--docs-article）：两页切换时栏宽一致，
+      也不会顶到左侧文档树上 —— 导航的落点同样是按这个变量算的。
     */
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-[var(--docs-article)] flex-col gap-6">
       <PageHeader
         title="Docs"
         description="路由与 content/ 的目录结构一一对应，丢进来的 markdown 会自动出现在这里。"

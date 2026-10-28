@@ -15,13 +15,15 @@ export function loader() {
 }
 
 /**
- * 导航的落点与正文（最宽 48rem 的栏）无关，直接按视口中线往左量：
- * 半宽 24rem + 间隔 2rem + 导航自身 14rem，即 50% - 40rem。
- * 视口收窄时这个值会变成负数，用 max() 兜到 1rem，保证导航永远贴在屏幕内；
- * 1280px（xl）以下干脆整块隐藏 —— 那时正文自己已经占满两侧留白，没有它的位置。
+ * 导航的落点不写死数字，从视口中线往左量：半宽 + 间距 + 自身宽度，三者都读
+ * main.css 里的那一组变量（.docs-rail-left），正文变宽、间距变大时跟着一起动。
+ *
+ * 断点比右侧章节导航（xl / 1280px）更晚，取 1440px：屏宽从宽到窄时先收起左侧
+ * 目录树，版面变成「正文 + 章节导航」的双列；再窄到 xl 以下才轮到章节导航，
+ * 只剩正文 + 底部悬浮的目录卡片。这样中间那一段不会两边同时空着。
  */
 const NAV_RAIL =
-  "fixed top-24 left-[max(1rem,calc(50%-40rem))] z-30 hidden h-[calc(100svh-8rem)] w-56 xl:block";
+  "docs-rail-left fixed top-24 z-30 hidden h-[calc(100svh-8rem)] w-[var(--docs-rail-left)] min-[1440px]:block";
 
 /** location.pathname 里中文是百分号编码的，而文档路径是原文，比对前先还原 */
 function decodePath(pathname: string) {

@@ -1,10 +1,8 @@
-import { useRef } from "react";
 import { Link, Outlet, useLocation } from "react-router";
 import { Brands } from "@/components/custom/brands";
 import BreadcrumbBar from "@/components/custom/breadcrumb-bar";
 import HeaderNav from "@/components/custom/header-nav";
 import ThemeSelect from "@/components/custom/theme-select";
-import { useHideOnScroll } from "@/hooks/use-hide-on-scroll";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { ROUTES } from "@/config/links";
 import { cn } from "@/lib/utils";
@@ -17,21 +15,18 @@ function isDocsRoute(pathname: string) {
 export default function AppLayout() {
   const showBrandName = useMediaQuery("(min-width: 640px)");
   const { pathname } = useLocation();
-  const headerRef = useRef<HTMLDivElement>(null);
   /** docs 体系里顶栏与面包屑都铺满屏幕，正文仍按 5xl 居中 */
   const wideHeader = isDocsRoute(pathname);
-
-  useHideOnScroll(headerRef);
 
   return (
     <div className="flex min-h-svh flex-col">
 
       {/*
-        顶栏和面包屑装在同一个 sticky 容器里：useHideOnScroll 位移的是这一整块，
-        两者始终同步滚入滚出；上移上限取顶栏（容器第一个子元素）的高度，
-        顶栏整条让出视口后面包屑正好停在视口顶。
+        顶栏和面包屑装在同一个 sticky 容器里：固定钉在视口顶部，滚动时一直可见
+        （不做「下滚收起、上滚露出」，避免切页回来时状态错位）。
+        背景保持透明，不铺底色、也不加毛玻璃。
       */}
-      <div ref={headerRef} className="sticky top-0 z-40">
+      <div className="sticky top-0 z-40">
         <header>
           <div
             className={cn(
@@ -63,7 +58,16 @@ export default function AppLayout() {
         <BreadcrumbBar wide={wideHeader} />
       </div>
 
-      <main className="typeset typeset-docs mx-auto w-full max-w-5xl flex-1 px-4 py-8">
+      {/*
+        docs 体系里正文栏自己按 --docs-article 居中，外层不能再卡在 5xl：
+        否则 2K/4K 下正文宽度上限被压回 1024px，两侧导航往外挪也没意义。
+      */}
+      <main
+        className={cn(
+          "typeset typeset-docs mx-auto w-full flex-1 px-4 py-8",
+          wideHeader ? "max-w-none" : "max-w-5xl",
+        )}
+      >
         <Outlet />
       </main>
     </div>

@@ -16,22 +16,26 @@ import { cn } from "@/lib/utils";
 const COPY_FEEDBACK = 1200;
 
 /**
- * 文档栏：标题区与正文共用一栏，独立居中 —— 最多 48rem（768px）、最少 20rem（320px），
- * 两侧留白随屏宽递增（窄屏不贴屏幕边，宽屏给右侧章节导航留出间隔）。
+ * 文档栏：标题区与正文共用一栏，独立居中。
  *
- * 320px 时靠 min-w 顶到满宽：外层 main 也有 16px 内边距，这一栏会向外溢过它，
- * 正好占满屏幕宽度，正文自己的 padding 仍是 16px，不会顶出屏幕。
- * 章节导航与进度条用 fixed 挂在这一栏里，脱离文档流，不参与这里的宽度计算。
+ * 宽度取 --docs-article（48rem → 66rem，随视口变宽，见 main.css）：窄屏保持原来
+ * 的阅读宽度，2K/4K 下才放宽。下限 20rem（320px）靠 min-w 顶住，窄屏时这一栏会
+ * 向外溢过 main 的 16px 内边距，正好占满屏幕宽度，正文自己的 padding 仍是 16px。
+ * 章节导航与进度条用 fixed 挂在两侧，脱离文档流，不参与这里的宽度计算。
+ *
+ * docs-column 带上 --docs-shift：左侧目录树收起的区间里整栏左移，让
+ * 「正文 + 章节导航」这一整块居中（见 main.css）。
  */
 const DOC_COLUMN =
-  "mx-auto flex w-full min-w-80 max-w-3xl flex-col gap-6 px-4 pb-14 sm:px-6 lg:px-8";
+  "docs-column mx-auto flex w-full min-w-80 max-w-[var(--docs-article)] flex-col gap-6 px-4 pb-14 sm:px-6 lg:px-8";
 
 /**
- * 侧栏导航的落点：正文半宽 24rem + 间隔 2rem，从视口中线往右量。
- * 13rem 宽 + 16px 右边距 = 1280px（xl）刚好放得下，所以断点取 xl：
- * 再窄就装不进正文两侧，改成底部悬浮卡片。
+ * 右侧章节导航的落点：从视口中线往右量「半宽 + 间距」，两者都读 main.css 里的
+ * 变量（.docs-rail-right），与左侧目录树共用同一份尺寸，正文变宽时间距一起变。
+ * 显隐由调用处的 xl 系列类控制（1280px 起出现）。
  */
-const TOC_ASIDE = "fixed top-24 left-[calc(50%+24rem+2rem)] z-30 hidden w-52";
+const TOC_ASIDE =
+  "docs-rail-right fixed top-24 z-30 hidden w-[var(--docs-rail-right)]";
 const TOC_CARD =
   "fixed inset-x-3 bottom-24 z-40 mx-auto flex max-h-[80svh] max-w-md flex-col overflow-hidden rounded-xl border bg-popover/95 shadow-lg backdrop-blur-sm xl:hidden";
 
@@ -157,6 +161,8 @@ export default function DocsDetailPage() {
       {/*
         宽屏：导航贴在正文右侧的空白里。fixed 脱离文档流，正文宽度与居中都不受影响；
         导航自己滚动（max-h），长目录不会把整页撑长。
+        它比左侧目录树（1440px）出现得更早（xl / 1280px）：屏宽往下收时先收起目录树，
+        这一屏仍是「正文 + 章节导航」的双列，再窄才换成底部悬浮卡片。
       */}
       <aside
         data-not-typeset
