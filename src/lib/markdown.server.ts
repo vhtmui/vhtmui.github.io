@@ -56,6 +56,10 @@ const SHIKI_LANGS: ShikiLang[] = [
   "python",
   "bash",
   "markdown",
+  // 书里搬过来的章节（代码整洁之道）几乎全是 Java，零星有 XML / SQL
+  "java",
+  "xml",
+  "sql",
   "text",
 ];
 
@@ -240,6 +244,28 @@ function rehypeCodeBlocks() {
 }
 
 /**
+ * 图片路径补部署前缀。
+ *
+ * markdown 里统一写站内绝对路径（`/books/clean-code/x.jpeg`），这样换部署
+ * 子路径时不用改正文；站点实际挂在 base 下，产物里得是 `/my_site_zzy/books/...`。
+ * 外链和已经是完整 URL 的一律不动。
+ */
+function rehypeAssetBase() {
+  const base = import.meta.env.BASE_URL;
+
+  return (tree: HastRoot) => {
+    visit(tree, "element", (node) => {
+      if (node.tagName !== "img") return;
+
+      const src = node.properties?.src;
+      if (typeof src !== "string" || !src.startsWith("/") || src.startsWith("//")) return;
+
+      node.properties.src = base + src.slice(1);
+    });
+  };
+}
+
+/**
  * 表格：套一层横向滚动容器。
  *
  * 表格自己的 `max-width: 100%` 拦不住内容宽度 —— 表头是 nowrap，列一多最小
@@ -272,6 +298,7 @@ export async function renderMarkdown(body: string) {
     .use(remarkRehype)
     .use(rehypeCodeBlocks)
     .use(rehypeTableScroll)
+    .use(rehypeAssetBase)
     // 代码块栏里的图标是现成的 SVG 片段（raw 节点），需要放行；正文里的
     // 原始 HTML 会被 remark-rehype 丢掉（非危险模式），不会跟着漏到这里
     .use(rehypeStringify, { allowDangerousHtml: true });
