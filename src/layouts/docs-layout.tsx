@@ -37,19 +37,38 @@ export default function DocsLayout() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
-  /** 目录项与 content/ 的分组一一对应；没有分类名的（根下直放的文件）不单独开一支 */
-  const items: BranchedMenuItem[] = groups
-    .filter((group) => group.docs.length > 0)
-    .map((group) => ({
-      label: group.name || "未分类",
-      children: group.docs.map((doc) => ({ value: doc.path, label: doc.title })),
-    }));
+  /**
+   * BranchedMenu 只有两级，层级靠「按目录成支」来收敛：
+   * 分支头取文档所在的最后一级目录名，叶子是目录里的页面。
+   * 于是 content/books/代码整洁之道/03-函数.md 落在「代码整洁之道」一支下 ——
+   * 书比站点的第一级分类更重要，再深的目录也只是并进同一支，不会被拆散。
+   * 直接放在 content 根下的文件没有目录名，归到「未分类」。
+   */
+  const sections = new Map<string, BranchedMenuItem>();
+
+  for (const doc of groups.flatMap((group) => group.docs)) {
+    const dirs = doc.segments.slice(0, -1);
+    const key = dirs.join("/");
+    const label = dirs[dirs.length - 1] ?? "未分类";
+
+    let section = sections.get(key);
+    if (!section) {
+      section = { label, children: [] };
+      sections.set(key, section);
+    }
+
+    section.children?.push({ value: doc.path, label: doc.title });
+  }
+
+  const items = [...sections.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([, section]) => section);
 
   const activePath = decodePath(pathname);
 
-  /** 当前文档所在的分组默认展开，其余折叠 */
-  const defaultOpen = groups.findIndex((group) =>
-    group.docs.some((doc) => doc.path === activePath),
+  /** 当前文档所在的分支默认展开，其余折叠 */
+  const defaultOpen = items.findIndex((section) =>
+    section.children?.some((child) => child.value === activePath),
   );
 
   return (
