@@ -36,9 +36,12 @@ export default function AppLayout() {
               // 品牌 + 三个药丸 + 主题选择最少要 328，文档就横向溢出了 8px）
               "mx-auto grid h-14 w-full grid-cols-[auto_1fr_auto] items-center gap-4 px-4",
               // 只过渡 max-width：容器一直是居中的，宽度一变，左右两组按钮就各自
-              // 平滑地滑到新位置（max-width 由 64rem 过渡到 100%，浏览器按 calc 插值）
+              // 平滑地滑到新位置（max-width 由 64rem 过渡到内容区宽度的 125%，
+              // 浏览器按 calc 插值）
               "transition-[max-width] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none",
-              wideHeader ? "max-w-full" : "max-w-5xl",
+              // docs 页面不铺满整屏：最宽到「正文 + 两侧导航」的 125%（见 main.css 的
+              // .docs-shell），4K 下两端的品牌与主题选择不会贴到屏幕边缘
+              wideHeader ? "docs-shell" : "max-w-5xl",
             )}
           >
             <div className="flex items-center gap-3 justify-self-start">

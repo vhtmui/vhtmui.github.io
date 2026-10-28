@@ -268,14 +268,15 @@ export default function BreadcrumbBar({ wide = false }: { wide?: boolean }) {
     >
       <div className="min-h-0">
         {/*
-          和顶栏同一栏宽：docs 体系铺满屏幕、其余页面 5xl 居中，于是面包屑的左边线
-          正好落在顶栏 logo 那条竖线上；条目本身按默认的靠左排布，宽度变化与顶栏同节奏。
+          和顶栏同一栏宽：docs 体系用 .docs-shell（内容区宽度的 125%）、其余页面
+          5xl 居中，于是面包屑的左边线正好落在顶栏 logo 那条竖线上；
+          条目本身按默认的靠左排布，宽度变化与顶栏同节奏。
         */}
         <div
           className={cn(
             "mx-auto w-full px-5 pb-2",
             "transition-[max-width] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none",
-            wide ? "max-w-full" : "max-w-5xl",
+            wide ? "docs-shell" : "max-w-5xl",
           )}
         >
           <Breadcrumb>
