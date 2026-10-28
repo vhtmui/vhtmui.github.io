@@ -51,7 +51,7 @@ export interface FlipCharsProps {
   children?: ReactNode;
   /** 未给单个元素外壳时使用的标签，默认 span */
   as?: FlipCharsTag;
-  /** 翻转轴，默认 "x"（上下翻转） */
+  /** 翻转轴，默认 "y"（左右翻转） */
   flip?: FlipAxis;
   /** 单个字符翻转的时长（秒） */
   flipDuration?: number;
@@ -335,7 +335,7 @@ export default function FlipChars({
   text,
   children,
   as,
-  flip = "x",
+  flip = "y",
   flipDuration = 0.45,
   shiftDuration = 0.18,
   collapseDuration = 0.6,

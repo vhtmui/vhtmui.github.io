@@ -20,7 +20,8 @@ const PRESETS = ["Character Flip", "Character Flow", "Characters Flip!"];
 function FlipDemo() {
   const chars = useRef<FlipCharsHandle>(null);
   const [text, setText] = useState(PRESETS[0]);
-  const [axis, setAxis] = useState<FlipAxis>("x");
+  /** 起始轴与 FlipChars 的默认值保持一致 */
+  const [axis, setAxis] = useState<FlipAxis>("y");
 
   return (
     <div className="flex flex-col gap-4 rounded-xl bg-muted/40 p-4">

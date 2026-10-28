@@ -16,9 +16,8 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { ROUTES } from "@/config/links";
 import { cn } from "@/lib/utils";
 
-/** 面包屑逐字翻转参数（翻入 / 翻出节奏一致） */
+/** 面包屑逐字翻转参数（翻入 / 翻出节奏一致；轴沿用 FlipChars 默认的左右翻转） */
 const BREADCRUMB_FLIP = {
-  flip: "x",
   flipDuration: 0.32,
   stagger: 0,
   perspective: 600,
