@@ -244,23 +244,35 @@ function rehypeCodeBlocks() {
 }
 
 /**
- * 图片路径补部署前缀。
+ * 站内绝对路径补部署前缀：图片的 src 与链接的 href。
  *
- * markdown 里统一写站内绝对路径（`/books/clean-code/x.jpeg`），这样换部署
- * 子路径时不用改正文；站点实际挂在 base 下，产物里得是 `/my_site_zzy/books/...`。
- * 外链和已经是完整 URL 的一律不动。
+ * markdown 里统一写站内绝对路径（`/books/clean-code/x.jpeg`、`/docs/books/xxx`），
+ * 这样换部署子路径时不用改正文；站点实际挂在 base 下，产物里得是
+ * `/my_site_zzy/books/...`。外链、协议相对地址（`//host`）、纯 `#hash`、
+ * 以及已经带了 base 的路径一律不动。
  */
-function rehypeAssetBase() {
+function rehypeInternalBase() {
   const base = import.meta.env.BASE_URL;
+
+  /** 返回补好 base 的地址；不需要处理时返回 null */
+  const prefixBase = (url: string) => {
+    if (!url.startsWith("/") || url.startsWith("//")) return null;
+    // 正文里已经写了 base 的，别再加一次
+    if (base !== "/" && url.startsWith(base)) return null;
+
+    return base + url.slice(1);
+  };
 
   return (tree: HastRoot) => {
     visit(tree, "element", (node) => {
-      if (node.tagName !== "img") return;
+      const key = node.tagName === "img" ? "src" : node.tagName === "a" ? "href" : null;
+      if (!key) return;
 
-      const src = node.properties?.src;
-      if (typeof src !== "string" || !src.startsWith("/") || src.startsWith("//")) return;
+      const value = node.properties?.[key];
+      if (typeof value !== "string") return;
 
-      node.properties.src = base + src.slice(1);
+      const prefixed = prefixBase(value);
+      if (prefixed) node.properties[key] = prefixed;
     });
   };
 }
@@ -298,7 +310,7 @@ export async function renderMarkdown(body: string) {
     .use(remarkRehype)
     .use(rehypeCodeBlocks)
     .use(rehypeTableScroll)
-    .use(rehypeAssetBase)
+    .use(rehypeInternalBase)
     // 代码块栏里的图标是现成的 SVG 片段（raw 节点），需要放行；正文里的
     // 原始 HTML 会被 remark-rehype 丢掉（非危险模式），不会跟着漏到这里
     .use(rehypeStringify, { allowDangerousHtml: true });
