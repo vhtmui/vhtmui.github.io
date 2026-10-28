@@ -21,7 +21,7 @@ export function loader() {
  * 1280px（xl）以下干脆整块隐藏 —— 那时正文自己已经占满两侧留白，没有它的位置。
  */
 const NAV_RAIL =
-  "fixed top-24 left-[max(1rem,calc(50%-40rem))] z-30 hidden max-h-[calc(100svh-8rem)] w-56 overflow-y-auto pr-1 xl:block";
+  "fixed top-24 left-[max(1rem,calc(50%-40rem))] z-30 hidden h-[calc(100svh-8rem)] w-56 xl:block";
 
 /** location.pathname 里中文是百分号编码的，而文档路径是原文，比对前先还原 */
 function decodePath(pathname: string) {
@@ -40,11 +40,11 @@ export default function DocsLayout() {
   return (
     <>
       {/*
-        换一篇文档就重挂一次：展开状态是组件里按初始值种下的，
-        不加 key 的话前进/后退或从章节导航跳转时，高亮会停在上一页。
+        不加 key：树自己跨页面保持挂载，展开状态才不会在切换目录时被重置；
+        当前文档的变化由组件内部的 effect 处理（只补开、不收起）。
       */}
       <aside data-not-typeset aria-label="文档导航" className={NAV_RAIL}>
-        <DocsNavTree key={activePath} nodes={tree} activePath={activePath} />
+        <DocsNavTree nodes={tree} activePath={activePath} />
       </aside>
 
       <Outlet />
