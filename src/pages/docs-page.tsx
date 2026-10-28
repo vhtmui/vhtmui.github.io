@@ -15,7 +15,11 @@ export default function DocsPage() {
   const { groups } = useLoaderData<typeof loader>();
 
   return (
-    <div className="flex flex-col gap-6">
+    /*
+      和详情页一样收在 48rem 一栏里：左侧文档树是按视口中线往左量的，
+      目录页若铺满 5xl 就会顶到树上去（1280～1500 这一段窄的不只是留白）。
+    */
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
       <PageHeader
         title="Docs"
         description="路由与 content/ 的目录结构一一对应，丢进来的 markdown 会自动出现在这里。"

@@ -1,4 +1,10 @@
-import { type RouteConfig, index, layout, route } from "@react-router/dev/routes";
+import {
+  type RouteConfig,
+  index,
+  layout,
+  prefix,
+  route,
+} from "@react-router/dev/routes";
 
 /**
  * 路由表。
@@ -10,8 +16,14 @@ import { type RouteConfig, index, layout, route } from "@react-router/dev/routes
 export default [
   layout("./layouts/app-layout.tsx", [
     index("./pages/home-page.tsx"),
-    route("docs", "./pages/docs-page.tsx"),
-    route("docs/*", "./pages/docs-detail-page.tsx"),
+    // docs 单独一层布局：左侧文档树只在这棵子树里出现。
+    // layout() 只认文件、不认路径，路径前缀交给 prefix() 给两个子路由一起加。
+    ...prefix("docs", [
+      layout("./layouts/docs-layout.tsx", [
+        index("./pages/docs-page.tsx"),
+        route("*", "./pages/docs-detail-page.tsx"),
+      ]),
+    ]),
     route("tools", "./pages/tools-page.tsx"),
     route("tools/mac-converter", "./pages/mac-converter-page.tsx"),
     route("playground", "./pages/playground-page.tsx"),
