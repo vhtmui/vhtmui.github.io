@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
 import { gsap } from "gsap";
 import {
@@ -165,12 +165,12 @@ export default function BreadcrumbBar({ wide = false }: { wide?: boolean }) {
    * 容器怎么动都不再干扰（跨 offsetParent 时两边共享的常量偏差也会被抵消）。
    */
   const placedRef = useRef(new Map<Element, { x: number; y: number }>());
-  useLayoutEffect(() => {
+
+  /** 按当前布局算一次，并把「被挪动」的项先钉回原位再滑过去 */
+  const syncItems = useCallback(() => {
     const list = listRef.current;
-    if (!list || !visible || !expanded) {
-      placedRef.current.clear();
-      return;
-    }
+    if (!list) return;
+
     const baseX = list.offsetLeft;
     const baseY = list.offsetTop;
     const next = new Map<Element, { x: number; y: number }>();
@@ -178,17 +178,20 @@ export default function BreadcrumbBar({ wide = false }: { wide?: boolean }) {
       const el = item as HTMLElement;
       next.set(el, { x: el.offsetLeft - baseX, y: el.offsetTop - baseY });
     }
+
     for (const [item, from] of placedRef.current) {
       const el = item as HTMLElement;
-      gsap.killTweensOf(el);
       const to = next.get(item);
       if (!to || !el.isConnected) continue;
-      const dx = from.x - to.x;
-      const dy = from.y - to.y;
-      if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) {
-        gsap.set(el, { clearProps: "x,y" });
-        continue;
-      }
+
+      // 接上还没跑完的滑移（位移是叠加在布局位置之上的），连点时才不会跳
+      const currentX = Number(gsap.getProperty(el, "x") ?? 0);
+      const currentY = Number(gsap.getProperty(el, "y") ?? 0);
+      const dx = from.x - to.x + currentX;
+      const dy = from.y - to.y + currentY;
+      if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) continue;
+
+      gsap.killTweensOf(el);
       // 先钉在改动前的位置，再滑回 0（不动画时不残留 transform）
       gsap.fromTo(
         el,
@@ -202,7 +205,35 @@ export default function BreadcrumbBar({ wide = false }: { wide?: boolean }) {
         },
       );
     }
+
     placedRef.current = next;
+  }, []);
+
+  const observerRef = useRef<ResizeObserver | null>(null);
+
+  useEffect(() => () => observerRef.current?.disconnect(), []);
+
+  useLayoutEffect(() => {
+    const list = listRef.current;
+    if (!list || !visible || !expanded) {
+      placedRef.current.clear();
+      observerRef.current?.disconnect();
+      return;
+    }
+
+    syncItems();
+
+    /*
+      光靠上面这次布局效应还不够：一级变宽变窄，很多时候不是 React 渲染出来的 ——
+      FlipChars 把离场的字摘掉、换字时撑开宽度，都是它自己在 DOM 上改的（延迟到
+      "这一轮编辑结束"之后）。那时没有 React 提交，布局效应不会跑，后面的项就会
+      硬生生跳过去（切到「序」时，新出现的那级先待在老位置、再闪到前面就是这个）。
+      所以再盯着每个 li 的尺寸：谁变了就重新对一次位置，把位移补成滑移。
+    */
+    const observer = observerRef.current ?? new ResizeObserver(() => syncItems());
+    observerRef.current = observer;
+    observer.disconnect();
+    for (const item of list.children) observer.observe(item);
   });
 
   if (!mounted) return null;
