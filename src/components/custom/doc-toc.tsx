@@ -8,7 +8,12 @@ import type { TocItem } from "@/lib/markdown.server";
  *
  * 目录是构建期从 markdown 标题收集的扁平列表（文档顺序），嵌套关系在这里
  * 按层级现算：二级标题是"节"，三级及以下挂在它下面。二级默认折叠，浏览到哪一节
- * 就只展开那一节，高亮留给当前位置最细的那个标题（位置由 useDocReading 给）。
+ * 就只展开那一节。
+ *
+ * 高亮不止一项：视口里还有正文的章节全都亮起来（位置由 useDocReading 给出），
+ * 长文档里一屏能同时看到好几节，逐节高亮比只标一个"当前"更贴合实际读到的位置。
+ * 自动展开、自动居中仍只看"当前位置最细的标题"（activeId），否则多项高亮会让
+ * 目录自己来回跳。
  */
 
 /** 章节树节点 */
@@ -107,18 +112,25 @@ function useCenterActive(currentId: string | null) {
 function TocLeaf({
   node,
   activeId,
+  visibleIds,
   depth,
   onJump,
 }: {
   node: TocNode;
   activeId: string | null;
+  /** 视口内还有正文的标题，命中就高亮 */
+  visibleIds: ReadonlySet<string>;
   depth: number;
   onJump: (id: string) => void;
 }) {
+  const visible = visibleIds.has(node.id);
+
   return (
     <li>
       <a
         href={`#${node.id}`}
+        // 同一组里 aria-current 只该有一个：「当前」仍按 activeId 标，
+        // 视口内其余章节只用底色区分（无障碍上不至于出现多个"当前位置"）
         aria-current={activeId === node.id ? "location" : undefined}
         // 自动居中靠它定位当前项（见 useCenterActive）
         data-active-id={activeId === node.id ? node.id : undefined}
@@ -130,9 +142,7 @@ function TocLeaf({
         style={{ paddingInlineStart: `${0.5 + depth * 0.5}rem` }}
         className={cn(
           "block truncate rounded-md py-1 pr-2 transition-colors outline-none hover:bg-muted/60 hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50",
-          activeId === node.id
-            ? "bg-muted font-medium text-foreground"
-            : "text-muted-foreground",
+          visible ? "bg-muted font-medium text-foreground" : "text-muted-foreground",
         )}
       >
         {node.text}
@@ -144,6 +154,7 @@ function TocLeaf({
               key={child.id}
               node={child}
               activeId={activeId}
+              visibleIds={visibleIds}
               depth={depth + 1}
               onJump={onJump}
             />
@@ -157,8 +168,10 @@ function TocLeaf({
 export interface DocTocProps {
   /** 构建期收集的扁平目录（文档顺序） */
   items: TocItem[];
-  /** 当前位置最细的标题 id */
+  /** 当前位置最细的标题 id：只决定自动展开哪一节、自动居中到哪一项 */
   activeId: string | null;
+  /** 视口内还有正文的标题 id（文档顺序）：这些条目一起高亮 */
+  visibleIds: readonly string[];
   /** 条目跳转后回调（窄屏卡片用它收起） */
   onNavigate?: () => void;
 }
@@ -166,18 +179,46 @@ export interface DocTocProps {
 /**
  * 章节导航本体。
  *
- * 展开状态在渲染期算出来，不用 effect 回写：
- * - 手动展开的"at"记下当时的所在节点，浏览位置一旦换到别的节就失效，自动展开跟随阅读位置；
- * - 所以点开别的节只是临时看看，当前位置那一节的高亮不受影响。
+ * 展开状态全部在渲染期算出来，不用 effect 回写：
+ * - 默认自动展开「视口里还有正文的节」和「当前位置所在的那一节」，滚动到哪就开到哪；
+ * - 手动开合只记一层临时覆盖，且只在阅读位置没变时有效：一旦滚到别的节，这次手动
+ *   干预就作废（渲染期直接清掉），之后再滚回来照样按位置自动展开 —— 不会出现
+ *   "手动收起过一次，滚走再滚回来就一直合着"。
  */
-export default function DocToc({ items, activeId, onNavigate }: DocTocProps) {
+export default function DocToc({
+  items,
+  activeId,
+  visibleIds,
+  onNavigate,
+}: DocTocProps) {
   const roots = useMemo(() => buildTree(items), [items]);
   const rootOf = useMemo(() => mapRoots(roots), [roots]);
   const activeRootId = activeId ? (rootOf.get(activeId) ?? null) : null;
+  const visibleSet = useMemo(() => new Set(visibleIds), [visibleIds]);
 
-  /** 手动开合：null 表示没手动干预过；rootId 为 null 表示手动收起了当前节 */
-  const [manual, setManual] = useState<{ at: string | null; rootId: string | null } | null>(null);
-  const openId = manual && manual.at === activeRootId ? manual.rootId : activeRootId;
+  /** 自动展开的节：视口内还有正文的（含子节可见的情况）+ 当前所在的那一节 */
+  const autoOpen = useMemo(() => {
+    const ids = new Set<string>();
+    for (const id of visibleIds) {
+      const rootId = rootOf.get(id);
+      if (rootId) ids.add(rootId);
+    }
+    if (activeRootId) ids.add(activeRootId);
+    return ids;
+  }, [visibleIds, rootOf, activeRootId]);
+
+  /**
+   * 手动开合覆盖：`at` 是按下时的阅读位置（所在的节），overrides 是 id → 是否展开。
+   * 阅读位置一变，这次干预就该失效，所以要一起清掉，而不只是"暂时不采用"。
+   */
+  const [manual, setManual] = useState<{
+    at: string | null;
+    overrides: Record<string, boolean>;
+  } | null>(null);
+
+  const overrides = manual && manual.at === activeRootId ? manual.overrides : null;
+  // 渲染期同步清掉过期的手动状态：留着它，滚回同一节时会被重新套用（正是要修的问题）
+  if (manual && !overrides) setManual(null);
 
   const jump = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ block: "start" });
@@ -194,25 +235,32 @@ export default function DocToc({ items, activeId, onNavigate }: DocTocProps) {
     <nav ref={navRef} aria-label="章节导航" className="flex flex-col gap-0.5 text-sm">
       {roots.map((root) => {
         const hasKids = root.children.length > 0;
-        const open = openId === root.id;
+        /** 手动覆盖优先，其次看这一节是否自动展开 */
+        const open = overrides?.[root.id] ?? autoOpen.has(root.id);
         const current = activeRootId === root.id;
+        /** 这一节的正文还在视口里（含它的子节），整行高亮 */
+        const visible = visibleSet.has(root.id);
         const rowClass = cn(
           "flex w-full cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-left transition-colors outline-none hover:bg-muted/60 focus-visible:ring-3 focus-visible:ring-ring/50",
-          // 正在读的那一节：字色加深；如果当前位置最细的就是它本身，再多一层底色
-          current ? "font-medium text-foreground" : "text-muted-foreground",
-          activeId === root.id && "bg-muted",
+          // 在视口里的节铺底色；正在读的那一节再把字色加深，位置更好找
+          visible ? "bg-muted text-foreground" : "text-muted-foreground",
+          current && "font-medium text-foreground",
         );
 
         return (
           <div key={root.id} className="flex flex-col gap-0.5">
             {hasKids ? (
-              // 有子项：这一行管展开（不跳转），当前位置的高亮由 activeRootId 决定
+              // 有子项：这一行管展开（不跳转），高亮看本节是否还在视口内
               <button
                 type="button"
                 aria-expanded={open}
                 data-active-id={activeId === root.id ? root.id : undefined}
+                aria-current={activeId === root.id ? "location" : undefined}
                 onClick={() =>
-                  setManual({ at: activeRootId, rootId: open ? null : root.id })
+                  setManual({
+                    at: activeRootId,
+                    overrides: { ...overrides, [root.id]: !open },
+                  })
                 }
                 className={rowClass}
               >
@@ -229,6 +277,7 @@ export default function DocToc({ items, activeId, onNavigate }: DocTocProps) {
               <a
                 href={`#${root.id}`}
                 data-active-id={activeId === root.id ? root.id : undefined}
+                aria-current={activeId === root.id ? "location" : undefined}
                 onClick={(event) => {
                   event.preventDefault();
                   jump(root.id);
@@ -253,6 +302,7 @@ export default function DocToc({ items, activeId, onNavigate }: DocTocProps) {
                       key={child.id}
                       node={child}
                       activeId={activeId}
+                      visibleIds={visibleSet}
                       depth={1}
                       onJump={jump}
                     />

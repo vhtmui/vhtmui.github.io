@@ -84,7 +84,8 @@ export default function DocsDetailPage() {
   /** 宽屏默认展开（点进度条收起）、窄屏默认隐藏（点进度条弹出），同一份状态两种解释 */
   const [tocOpen, setTocOpen] = useState(false);
   const toggleToc = useCallback(() => setTocOpen((open) => !open), []);
-  const { activeId, progress } = useDocReading(toc, articleRef);
+  /** activeId 定"当前"那一节（展开 + 自动居中），visibleIds 则是视口内所有章节（一起高亮） */
+  const { activeId, visibleIds, progress } = useDocReading(toc, articleRef);
 
   // 带着 #hash 直接打开时补一次定位（浏览器原生行为可能被滚动恢复抢先）
   useEffect(() => {
@@ -173,7 +174,7 @@ export default function DocsDetailPage() {
           tocOpen ? "xl:hidden" : "xl:block",
         )}
       >
-        <DocToc items={toc} activeId={activeId} />
+        <DocToc items={toc} activeId={activeId} visibleIds={visibleIds} />
       </aside>
 
       {/* 窄屏：装不下正文 + 留白 + 导航，就收进 80svh 的悬浮卡片，默认隐藏 */}
@@ -200,6 +201,7 @@ export default function DocsDetailPage() {
             <DocToc
               items={toc}
               activeId={activeId}
+              visibleIds={visibleIds}
               onNavigate={() => setTocOpen(false)}
             />
           </div>

@@ -8,10 +8,16 @@ import type { TocItem } from "@/lib/markdown.server";
 const ACTIVE_LINE = 120;
 
 /**
- * 阅读位置：当前位置最细标题的 id + 阅读进度（0–100）。
+ * 视口上边界（px）：顶栏 + 面包屑 ≈88px。藏在这条线后面的内容不算"在当前视口内"，
+ * 否则刚滚过去的那一节会一直挂着高亮。
+ */
+const VIEW_TOP = 96;
+
+/**
+ * 阅读位置：当前最细标题的 id + 视口内见过的标题 + 阅读进度（0–100）。
  *
- * 一个 rAF 节流的滚动监听把两件事一起算出来：本来就在量同一批节点的位置，
- * 分成两个监听只会让每帧多一次布局读取。
+ * 一个 rAF 节流的滚动监听把三件事一起算出来：本来就在量同一批节点的位置，
+ * 分成几个监听只会让每帧多读几次布局。
  *
  * @param items 构建期收集的目录（文档顺序）
  * @param articleRef 正文元素，用来算进度
@@ -21,6 +27,8 @@ export function useDocReading(
   articleRef: RefObject<HTMLElement | null>,
 ) {
   const [activeId, setActiveId] = useState<string | null>(null);
+  /** 视口内还有正文的标题（文档顺序）：章节导航据此同时高亮多节 */
+  const [visibleIds, setVisibleIds] = useState<string[]>([]);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -29,16 +37,42 @@ export function useDocReading(
 
     const measure = () => {
       frame = 0;
+      const bottom = window.innerHeight;
+
+      /** 每个标题当前的视口位置；没渲染出来的留 null */
+      const tops = items.map((item) => {
+        const el = document.getElementById(item.id);
+        return el ? el.getBoundingClientRect().top : null;
+      });
 
       // 从上往下找最后一个越过判定线的标题，它就是"当前位置最细的标题"
       let current: string | null = null;
-      for (const item of items) {
-        const el = document.getElementById(item.id);
-        if (!el) continue;
-        if (el.getBoundingClientRect().top > ACTIVE_LINE) break;
-        current = item.id;
+      // 一节的范围是「本节标题 → 下一个同级或更浅的标题」，这段和视口有交集就算在视口内
+      const visible: string[] = [];
+
+      for (let i = 0; i < items.length; i += 1) {
+        const top = tops[i];
+        if (top === null) continue;
+        if (top <= ACTIVE_LINE) current = items[i].id;
+
+        let end = Number.POSITIVE_INFINITY;
+        for (let j = i + 1; j < items.length; j += 1) {
+          if (items[j].level <= items[i].level) {
+            end = tops[j] ?? Number.POSITIVE_INFINITY;
+            break;
+          }
+        }
+
+        if (top < bottom && end > VIEW_TOP) visible.push(items[i].id);
       }
+
       setActiveId(current);
+      // 内容不变就别换引用：滚动时每帧都会算，false 分支不该触发重渲染
+      setVisibleIds((prev) =>
+        prev.length === visible.length && prev.every((id, index) => id === visible[index])
+          ? prev
+          : visible,
+      );
 
       const article = articleRef.current;
       if (!article) return;
@@ -66,5 +100,5 @@ export function useDocReading(
     };
   }, [items, articleRef]);
 
-  return { activeId, progress };
+  return { activeId, visibleIds, progress };
 }
