@@ -23,6 +23,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # 早失败：Pages 的 Source 若还停留在 "Deploy from a branch"，
+      # 这里就会报错，不必等安装、构建跑完才失败
+      - uses: actions/configure-pages@v5
+
+      # 部署路径由仓库名决定，和站点类型一一对应：
+      #   <owner>.github.io  —— user page，站点在域名根路径，base 用 "/"
+      #   其它仓库名          —— project page，站点在 /<repo>/，base 用 "/<repo>/"
+      # base/basename 与产物目录必须同源，所以两者都在这里算一次
+      - name: 解析部署路径
+        id: site
+        run: |
+          repo="${GITHUB_REPOSITORY#*/}"
+          owner="${GITHUB_REPOSITORY_OWNER,,}"
+          if [ "$repo" = "$owner.github.io" ]; then
+            base="/"
+            dir="build/client"
+          else
+            base="/$repo/"
+            dir="build/client/$repo"
+          fi
+          echo "base=$base" >> "$GITHUB_OUTPUT"
+          echo "dir=$dir" >> "$GITHUB_OUTPUT"
+          echo "站点部署在 $base"
+
       - uses: pnpm/action-setup@v4
         with:
           version: 12
@@ -35,19 +59,17 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
-      # 站点落在 GitHub Pages 的根路径，base 与 basename 都必须是 "/"；
-      # 平时本地构建不传这个变量，仍然是 /my_site_zzy/（见 site.config.ts）
+      # 产物是纯静态文件（ssr: false + 预渲染）。子路径部署时 postbuild 会把
+      # 页面、assets、public 资源统一收进 build/client/<repo>/，那目录就是站点根；
+      # 根路径部署时它们本来就在 build/client 下。
       - name: Build
         run: pnpm build
         env:
-          SITE_BASE: "/"
+          SITE_BASE: ${{ steps.site.outputs.base }}
 
-      - uses: actions/configure-pages@v5
-
-      # 产物是纯静态文件（ssr: false + 预渲染），build/client 就是站点根
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: build/client
+          path: ${{ steps.site.outputs.dir }}
 
   deploy:
     needs: build

@@ -7,7 +7,7 @@ import { extname, join, resolve } from "node:path";
  * 用任意静态服务器都能跑，这里只是为了本地验证产物形态）。
  *
  * 站点根目录是 build/client：子路径部署时页面在 basename 目录下，
- * 根路径部署（SITE_BASE=/，GitHub Pages）时页面就在根上。
+ * 根路径部署（SITE_BASE=/）时页面就在根上。
  * 未预渲染的路径回落到 SPA 兜底 HTML。
  */
 
