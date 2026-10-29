@@ -1,0 +1,60 @@
+name: Deploy to GitHub Pages
+
+# 推到 master 就构建并发布；也可以在 Actions 页面手动点一次
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+# Pages 需要：读仓库、写 Pages、用 OIDC 换部署凭证
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同一时刻只跑一个发布；正在部署的那次不打断，排队等它结束
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # 站点落在 GitHub Pages 的根路径，base 与 basename 都必须是 "/"；
+      # 平时本地构建不传这个变量，仍然是 /my_site_zzy/（见 site.config.ts）
+      - name: Build
+        run: pnpm build
+        env:
+          SITE_BASE: "/"
+
+      - uses: actions/configure-pages@v5
+
+      # 产物是纯静态文件（ssr: false + 预渲染），build/client 就是站点根
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/client
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

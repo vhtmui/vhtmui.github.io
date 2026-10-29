@@ -1,8 +1,6 @@
 import type { Config } from "@react-router/dev/config";
+import { SITE_BASE } from "./site.config.ts";
 import { docRoute, listDocSegments } from "./src/lib/content.server";
-
-/** 站点部署在子路径下，base（vite.config.ts）与本值必须完全一致，含结尾斜杠 */
-const BASENAME = "/my_site_zzy/";
 
 /**
  * React Router framework mode 配置。
@@ -17,7 +15,8 @@ const BASENAME = "/my_site_zzy/";
  */
 export default {
   appDirectory: "src",
-  basename: BASENAME,
+  // 与 vite 的 base 同源（site.config.ts），含结尾斜杠
+  basename: SITE_BASE,
   ssr: false,
   prerender: async ({ getStaticPaths }) => [
     ...getStaticPaths(),
