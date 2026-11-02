@@ -115,6 +115,41 @@ export function readDocSource(segments: string[]): DocSource {
   };
 }
 
+/**
+ * 按导航顺序把整棵树拍平：先目录、后文档，各自按名字排，逐层往下。
+ * 顺序与 listDocTree 完全一致 —— 翻页导航得跟着左侧目录树的阅读顺序走，
+ * 不能另立一套（否则「下一篇」跳到的不是目录里的下一项）。
+ *
+ * 只在构建期调用；每篇文档都要打开一次才能拿到标题。
+ */
+export function listDocFlat(dir = CONTENT_DIR, prefix: string[] = []): DocMeta[] {
+  const dirs: Array<{ name: string; segments: string[] }> = [];
+  const docs: DocMeta[] = [];
+
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    if (entry.isDirectory()) {
+      dirs.push({ name: entry.name, segments: [...prefix, entry.name] });
+      continue;
+    }
+
+    if (!entry.name.toLowerCase().endsWith(".md")) continue;
+
+    const source = readDocSource([...prefix, entry.name.replace(/\.md$/i, "")]);
+    docs.push({
+      segments: source.segments,
+      group: source.group,
+      name: source.name,
+      title: source.title,
+      path: source.path,
+    });
+  }
+
+  dirs.sort((a, b) => a.name.localeCompare(b.name));
+  docs.sort((a, b) => a.name.localeCompare(b.name));
+
+  return [...dirs.flatMap((item) => listDocFlat(join(dir, item.name), item.segments)), ...docs];
+}
+
 /** 全部文档的元信息，按分类归拢好（分组名与文档名都排过序） */
 export function listDocGroups(): DocGroup[] {
   const groups: DocGroup[] = [];

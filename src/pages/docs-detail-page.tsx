@@ -2,13 +2,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import ClipboardJS from "clipboard";
 import { X } from "lucide-react";
 import { Link, useLoaderData } from "react-router";
+import DocPager from "@/components/custom/doc-pager";
 import DocToc from "@/components/custom/doc-toc";
 import PageHeader from "@/components/custom/page-header";
 import ReadingProgress from "@/components/custom/reading-progress";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/links";
 import { useDocReading } from "@/hooks/use-doc-reading";
-import { readDocSource } from "@/lib/content.server";
+import { listDocFlat, readDocSource } from "@/lib/content.server";
 import { renderMarkdown } from "@/lib/markdown.server";
 import { cn } from "@/lib/utils";
 
@@ -67,9 +68,27 @@ function toSegments(splat: string | undefined) {
 export async function loader({ params }: { params: Partial<Record<string, string>> }) {
   const segments = toSegments(params["*"]);
   const doc = readDocSource(segments);
-  const { html, toc } = await renderMarkdown(doc.content);
+  const { html, footnotes, trailingRule, toc } = await renderMarkdown(doc.content);
 
-  return { title: doc.title, segments: doc.segments, html, toc };
+  /*
+    上一篇 / 下一篇跟着左侧目录树的顺序走：listDocFlat 与 listDocTree 同一套排序
+    （先目录、后文档，各自按名字），翻页跳到的就是目录里的相邻两项。
+  */
+  const flat = listDocFlat();
+  const index = flat.findIndex((item) => item.path === doc.path);
+  const toLink = (item: (typeof flat)[number] | undefined) =>
+    item ? { title: item.title, path: item.path } : null;
+
+  return {
+    title: doc.title,
+    segments: doc.segments,
+    html,
+    footnotes,
+    trailingRule,
+    toc,
+    prev: toLink(index > 0 ? flat[index - 1] : undefined),
+    next: toLink(index >= 0 ? flat[index + 1] : undefined),
+  };
 }
 
 /**
@@ -83,8 +102,10 @@ export async function loader({ params }: { params: Partial<Record<string, string
  * 窄屏收进底部悬浮卡片，两者共用同一份开合状态（默认值按断点各自解释）。
  */
 export default function DocsDetailPage() {
-  const { title, segments, html, toc } = useLoaderData<typeof loader>();
-  const articleRef = useRef<HTMLElement>(null);
+  const { title, segments, html, footnotes, trailingRule, toc, prev, next } =
+    useLoaderData<typeof loader>();
+  /** 进度的量尺：正文 + 翻页导航 + 脚注这一整块（见 use-doc-reading） */
+  const articleRef = useRef<HTMLDivElement>(null);
   /** 宽屏默认展开（点进度条收起）、窄屏默认隐藏（点进度条弹出），同一份状态两种解释 */
   const [tocOpen, setTocOpen] = useState(false);
   const toggleToc = useCallback(() => setTocOpen((open) => !open), []);
@@ -157,11 +178,34 @@ export default function DocsDetailPage() {
         </Button>
       </PageHeader>
 
-      <article
-        ref={articleRef}
-        className="typeset typeset-docs min-w-0"
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
+      {/*
+        正文与脚注是两段 HTML（构建期由 splitFootnotes 拆开），中间夹着翻页导航。
+        外面这层只负责把三者当成一个整体量进度，不带任何排版类。
+      */}
+      <div ref={articleRef} className="flex min-w-0 flex-col gap-6">
+        <article
+          className="typeset typeset-docs min-w-0"
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
+
+        {/*
+          正文和翻页区之间的分割线。颜色取 --color-border，与正文里作者手写的 hr
+          同一种线；间距交给外层 gap-6。
+          正文自己已经以 `---` 收尾的（trailingRule，比如 06-函数 末尾那条）就
+          不再补，否则会在翻页区上方并出两条平行的线。
+        */}
+        {!trailingRule && (prev || next) ? <hr className="border-t border-border" /> : null}
+
+        {/* 没有脚注的文档，splitFootnotes 不动正文，导航就落在正文末尾 */}
+        <DocPager prev={prev} next={next} />
+
+        {footnotes ? (
+          <div
+            className="typeset typeset-docs min-w-0"
+            dangerouslySetInnerHTML={{ __html: footnotes }}
+          />
+        ) : null}
+      </div>
 
       {/*
         宽屏：导航贴在正文右侧的空白里。外面这层 .docs-rail-wrap 绝对定位、不占位，

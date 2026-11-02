@@ -302,6 +302,51 @@ function rehypeTableScroll() {
 
 /* --------------------------------- 出口 ---------------------------------- */
 
+/**
+ * 最后一个非空白节点是不是一条分割线（作者手写的 `---`）。
+ * 节点之间会夹着纯空白的文本节点（序列化出来就是换行），得跳过去再看。
+ */
+function endsWithRule(children: HastRoot["children"]) {
+  for (let i = children.length - 1; i >= 0; i -= 1) {
+    const node = children[i];
+    if (node.type === "text" && !node.value.trim()) continue;
+    return node.type === "element" && node.tagName === "hr";
+  }
+
+  return false;
+}
+
+/**
+ * 把脚注从正文里摘出来单独成段。
+ *
+ * remark-gfm 会把 `[^1]: ...` 收成文末的 `<section data-footnotes>`，正文和脚注
+ * 之间要插「上一篇 / 下一篇」（见 doc-pager），而正文是一整段 HTML、中间塞不进
+ * React 节点，所以在构建期就切成两截。
+ *
+ * 作者手写的那条 `---` 留在正文末尾不搬走：它正好当「正文与翻页区」的分割线用，
+ * 页面那边据此决定还要不要再补一条（否则会出现两条平行的线）。
+ *
+ * 没有脚注的文档原样返回，导航就落在正文末尾。
+ */
+function splitFootnotes(tree: HastRoot) {
+  const index = tree.children.findIndex(
+    (node) =>
+      node.type === "element" &&
+      node.tagName === "section" &&
+      Array.isArray(node.properties?.className) &&
+      node.properties.className.includes("footnotes"),
+  );
+  if (index < 0) return { body: tree, footnotes: null, trailingRule: endsWithRule(tree.children) };
+
+  const head = tree.children.slice(0, index);
+
+  return {
+    body: { type: "root", children: head } as HastRoot,
+    footnotes: { type: "root", children: tree.children.slice(index) } as HastRoot,
+    trailingRule: endsWithRule(head),
+  };
+}
+
 /** 渲染一篇文档的正文，返回 HTML 与章节目录 */
 export async function renderMarkdown(body: string) {
   const processor = unified()
@@ -317,7 +362,14 @@ export async function renderMarkdown(body: string) {
 
   const tree = processor.parse(body) as Root;
   const toc = collectToc(tree);
-  const hast = await processor.run(tree);
+  const hast = (await processor.run(tree)) as HastRoot;
+  const { body: bodyTree, footnotes, trailingRule } = splitFootnotes(hast);
 
-  return { html: processor.stringify(hast), toc };
+  return {
+    html: processor.stringify(bodyTree),
+    footnotes: footnotes ? processor.stringify(footnotes) : "",
+    /** 正文已经以分割线收尾：翻页区上方不必再补一条 */
+    trailingRule,
+    toc,
+  };
 }
