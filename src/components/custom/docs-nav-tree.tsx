@@ -296,7 +296,7 @@ function NodeItem({
   const rowClass = cn(
     ROW,
     "hover:text-foreground",
-    isActive && "font-medium text-primary",
+    isActive && "font-medium text-primary-foreground",
     !isActive && (isHovered || isOpen || holdsActive ? "text-foreground" : "text-muted-foreground"),
   );
 

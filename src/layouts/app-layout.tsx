@@ -64,10 +64,11 @@ export default function AppLayout() {
       {/*
         docs 体系里正文栏自己按 --docs-article 居中，外层不能再卡在 5xl：
         否则 2K/4K 下正文宽度上限被压回 1024px，两侧导航往外挪也没意义。
+        relative 是给两侧导航的挂载层（.docs-rail-wrap）做定位基准，不影响 fixed 子元素。
       */}
       <main
         className={cn(
-          "typeset typeset-docs mx-auto w-full flex-1 px-4 py-8",
+          "typeset typeset-docs relative mx-auto w-full flex-1 px-4 py-8",
           wideHeader ? "max-w-none" : "max-w-5xl",
         )}
       >

@@ -52,7 +52,7 @@ function mapRoots(roots: TocNode[]) {
   return map;
 }
 
-/** 最近的可滚动祖先：目录在宽屏是 fixed 侧栏、窄屏是卡片里的 div，位置不固定 */
+/** 最近的可滚动祖先：目录在宽屏是 sticky 侧栏、窄屏是卡片里的 div，位置不固定 */
 function findScroller(from: HTMLElement) {
   let node = from.parentElement;
 

@@ -114,13 +114,13 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.438 0.218 303.724);
+  --primary: oklch(0.56 0.25 303.724);
   --primary-foreground: oklch(0.977 0.014 308.299);
   --secondary: oklch(0.274 0.006 286.033);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.438 0.218 303.724);
+  --accent: oklch(0.56 0.25 303.724);
   --accent-foreground: oklch(0.977 0.014 308.299);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
@@ -169,7 +169,7 @@
  * - --docs-gap：正文与两侧导航之间按比例增长的间距（1.5rem → 6rem），
  *   屏越宽导航离正文越远，不会粘在正文边上；
  * - --docs-shift：正文栏的水平偏移。默认 0（三栏时正文居中，两侧对称）；
- *   左侧目录树收起的区间里（xl ~ 1440px）改成向左挪半个「间距 + 右侧导航宽」，
+ *   左侧目录树收起的区间里（67rem ~ 85rem）改成向左挪半个「间距 + 右侧导航宽」，
  *   让「正文 + 章节导航」这一整块在视口里居中，而不是正文居中、导航挂在右边外面。
  */
 :root {
@@ -192,32 +192,55 @@
 }
 
 /*
- * 左侧目录树已经收起、右侧章节导航还在（80rem ~ 90rem，与组件的 xl / 1440px
- * 断点保持一致）：整组左移，使 正文 + 间距 + 章节导航 的总宽居中。
+ * 左侧目录树已经收起、右侧章节导航还在（67rem ~ 85rem，与组件的两个断点保持一致）：
+ * 整组左移，使 正文 + 间距 + 章节导航 的总宽居中。
  * 偏移量是负值，两个媒体边界用 rem 与组件的 rem 断点严格对齐。
  */
-@media (width >= 80rem) and (width < 90rem) {
+@media (width >= 67rem) and (width < 85rem) {
   :root {
     --docs-shift: calc((var(--docs-gap) + var(--docs-rail-right)) / -2);
   }
 }
 
+/*
+ * 两侧导航的挂载层：absolute inset-0，宽高跟住它所在的那一栏。
+ *
+ * 导航本身不用 fixed，改用 sticky 挂在这里：fixed 钉在视口上，不参与滚动内容层
+ * 的平移 —— 触摸下拉回弹时正文被弹开、导航却纹丝不动。sticky 仍然待在滚动内容里，
+ * 回弹时整层一起平移，松手后各自归位。
+ *
+ * 这一层 absolute 所以不占位，正文的宽度与居中都不受影响；它只是给 sticky 一个
+ * 足够高的包含块（滚到这一栏末端为止，和原来「钉在视口」的观感基本一致）。
+ */
+.docs-rail-wrap {
+  position: absolute;
+  inset: 0;
+  /* 容器铺满整栏，别挡住正文的点击与文字选择；导航自己再打开 */
+  pointer-events: none;
+}
+
 /* 左侧目录树：从视口中线往左量，太窄兜回 1rem，保证不出屏 */
 .docs-rail-left {
-  left: max(
+  pointer-events: auto;
+  margin-left: max(
     1rem,
     calc(50% - var(--docs-article) / 2 - var(--docs-gap) - var(--docs-rail-left) + var(--docs-shift))
   );
 }
 
-/* 右侧章节导航：从视口中线往右量（跟着正文栏一起偏移，间距保持不变） */
+/*
+ * 右侧章节导航：它挂在正文栏里的 .docs-rail-wrap 上，容器左边缘就是正文栏左边缘，
+ * 所以横向只要再让开「正文宽 + 间距」（--docs-shift 已经由正文栏自己带上了）。
+ */
 .docs-rail-right {
-  left: calc(50% + var(--docs-article) / 2 + var(--docs-gap) + var(--docs-shift));
+  pointer-events: auto;
+  margin-left: calc(var(--docs-article) + var(--docs-gap));
 }
 
 /*
  * 正文栏本体：用 relative + left 做偏移，不用 transform —— transform 会让 fixed
- * 子元素（章节导航、进度条）改以这一栏为定位基准，滚动时就不再钉在视口上了。
+ * 子元素（底部的进度条）改以这一栏为定位基准，滚动时就不再钉在视口上了。
+ * 同时它也是右侧章节导航挂载层（.docs-rail-wrap）的定位基准。
  */
 .docs-column {
   position: relative;

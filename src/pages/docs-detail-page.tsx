@@ -21,7 +21,7 @@ const COPY_FEEDBACK = 1200;
  * 宽度取 --docs-article（48rem → 66rem，随视口变宽，见 main.css）：窄屏保持原来
  * 的阅读宽度，2K/4K 下才放宽。下限 20rem（320px）靠 min-w 顶住，窄屏时这一栏会
  * 向外溢过 main 的 16px 内边距，正好占满屏幕宽度，正文自己的 padding 仍是 16px。
- * 章节导航与进度条用 fixed 挂在两侧，脱离文档流，不参与这里的宽度计算。
+ * 章节导航与进度条都挂在不占位的一层上（.docs-rail-wrap / fixed），不参与这里的宽度计算。
  *
  * docs-column 带上 --docs-shift：左侧目录树收起的区间里整栏左移，让
  * 「正文 + 章节导航」这一整块居中（见 main.css）。
@@ -30,14 +30,18 @@ const DOC_COLUMN =
   "docs-column mx-auto flex w-full min-w-80 max-w-[var(--docs-article)] flex-col gap-6 px-4 pb-14 sm:px-6 lg:px-8";
 
 /**
- * 右侧章节导航的落点：从视口中线往右量「半宽 + 间距」，两者都读 main.css 里的
- * 变量（.docs-rail-right），与左侧目录树共用同一份尺寸，正文变宽时间距一起变。
- * 显隐由调用处的 xl 系列类控制（1280px 起出现）。
+ * 右侧章节导航的落点：从正文栏右边缘再让开一个间距，尺寸都读 main.css 里的
+ * 变量（.docs-rail-right），与左侧目录树共用同一份数据，正文变宽时间距一起变。
+ * 显隐由调用处的 min-[67rem] 系列类控制（1072px 起出现）：
+ * 正文最短 48rem + 间距 + 13rem 导航，刚好装得下就上，装不下才换成底部卡片。
+ *
+ * sticky 而不是 fixed：fixed 脱离滚动内容，触摸下拉回弹时正文弹开、导航不动；
+ * sticky 跟着内容一起平移。挂载层见 main.css 的 .docs-rail-wrap。
  */
 const TOC_ASIDE =
-  "docs-rail-right fixed top-24 z-30 hidden w-[var(--docs-rail-right)]";
+  "docs-rail-right sticky top-24 z-30 hidden w-[var(--docs-rail-right)]";
 const TOC_CARD =
-  "fixed inset-x-3 bottom-24 z-40 mx-auto flex max-h-[80svh] max-w-md flex-col overflow-hidden rounded-xl border bg-popover/95 shadow-lg backdrop-blur-sm xl:hidden";
+  "fixed inset-x-3 bottom-24 z-40 mx-auto flex max-h-[80svh] max-w-md flex-col overflow-hidden rounded-xl border bg-popover/95 shadow-lg backdrop-blur-sm min-[67rem]:hidden";
 
 /** 把 `/docs/*` 的通配参数拆成路径段（可能带 URL 编码） */
 function toSegments(splat: string | undefined) {
@@ -160,22 +164,24 @@ export default function DocsDetailPage() {
       />
 
       {/*
-        宽屏：导航贴在正文右侧的空白里。fixed 脱离文档流，正文宽度与居中都不受影响；
-        导航自己滚动（max-h），长目录不会把整页撑长。
-        它比左侧目录树（1440px）出现得更早（xl / 1280px）：屏宽往下收时先收起目录树，
+        宽屏：导航贴在正文右侧的空白里。外面这层 .docs-rail-wrap 绝对定位、不占位，
+        正文宽度与居中都不受影响；导航自己滚动（max-h），长目录不会把整页撑长。
+        它比左侧目录树（1360px）出现得更早（1072px）：屏宽往下收时先收起目录树，
         这一屏仍是「正文 + 章节导航」的双列，再窄才换成底部悬浮卡片。
       */}
-      <aside
-        data-not-typeset
-        aria-label="章节导航"
-        className={cn(
-          TOC_ASIDE,
-          "max-h-[calc(100svh-8rem)] overflow-y-auto",
-          tocOpen ? "xl:hidden" : "xl:block",
-        )}
-      >
-        <DocToc items={toc} activeId={activeId} visibleIds={visibleIds} />
-      </aside>
+      <div className="docs-rail-wrap">
+        <aside
+          data-not-typeset
+          aria-label="章节导航"
+          className={cn(
+            TOC_ASIDE,
+            "max-h-[calc(100svh-8rem)] overflow-y-auto",
+            tocOpen ? "min-[67rem]:hidden" : "min-[67rem]:block",
+          )}
+        >
+          <DocToc items={toc} activeId={activeId} visibleIds={visibleIds} />
+        </aside>
+      </div>
 
       {/* 窄屏：装不下正文 + 留白 + 导航，就收进 80svh 的悬浮卡片，默认隐藏 */}
       {tocOpen ? (
