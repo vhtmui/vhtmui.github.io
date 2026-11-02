@@ -175,7 +175,12 @@ export default function DocsDetailPage() {
           aria-label="章节导航"
           className={cn(
             TOC_ASIDE,
-            "max-h-[calc(100svh-8rem)] overflow-y-auto",
+            /*
+              底边比左侧目录树多让 2.5rem：右下角还悬着「返回顶部」（见 docs-dock，
+              从视口底部往上占 1.25 + 2.75rem）。只扣上边 6rem 的话，目录一长就会
+              铺到那个角上，最下面几行的展开箭头正好被按钮盖住。
+            */
+            "max-h-[calc(100svh-10.5rem)] overflow-y-auto",
             tocOpen ? "min-[67rem]:hidden" : "min-[67rem]:block",
           )}
         >

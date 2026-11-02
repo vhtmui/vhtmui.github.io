@@ -1,4 +1,5 @@
 import { Outlet, useLoaderData, useLocation } from "react-router";
+import DocsDock from "@/components/custom/docs-dock";
 import DocsNavTree from "@/components/custom/docs-nav-tree";
 import { listDocTree } from "@/lib/content.server";
 
@@ -60,6 +61,12 @@ export default function DocsLayout() {
       </div>
 
       <Outlet />
+
+      {/*
+        右下角的悬浮操作（现在只有「返回顶部」，之后做成移动端的可展开 dock）。
+        放在布局里而不是详情页：目录页滚长了也用得上，且切文档时不用重新挂载。
+      */}
+      <DocsDock />
     </>
   );
 }
