@@ -10,6 +10,7 @@ import {
 } from "react";
 import { Link } from "react-router";
 import { cn } from "@/lib/utils";
+import { hideSlidePill } from "@/lib/slide-pill";
 
 /**
  * 文档目录树。
@@ -94,43 +95,48 @@ export default function DocsNavTree({ nodes, activePath }: DocsNavTreeProps) {
     [],
   );
 
-  const placePill = useCallback(
-    (glide: boolean) => {
-      const pill = pillRef.current;
-      const nav = navRef.current;
-      const row = rows.current.get(targetId);
-      if (!pill || !nav) return;
+  const placePill = useCallback(() => {
+    const pill = pillRef.current;
+    const nav = navRef.current;
+    const row = rows.current.get(targetId);
+    if (!pill || !nav) return;
 
-      // 目标行可能被收起来的分支藏着（高度 0 + overflow hidden），这时别露滑块
-      if (!row || row.closest("[data-collapsed]")) {
-        pill.style.opacity = "0";
-        return;
-      }
+    // 目标行可能被收起来的分支藏着（高度 0 + overflow hidden），这时别露滑块
+    if (!row || row.closest("[data-collapsed]")) {
+      hideSlidePill(pill);
+      return;
+    }
 
-      const navBox = nav.getBoundingClientRect();
-      const rowBox = row.getBoundingClientRect();
+    const navBox = nav.getBoundingClientRect();
+    const rowBox = row.getBoundingClientRect();
 
-      // 首次定位直接落位，避免从左上角滑进来
-      if (!glide) pill.style.transition = "none";
-      pill.style.opacity = "1";
-      pill.style.width = `${rowBox.width}px`;
-      pill.style.height = `${rowBox.height}px`;
-      // 导航自己会滚动，换算成内容坐标（滑块在滚动容器里，跟着内容一起滚）
-      pill.style.transform = `translate(${rowBox.left - navBox.left + nav.scrollLeft}px, ${
-        rowBox.top - navBox.top + nav.scrollTop
-      }px)`;
-      if (!glide) {
-        void pill.offsetHeight;
-        pill.style.transition = "";
-      }
-    },
-    [targetId],
-  );
+    /*
+      只有首次定位要关过渡（避免从左上角滑进来）。
+      这里不能按「本次是否需要滑动」来判断：fonts.ready / ResizeObserver 会在同一次
+      effect 的微任务里再调一次，若那次也去改 transition，刚起步的动画会立刻被
+      transitioncancel 掐断，看起来就是硬跳（参考 header-nav 的 firstRef 写法）。
+    */
+    const first = firstPlace.current;
+    if (first) pill.style.transition = "none";
+
+    pill.style.opacity = "1";
+    pill.style.width = `${rowBox.width}px`;
+    pill.style.height = `${rowBox.height}px`;
+    // 导航自己会滚动，换算成内容坐标（滑块在滚动容器里，跟着内容一起滚）
+    pill.style.transform = `translate(${rowBox.left - navBox.left + nav.scrollLeft}px, ${
+      rowBox.top - navBox.top + nav.scrollTop
+    }px)`;
+
+    if (first) {
+      void pill.offsetHeight;
+      pill.style.transition = "";
+      firstPlace.current = false;
+    }
+  }, [targetId]);
 
   useLayoutEffect(() => {
-    placePill(!firstPlace.current);
-    firstPlace.current = false;
-    document.fonts.ready.then(() => placePill(false)).catch(() => {});
+    placePill();
+    document.fonts.ready.then(placePill).catch(() => {});
   }, [placePill]);
 
   /*
@@ -142,7 +148,7 @@ export default function DocsNavTree({ nodes, activePath }: DocsNavTreeProps) {
     const list = listRef.current;
     if (!list) return;
 
-    const observer = new ResizeObserver(() => placePill(true));
+    const observer = new ResizeObserver(() => placePill());
     observer.observe(list);
     return () => observer.disconnect();
   }, [placePill]);

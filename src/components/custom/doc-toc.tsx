@@ -1,6 +1,15 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type RefCallback,
+} from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { hideSlidePill } from "@/lib/slide-pill";
 import type { TocItem } from "@/lib/markdown.server";
 
 /**
@@ -115,6 +124,8 @@ function TocLeaf({
   visibleIds,
   depth,
   onJump,
+  onHover,
+  registerRow,
 }: {
   node: TocNode;
   activeId: string | null;
@@ -122,12 +133,15 @@ function TocLeaf({
   visibleIds: ReadonlySet<string>;
   depth: number;
   onJump: (id: string) => void;
+  onHover: (id: string) => void;
+  registerRow: (id: string) => RefCallback<HTMLElement>;
 }) {
   const visible = visibleIds.has(node.id);
 
   return (
     <li>
       <a
+        ref={registerRow(node.id)}
         href={`#${node.id}`}
         // 同一组里 aria-current 只该有一个：「当前」仍按 activeId 标，
         // 视口内其余章节只用底色区分（无障碍上不至于出现多个"当前位置"）
@@ -138,11 +152,13 @@ function TocLeaf({
           event.preventDefault();
           onJump(node.id);
         }}
+        onPointerEnter={(event) => event.pointerType === "mouse" && onHover(node.id)}
         // 缩进按相对深度递进（二级标题 0.5rem 起），标题层级再深也不会挤在一起
         style={{ paddingInlineStart: `${0.5 + depth * 0.5}rem` }}
         className={cn(
-          "block truncate rounded-md py-1 pr-2 transition-colors outline-none hover:bg-muted/60 hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50",
-          visible ? "bg-muted font-medium text-foreground" : "text-muted-foreground",
+          // z-1 压住滑动色块；底色交给色块，行本身只留"在视口里"的那层浅色
+          "relative z-1 block truncate rounded-md py-1 pr-2 transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+          visible ? "bg-muted/50 text-foreground" : "text-muted-foreground",
         )}
       >
         {node.text}
@@ -157,6 +173,8 @@ function TocLeaf({
               visibleIds={visibleIds}
               depth={depth + 1}
               onJump={onJump}
+              onHover={onHover}
+              registerRow={registerRow}
             />
           ))}
         </ul>
@@ -229,10 +247,93 @@ export default function DocToc({
   // 阅读位置变了就把当前项带进容器中线
   const navRef = useCenterActive(activeId);
 
+  /*
+    滑动的底色块：位置跟随「悬停项 ?? 当前位置」，做法与 header-nav 的激活色块一致。
+    行自己的底色只表示"正文还在视口里"（很浅的一层），所以两者叠在一起也不糊。
+  */
+  const [hoverId, setHoverId] = useState<string | null>(null);
+  const pillRef = useRef<HTMLSpanElement>(null);
+  const rowRefs = useRef(new Map<string, HTMLElement>());
+  const firstPlace = useRef(true);
+  const targetId = hoverId ?? activeId;
+
+  const registerRow = useCallback(
+    (id: string): RefCallback<HTMLElement> =>
+      (element) => {
+        if (element) rowRefs.current.set(id, element);
+        else rowRefs.current.delete(id);
+      },
+    [],
+  );
+
+  const placePill = useCallback(() => {
+    const nav = navRef.current;
+    const pill = pillRef.current;
+    const row = targetId ? rowRefs.current.get(targetId) : null;
+    if (!nav || !pill) return;
+
+    // 目标项可能缩在收起的节里（grid-rows 0fr + overflow hidden），这时别露色块
+    if (!row || row.closest("[data-collapsed]")) {
+      hideSlidePill(pill);
+      return;
+    }
+
+    // 只有首次定位关过渡：其余时候改 transition 会把刚起步的动画 cancel 掉
+    const first = firstPlace.current;
+    if (first) pill.style.transition = "none";
+
+    const navBox = nav.getBoundingClientRect();
+    const rowBox = row.getBoundingClientRect();
+
+    // 色块和行都挂在 nav 里，跟着内容一起滚，这里用相对 nav 的坐标即可
+    pill.style.opacity = "1";
+    pill.style.width = `${rowBox.width}px`;
+    pill.style.height = `${rowBox.height}px`;
+    pill.style.transform = `translate(${rowBox.left - navBox.left}px, ${
+      rowBox.top - navBox.top
+    }px)`;
+
+    if (first) {
+      void pill.offsetHeight;
+      pill.style.transition = "";
+      firstPlace.current = false;
+    }
+  }, [targetId, navRef]);
+
+  useLayoutEffect(() => {
+    placePill();
+    document.fonts.ready.then(placePill).catch(() => {});
+  }, [placePill]);
+
+  // 节展开/收起是高 0fr→1fr 的动画，行一直在动，跟着量才不会脱节
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+
+    const observer = new ResizeObserver(() => placePill());
+    observer.observe(nav);
+    window.addEventListener("resize", placePill);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", placePill);
+    };
+  }, [placePill, navRef]);
+
   if (!roots.length) return null;
 
   return (
-    <nav ref={navRef} aria-label="章节导航" className="flex flex-col gap-0.5 text-sm">
+    <nav
+      ref={navRef}
+      aria-label="章节导航"
+      onPointerLeave={() => setHoverId(null)}
+      className="relative flex flex-col gap-0.5 text-sm"
+    >
+      {/* 滑动的底色块：高亮跟着悬停项走，指针离开后回到当前项 */}
+      <span
+        ref={pillRef}
+        aria-hidden="true"
+        className="pointer-events-none absolute top-0 left-0 z-0 rounded-md bg-muted opacity-0 transition-[transform,width,height,opacity] duration-220 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none"
+      />
       {roots.map((root) => {
         const hasKids = root.children.length > 0;
         /** 手动覆盖优先，其次看这一节是否自动展开 */
@@ -241,9 +342,10 @@ export default function DocToc({
         /** 这一节的正文还在视口里（含它的子节），整行高亮 */
         const visible = visibleSet.has(root.id);
         const rowClass = cn(
-          "flex w-full cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-left transition-colors outline-none hover:bg-muted/60 focus-visible:ring-3 focus-visible:ring-ring/50",
-          // 在视口里的节铺底色；正在读的那一节再把字色加深，位置更好找
-          visible ? "bg-muted text-foreground" : "text-muted-foreground",
+          // z-1 压住滑动色块；底色交给色块，行本身只留"在视口里"的那层浅色
+          "relative z-1 flex w-full cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-left transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+          // 在视口里的节铺浅底色；正在读的那一节再把字色加深，位置更好找
+          visible ? "bg-muted/50 text-foreground" : "text-muted-foreground",
           current && "font-medium text-foreground",
         );
 
@@ -252,6 +354,7 @@ export default function DocToc({
             {hasKids ? (
               // 有子项：这一行管展开（不跳转），高亮看本节是否还在视口内
               <button
+                ref={registerRow(root.id)}
                 type="button"
                 aria-expanded={open}
                 data-active-id={activeId === root.id ? root.id : undefined}
@@ -261,6 +364,9 @@ export default function DocToc({
                     at: activeRootId,
                     overrides: { ...overrides, [root.id]: !open },
                   })
+                }
+                onPointerEnter={(event) =>
+                  event.pointerType === "mouse" && setHoverId(root.id)
                 }
                 className={rowClass}
               >
@@ -275,6 +381,7 @@ export default function DocToc({
               </button>
             ) : (
               <a
+                ref={registerRow(root.id)}
                 href={`#${root.id}`}
                 data-active-id={activeId === root.id ? root.id : undefined}
                 aria-current={activeId === root.id ? "location" : undefined}
@@ -282,6 +389,9 @@ export default function DocToc({
                   event.preventDefault();
                   jump(root.id);
                 }}
+                onPointerEnter={(event) =>
+                  event.pointerType === "mouse" && setHoverId(root.id)
+                }
                 className={rowClass}
               >
                 <span className="min-w-0 flex-1 truncate">{root.text}</span>
@@ -291,6 +401,8 @@ export default function DocToc({
             {hasKids ? (
               // grid-rows 0fr→1fr：展开收起都有高度过渡，不用 JS 量高度
               <div
+                // 收起的节：里面还有行，但被裁掉了，色块据此判断要不要露出来
+                data-collapsed={open ? undefined : ""}
                 className={cn(
                   "grid transition-[grid-template-rows] duration-200 ease-out motion-reduce:transition-none",
                   open ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
@@ -305,6 +417,8 @@ export default function DocToc({
                       visibleIds={visibleSet}
                       depth={1}
                       onJump={jump}
+                      onHover={setHoverId}
+                      registerRow={registerRow}
                     />
                   ))}
                 </ul>
