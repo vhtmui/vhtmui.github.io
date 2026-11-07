@@ -19,3 +19,8 @@ export function docPath(...segments: string[]) {
 export const STATIC_PATHS = {
   dufs: "/dufs/常用软件/?noscript",
 } as const;
+
+/** 个人主页等外链 */
+export const LINKS = {
+  github: "https://github.com/vhtmui/",
+} as const;

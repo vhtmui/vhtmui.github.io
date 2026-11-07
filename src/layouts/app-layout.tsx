@@ -1,10 +1,11 @@
 import { Link, Outlet, useLocation } from "react-router";
 import { Brands } from "@/components/custom/brands";
 import BreadcrumbBar from "@/components/custom/breadcrumb-bar";
+import GithubIcon from "@/components/custom/github-icon";
 import HeaderNav from "@/components/custom/header-nav";
 import ThemeSelect from "@/components/custom/theme-select";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { ROUTES } from "@/config/links";
+import { LINKS, ROUTES } from "@/config/links";
 import { cn } from "@/lib/utils";
 
 /** 是不是 docs 或它的子页面 */
@@ -53,6 +54,17 @@ export default function AppLayout() {
             {/* 中：暂为空，不占宽度 */}
             <div />
             <div className="flex items-center gap-1 justify-self-end">
+              {/* GitHub 主页：外链在新标签打开，尺寸/圆角跟右侧主题选择保持一致 */}
+              <a
+                href={LINKS.github}
+                target="_blank"
+                rel="noreferrer"
+                aria-label="GitHub 主页"
+                title="GitHub"
+                className="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground transition-[background-color,color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100"
+              >
+                <GithubIcon className="size-4" />
+              </a>
               <ThemeSelect />
             </div>
           </div>
