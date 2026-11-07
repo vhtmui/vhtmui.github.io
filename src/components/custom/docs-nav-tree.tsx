@@ -328,14 +328,50 @@ function NodeItem({
           >
             {node.label}
           </Link>
+          {/*
+            加号/减号的命中区：
+            - 视觉上仍是 14px 的小图标，按钮本身撑到 24px 见方；
+            - 再用 after 伪元素向外多铺 4px（不占布局），实际点得到约 32px，
+              手指点也够用，又不会把行撑高。
+          */}
           <button
             type="button"
+            title={isOpen ? "收起" : "展开"}
             aria-expanded={isOpen}
             aria-label={isOpen ? `收起 ${node.label}` : `展开 ${node.label}`}
             onClick={() => onToggle(node.id)}
-            className="ml-auto inline-flex shrink-0 items-center rounded-sm p-0.5 text-muted-foreground hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+            className={cn(
+              "relative ml-auto inline-flex size-6 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors",
+              "after:absolute after:-inset-1 after:content-['']",
+              "hover:bg-foreground/10 hover:text-foreground active:bg-foreground/15",
+              "focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
+            )}
           >
-            {isOpen ? <Minus className="size-3" /> : <Plus className="size-3" />}
+            {/*
+              加号 / 减号的切换：整枚图标转 180° 的同时做交叉淡入淡出。
+              转 180° 是刻意挑的 —— 加减号都是中心对称的，转过去后减号仍然是横的，
+              既不会歪，又能看出"转了一下"。
+            */}
+            <span
+              aria-hidden="true"
+              className={cn(
+                "relative block size-3.5 transition-transform duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none",
+                isOpen && "rotate-180",
+              )}
+            >
+              <Plus
+                className={cn(
+                  "absolute inset-0 size-3.5 transition-opacity duration-300 motion-reduce:transition-none",
+                  isOpen ? "opacity-0" : "opacity-100",
+                )}
+              />
+              <Minus
+                className={cn(
+                  "absolute inset-0 size-3.5 transition-opacity duration-300 motion-reduce:transition-none",
+                  isOpen ? "opacity-100" : "opacity-0",
+                )}
+              />
+            </span>
           </button>
         </div>
       ) : (
