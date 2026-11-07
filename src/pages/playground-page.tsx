@@ -12,6 +12,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { pageTitle } from "@/config/site";
+
+export const meta = () => [
+  { title: pageTitle("Playground") },
+  { name: "description", content: "组件试验场：字符翻转、动画与交互效果先在这里跑一跑。" },
+];
 
 /** 预设句子：之间只差个别字符，方便看清 diff 只翻有差异的那几个 */
 const PRESETS = ["Character Flip", "Character Flow", "Characters Flip!"];

@@ -5,7 +5,13 @@ import FlipChars from "@/components/custom/flip-chars";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { pageTitle } from "@/config/site";
 import { cn } from "@/lib/utils";
+
+export const meta = () => [
+  { title: pageTitle("MAC Address Converter") },
+  { name: "description", content: "在 Hyphen / Colon / Cisco 等多种 MAC 地址书写格式之间互相转换，支持一键复制。" },
+];
 
 /** 复制成功后对勾停留时长（ms） */
 const COPY_DELAY = 750;

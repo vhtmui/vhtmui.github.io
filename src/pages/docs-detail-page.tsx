@@ -8,6 +8,7 @@ import PageHeader from "@/components/custom/page-header";
 import ReadingProgress from "@/components/custom/reading-progress";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/links";
+import { pageTitle, SITE_NAME } from "@/config/site";
 import { useDocReading } from "@/hooks/use-doc-reading";
 import { listDocFlat, readDocSource } from "@/lib/content.server";
 import { renderMarkdown } from "@/lib/markdown.server";
@@ -90,6 +91,22 @@ export async function loader({ params }: { params: Partial<Record<string, string
     next: toLink(index >= 0 ? flat[index + 1] : undefined),
   };
 }
+
+/**
+ * 标题跟着文档走，每一章都能在搜索结果里单独被认出来；
+ * 正文没有单独的摘要字段，描述就用「目录层级 + 标题」拼一句。
+ *
+ * 参数名按框架的约定是 `loaderData`（不是 `data`），取值时才拿得到 loader 的返回值。
+ */
+export const meta = ({ loaderData }: { loaderData?: { title: string; segments: string[] } }) => {
+  if (!loaderData) return [{ title: SITE_NAME }];
+
+  const { title, segments } = loaderData;
+  return [
+    { title: pageTitle(title) },
+    { name: "description", content: `${segments.join(" / ")} — ${title}` },
+  ];
+};
 
 /**
  * 文档正文页。

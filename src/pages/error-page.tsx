@@ -1,6 +1,13 @@
 import { Link, isRouteErrorResponse, useRouteError } from "react-router";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/links";
+import { pageTitle } from "@/config/site";
+
+/** 走通配路由的页面基本就是 404，标题也照这个写 */
+export const meta = () => [
+  { title: pageTitle("404") },
+  { name: "description", content: "页面不存在。" },
+];
 
 export default function ErrorPage() {
   const error = useRouteError();

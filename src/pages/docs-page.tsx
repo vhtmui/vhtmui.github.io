@@ -1,6 +1,12 @@
 import { Link, useLoaderData } from "react-router";
 import PageHeader from "@/components/custom/page-header";
+import { pageTitle } from "@/config/site";
 import { listDocGroups } from "@/lib/content.server";
+
+export const meta = () => [
+  { title: pageTitle("Docs") },
+  { name: "description", content: "站内文档目录：书籍、笔记与各类整理内容，按 content/ 的目录结构列出。" },
+];
 
 /**
  * 目录页的数据：只有元信息（分组 / 标题 / 路径），

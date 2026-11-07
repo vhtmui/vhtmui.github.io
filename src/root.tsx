@@ -9,6 +9,7 @@ import {
   useRouteError,
 } from "react-router";
 import ThemeProvider from "@/components/custom/theme-provider";
+import { SITE_NAME } from "@/config/site";
 import "./main.css";
 
 /**
@@ -30,7 +31,6 @@ export function Layout({ children }: { children: ReactNode }) {
           type="image/svg+xml"
           href={`${import.meta.env.BASE_URL}favicon.svg`}
         />
-        <meta title="Useless" />
         <Meta />
         <Links />
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
@@ -45,7 +45,12 @@ export function Layout({ children }: { children: ReactNode }) {
   );
 }
 
-export const meta = () => [{ title: "Useless" }];
+/**
+ * 兜底的 meta：没有自己 meta 的路由（或渲染出错）用这份。
+ * 各页面在自己的路由模块里导出 meta 覆盖标题 —— 这里只放 title，
+ * description 交给各页面自己写，避免子路由再写一份时页面上出现两条同名 meta。
+ */
+export const meta = () => [{ title: SITE_NAME }];
 
 /** 主题与全局布局之外的根组件 */
 export default function App() {

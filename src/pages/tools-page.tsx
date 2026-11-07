@@ -8,6 +8,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ROUTES } from "@/config/links";
+import { pageTitle } from "@/config/site";
+
+export const meta = () => [
+  { title: pageTitle("Tools") },
+  { name: "description", content: "一些自用的小工具：MAC 地址格式转换等。" },
+];
 
 export default function ToolsPage() {
   return (

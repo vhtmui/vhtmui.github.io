@@ -1,6 +1,13 @@
 import { ROUTES, STATIC_PATHS } from "@/config/links";
+import { pageTitle, SITE_DESCRIPTION } from "@/config/site";
 import ScrollCard from "@/components/custom/scroll-card";
 import { Link } from "react-router";
+
+/** 首页标题就是站点名，不拼后缀 */
+export const meta = () => [
+  { title: pageTitle() },
+  { name: "description", content: SITE_DESCRIPTION },
+];
 
 /** 首页入口卡片 */
 const HOME_LINKS: Array<{
