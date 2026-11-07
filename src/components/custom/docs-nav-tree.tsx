@@ -30,8 +30,8 @@ export interface DocsNavNode {
   /** 目录用路径段、文档用站内路径，全树唯一 */
   id: string;
   label: string;
-  /** 只有文档节点有 */
-  path?: string;
+  /** 站内路径：目录指向目录页，文档指向正文页。底色滑块和激活态都按它找行 */
+  path: string;
   children?: DocsNavNode[];
 }
 
@@ -75,22 +75,23 @@ const ROW =
 
 export default function DocsNavTree({ nodes, activePath }: DocsNavTreeProps) {
   const [open, setOpen] = useState<Set<string>>(() => new Set(pathTo(nodes, activePath)));
-  const [hoverId, setHoverId] = useState<string | null>(null);
+  const [hoverPath, setHoverPath] = useState<string | null>(null);
 
   const navRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const pillRef = useRef<HTMLSpanElement>(null);
+  /** 行按站内路径索引：目录与文档都注册，滑块与"滚到可见"才能一视同仁 */
   const rows = useRef(new Map<string, HTMLElement>());
   const firstPlace = useRef(true);
 
   /** 底色块的目标：优先跟随悬停项，指针离开后回到当前文档 */
-  const targetId = hoverId ?? activePath;
+  const targetId = hoverPath ?? activePath;
 
   const registerRow = useCallback(
-    (id: string): RefCallback<HTMLElement> =>
+    (path: string): RefCallback<HTMLElement> =>
       (element) => {
-        if (element) rows.current.set(id, element);
-        else rows.current.delete(id);
+        if (element) rows.current.set(path, element);
+        else rows.current.delete(path);
       },
     [],
   );
@@ -252,7 +253,7 @@ export default function DocsNavTree({ nodes, activePath }: DocsNavTreeProps) {
         <ul
           ref={listRef}
           className="relative flex flex-col"
-          onPointerLeave={() => setHoverId(null)}
+          onPointerLeave={() => setHoverPath(null)}
         >
           {nodes.map((node) => (
             <NodeItem
@@ -260,9 +261,9 @@ export default function DocsNavTree({ nodes, activePath }: DocsNavTreeProps) {
               node={node}
               open={open}
               activePath={activePath}
-              hoverId={hoverId}
+              hoverPath={hoverPath}
               onToggle={toggle}
-              onHover={setHoverId}
+              onHover={setHoverPath}
               registerRow={registerRow}
             />
           ))}
@@ -276,17 +277,18 @@ interface NodeItemProps {
   node: DocsNavNode;
   open: Set<string>;
   activePath: string;
-  hoverId: string | null;
+  /** 悬停项的路径（不是 id：底色滑块按路径找行，目录和文档一视同仁） */
+  hoverPath: string | null;
   onToggle: (id: string) => void;
-  onHover: (id: string) => void;
-  registerRow: (id: string) => RefCallback<HTMLElement>;
+  onHover: (path: string) => void;
+  registerRow: (path: string) => RefCallback<HTMLElement>;
 }
 
 function NodeItem({
   node,
   open,
   activePath,
-  hoverId,
+  hoverPath,
   onToggle,
   onHover,
   registerRow,
@@ -295,7 +297,7 @@ function NodeItem({
   const isBranch = children.length > 0;
   const isOpen = open.has(node.id);
   const isActive = node.path === activePath;
-  const isHovered = hoverId === node.id;
+  const isHovered = hoverPath === node.path;
   /** 分支里有当前文档时，分支头和它下面那条竖线一起亮起来 */
   const holdsActive = isBranch && children.some((child) => contains(child, activePath));
 
@@ -306,41 +308,46 @@ function NodeItem({
     !isActive && (isHovered || isOpen || holdsActive ? "text-foreground" : "text-muted-foreground"),
   );
 
-  const content = (
-    <>
-      <span className="truncate" title={node.label}>
-        {node.label}
-      </span>
-      {isBranch ? (
-        <span className="ml-auto inline-flex shrink-0 items-center text-muted-foreground">
-          {isOpen ? <Minus className="size-3" /> : <Plus className="size-3" />}
-        </span>
-      ) : null}
-    </>
-  );
-
   return (
     <li>
       {isBranch ? (
-        <button
-          ref={registerRow(node.id)}
-          type="button"
-          aria-expanded={isOpen}
-          onClick={() => onToggle(node.id)}
-          onPointerEnter={(event) => event.pointerType === "mouse" && onHover(node.id)}
+        /*
+          目录行拆成两半：名字是链接（进这一层的目录页），右侧 +/- 只负责开合。
+          之前整行是个按钮，目录名点不动，目录 URL 也没地方可达。
+        */
+        <div
+          ref={registerRow(node.path)}
+          onPointerEnter={(event) => event.pointerType === "mouse" && onHover(node.path)}
           className={rowClass}
         >
-          {content}
-        </button>
+          <Link
+            to={node.path}
+            aria-current={isActive ? "page" : undefined}
+            title={node.label}
+            className="min-w-0 flex-1 truncate rounded-sm no-underline outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          >
+            {node.label}
+          </Link>
+          <button
+            type="button"
+            aria-expanded={isOpen}
+            aria-label={isOpen ? `收起 ${node.label}` : `展开 ${node.label}`}
+            onClick={() => onToggle(node.id)}
+            className="ml-auto inline-flex shrink-0 items-center rounded-sm p-0.5 text-muted-foreground hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+          >
+            {isOpen ? <Minus className="size-3" /> : <Plus className="size-3" />}
+          </button>
+        </div>
       ) : (
         <Link
-          ref={registerRow(node.id)}
-          to={node.path ?? "#"}
+          ref={registerRow(node.path)}
+          to={node.path}
           aria-current={isActive ? "page" : undefined}
-          onPointerEnter={(event) => event.pointerType === "mouse" && onHover(node.id)}
+          title={node.label}
+          onPointerEnter={(event) => event.pointerType === "mouse" && onHover(node.path)}
           className={rowClass}
         >
-          {content}
+          <span className="truncate">{node.label}</span>
         </Link>
       )}
 
@@ -369,7 +376,7 @@ function NodeItem({
                   node={child}
                   open={open}
                   activePath={activePath}
-                  hoverId={hoverId}
+                  hoverPath={hoverPath}
                   onToggle={onToggle}
                   onHover={onHover}
                   registerRow={registerRow}

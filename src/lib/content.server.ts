@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from "node:fs";
+import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 /**
@@ -18,8 +18,6 @@ export const CONTENT_DIR = "content";
 export interface DocMeta {
   /** 目录结构对应的路径段，例如 ["其他", "Rust"] */
   segments: string[];
-  /** 分类目录名；直接放在 content 根下的文件为空串 */
-  group: string;
   /** 文件名（去掉 .md） */
   name: string;
   /** 文档标题：frontmatter.title 优先，其次正文首个一级标题，再兜底文件名 */
@@ -35,22 +33,30 @@ export interface DocSource extends DocMeta {
   frontmatter: Record<string, string>;
 }
 
-/** 分类 + 该分类下的文档，目录页直接用 */
-export interface DocGroup {
+/** 目录节点：目录本身也是一层，可以有自己的页面（列它下面的内容） */
+export interface DocDirSource {
+  segments: string[];
   name: string;
-  docs: DocMeta[];
+  path: string;
+  children: DocTreeNode[];
 }
 
 /**
- * 侧栏导航用的树节点：目录就是目录，文档就是文档，层级与 content/ 一一对应
- * （books → 代码整洁之道 → 各章），不为了界面的层级限制去压平。
+ * 侧栏导航 / 目录页共用的树节点：目录就是目录，文档就是文档，层级与 content/
+ * 一一对应（books → 代码整洁之道 → 各章），不为了界面的层级限制去压平。
+ *
+ * 目录也有 path：点目录名进的是「这一层的索引页」，不是某篇正文。
  */
 export interface DocTreeNode {
   /** 目录用路径段拼成，文档用站内路径，都是唯一的 */
   id: string;
+  /** 目录显示目录名，文档显示标题 */
   label: string;
-  /** 只有文档节点有站内路径 */
-  path?: string;
+  /** 站内路径：目录指向索引页，文档指向正文页 */
+  path: string;
+  kind: "dir" | "doc";
+  /** 文档的文件名（含 .md），目录没有 */
+  file?: string;
   children: DocTreeNode[];
 }
 
@@ -106,7 +112,6 @@ export function readDocSource(segments: string[]): DocSource {
 
   return {
     segments,
-    group: segments.length > 1 ? segments[0] : "",
     name,
     title,
     path: docRoute(segments),
@@ -137,7 +142,6 @@ export function listDocFlat(dir = CONTENT_DIR, prefix: string[] = []): DocMeta[]
     const source = readDocSource([...prefix, entry.name.replace(/\.md$/i, "")]);
     docs.push({
       segments: source.segments,
-      group: source.group,
       name: source.name,
       title: source.title,
       path: source.path,
@@ -150,36 +154,10 @@ export function listDocFlat(dir = CONTENT_DIR, prefix: string[] = []): DocMeta[]
   return [...dirs.flatMap((item) => listDocFlat(join(dir, item.name), item.segments)), ...docs];
 }
 
-/** 全部文档的元信息，按分类归拢好（分组名与文档名都排过序） */
-export function listDocGroups(): DocGroup[] {
-  const groups: DocGroup[] = [];
-
-  for (const segments of listDocSegments()) {
-    const source = readDocSource(segments);
-    const meta: DocMeta = {
-      segments: source.segments,
-      group: source.group,
-      name: source.name,
-      title: source.title,
-      path: source.path,
-    };
-
-    const existed = groups.find((group) => group.name === meta.group);
-    if (existed) existed.docs.push(meta);
-    else groups.push({ name: meta.group, docs: [meta] });
-  }
-
-  for (const group of groups) {
-    group.docs.sort((a, b) => a.name.localeCompare(b.name));
-  }
-  groups.sort((a, b) => a.name.localeCompare(b.name));
-
-  return groups;
-}
-
 /**
  * content/ 的目录树：目录节点在前、文档节点在后，各自按名字排。
- * 文档标题要读文件才知道，所以这里和 listDocGroups 一样会打开每篇文档。
+ * 文档标题要读文件才知道，所以这里会打开每篇文档；目录自带自己的路径，
+ * 点进去是这一层的索引页（见 readDocDir）。
  */
 export function listDocTree(dir = CONTENT_DIR, prefix: string[] = []): DocTreeNode[] {
   const dirs: DocTreeNode[] = [];
@@ -187,10 +165,13 @@ export function listDocTree(dir = CONTENT_DIR, prefix: string[] = []): DocTreeNo
 
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     if (entry.isDirectory()) {
+      const segments = [...prefix, entry.name];
       dirs.push({
-        id: [...prefix, entry.name].join("/"),
+        id: segments.join("/"),
         label: entry.name,
-        children: listDocTree(join(dir, entry.name), [...prefix, entry.name]),
+        path: docRoute(segments),
+        kind: "dir",
+        children: listDocTree(join(dir, entry.name), segments),
       });
       continue;
     }
@@ -198,7 +179,14 @@ export function listDocTree(dir = CONTENT_DIR, prefix: string[] = []): DocTreeNo
     if (!entry.name.toLowerCase().endsWith(".md")) continue;
 
     const source = readDocSource([...prefix, entry.name.replace(/\.md$/i, "")]);
-    docs.push({ id: source.path, label: source.title, path: source.path, children: [] });
+    docs.push({
+      id: source.path,
+      label: source.title,
+      path: source.path,
+      kind: "doc",
+      file: entry.name,
+      children: [],
+    });
   }
 
   // id 里带着文件名，按它排就是按文件名排（第 10 章不会跑到第 2 章前面）
@@ -206,4 +194,39 @@ export function listDocTree(dir = CONTENT_DIR, prefix: string[] = []): DocTreeNo
   docs.sort((a, b) => a.id.localeCompare(b.id));
 
   return [...dirs, ...docs];
+}
+
+/**
+ * 读取一个目录节点：目录名、它的路径，以及下一层的内容。
+ * 路径不存在或不是目录时返回 null（交给调用方按文档去读）。
+ *
+ * 目录页面就是靠它渲染的：/docs/books、/docs/books/代码整洁之道 这类
+ * 「由目录名产生的 URL」不再 404。
+ */
+export function readDocDir(segments: string[]): DocDirSource | null {
+  if (!segments.length) return null;
+
+  const full = join(CONTENT_DIR, ...segments);
+  try {
+    if (!statSync(full).isDirectory()) return null;
+  } catch {
+    return null;
+  }
+
+  return {
+    segments,
+    name: segments[segments.length - 1],
+    path: docRoute(segments),
+    children: listDocTree(full, segments),
+  };
+}
+
+/** 所有目录的路径段（预渲染目录页用，和预渲染文档页配套） */
+export function listDocDirs(dir = CONTENT_DIR, prefix: string[] = []): string[][] {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    if (!entry.isDirectory()) return [];
+
+    const segments = [...prefix, entry.name];
+    return [segments, ...listDocDirs(join(dir, entry.name), segments)];
+  });
 }

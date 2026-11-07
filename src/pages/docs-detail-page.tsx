@@ -4,13 +4,15 @@ import { X } from "lucide-react";
 import { Link, useLoaderData } from "react-router";
 import DocPager from "@/components/custom/doc-pager";
 import DocToc from "@/components/custom/doc-toc";
+import DocsDirIndex from "@/components/custom/docs-dir-index";
 import PageHeader from "@/components/custom/page-header";
 import ReadingProgress from "@/components/custom/reading-progress";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/links";
 import { pageTitle, SITE_NAME } from "@/config/site";
 import { useDocReading } from "@/hooks/use-doc-reading";
-import { listDocFlat, readDocSource } from "@/lib/content.server";
+import { listDocFlat, readDocDir, readDocSource } from "@/lib/content.server";
+import { countDocs } from "@/lib/doc-tree";
 import { renderMarkdown } from "@/lib/markdown.server";
 import { cn } from "@/lib/utils";
 
@@ -29,7 +31,7 @@ const COPY_FEEDBACK = 1200;
  * 「正文 + 章节导航」这一整块居中（见 main.css）。
  */
 const DOC_COLUMN =
-  "docs-column mx-auto flex w-full min-w-80 max-w-[var(--docs-article)] flex-col gap-6 px-4 pb-14 sm:px-6 lg:px-8";
+  "docs-column docs-column-shift flex min-w-80 flex-col gap-6 px-4 pb-14 sm:px-6 lg:px-8";
 
 /**
  * 右侧章节导航的落点：从正文栏右边缘再让开一个间距，尺寸都读 main.css 里的
@@ -65,9 +67,18 @@ function toSegments(splat: string | undefined) {
  * 这里读文件、跑 markdown 渲染，都只发生在预渲染阶段：产物里对应一份
  * `[url].data`（客户端导航时按需取单篇），而客户端代码里没有 markdown 原文，
  * 也没有任何 markdown 解析器。
+ *
+ * `/docs/*` 同时承担两种页面：
+ * - 路径落在目录上（/docs/books、/docs/books/代码整洁之道）→ 目录索引页；
+ * - 落在 .md 上 → 正文页。
+ * 两者返回同一个 loader 数据，用 `type` 区分，客户端据此分支渲染。
  */
 export async function loader({ params }: { params: Partial<Record<string, string>> }) {
   const segments = toSegments(params["*"]);
+
+  const dir = readDocDir(segments);
+  if (dir) return { type: "dir" as const, dir };
+
   const doc = readDocSource(segments);
   const { html, footnotes, trailingRule, toc } = await renderMarkdown(doc.content);
 
@@ -81,6 +92,7 @@ export async function loader({ params }: { params: Partial<Record<string, string
     item ? { title: item.title, path: item.path } : null;
 
   return {
+    type: "doc" as const,
     title: doc.title,
     segments: doc.segments,
     html,
@@ -92,14 +104,29 @@ export async function loader({ params }: { params: Partial<Record<string, string
   };
 }
 
+type LoaderData = Awaited<ReturnType<typeof loader>>;
+/** 正文页那一支的数据（去掉目录页） */
+type DocData = Extract<LoaderData, { type: "doc" }>;
+
 /**
- * 标题跟着文档走，每一章都能在搜索结果里单独被认出来；
+ * 标题跟着文档走，每一章都能在搜索结果里单独被认出来；目录页用目录名。
  * 正文没有单独的摘要字段，描述就用「目录层级 + 标题」拼一句。
  *
  * 参数名按框架的约定是 `loaderData`（不是 `data`），取值时才拿得到 loader 的返回值。
  */
-export const meta = ({ loaderData }: { loaderData?: { title: string; segments: string[] } }) => {
+export const meta = ({ loaderData }: { loaderData?: LoaderData }) => {
   if (!loaderData) return [{ title: SITE_NAME }];
+
+  if (loaderData.type === "dir") {
+    const { name, segments, children } = loaderData.dir;
+    return [
+      { title: pageTitle(name) },
+      {
+        name: "description",
+        content: `${segments.join(" / ")} — 目录下共 ${countDocs(children)} 篇文档`,
+      },
+    ];
+  }
 
   const { title, segments } = loaderData;
   return [
@@ -107,6 +134,16 @@ export const meta = ({ loaderData }: { loaderData?: { title: string; segments: s
     { name: "description", content: `${segments.join(" / ")} — ${title}` },
   ];
 };
+
+/**
+ * `/docs/*` 的入口：目录走索引页，其余按正文页渲染。
+ * 两个页面各自的 hooks 分开放在组件里，不能在这个壳里条件调用。
+ */
+export default function DocsRoutePage() {
+  const data = useLoaderData<typeof loader>();
+
+  return data.type === "dir" ? <DocsDirIndex dir={data.dir} /> : <DocArticle data={data} />;
+}
 
 /**
  * 文档正文页。
@@ -118,9 +155,8 @@ export const meta = ({ loaderData }: { loaderData?: { title: string; segments: s
  * 章节导航与正文互不占位：正文自己居中，导航在宽屏用 fixed 落在右侧空白里，
  * 窄屏收进底部悬浮卡片，两者共用同一份开合状态（默认值按断点各自解释）。
  */
-export default function DocsDetailPage() {
-  const { title, segments, html, footnotes, trailingRule, toc, prev, next } =
-    useLoaderData<typeof loader>();
+function DocArticle({ data }: { data: DocData }) {
+  const { title, segments, html, footnotes, trailingRule, toc, prev, next } = data;
   /** 进度的量尺：正文 + 翻页导航 + 脚注这一整块（见 use-doc-reading） */
   const articleRef = useRef<HTMLDivElement>(null);
   /** 宽屏默认展开（点进度条收起）、窄屏默认隐藏（点进度条弹出），同一份状态两种解释 */

@@ -1,6 +1,6 @@
 import type { Config } from "@react-router/dev/config";
 import { SITE_BASE } from "./site.config.ts";
-import { docRoute, listDocSegments } from "./src/lib/content.server";
+import { docRoute, listDocDirs, listDocSegments } from "./src/lib/content.server";
 
 /**
  * React Router framework mode 配置。
@@ -21,5 +21,8 @@ export default {
   prerender: async ({ getStaticPaths }) => [
     ...getStaticPaths(),
     ...listDocSegments().map(docRoute),
+    // 目录页（/docs/books、/docs/books/代码整洁之道）也要预渲染，
+    // 否则面包屑、目录树里点进去的目录 URL 只有 SPA 兜底
+    ...listDocDirs().map(docRoute),
   ],
 } satisfies Config;

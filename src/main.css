@@ -238,12 +238,23 @@
 }
 
 /*
- * 正文栏本体：用 relative + left 做偏移，不用 transform —— transform 会让 fixed
- * 子元素（底部的进度条）改以这一栏为定位基准，滚动时就不再钉在视口上了。
- * 同时它也是右侧章节导航挂载层（.docs-rail-wrap）的定位基准。
+ * 正文栏本体：宽度与居中统一由它给（正文页、目录页、目录索引页共用同一栏）。
+ * relative 是给右侧章节导航挂载层（.docs-rail-wrap）当包含块的，本身不产生位移。
  */
 .docs-column {
   position: relative;
+  width: 100%;
+  max-width: var(--docs-article);
+  margin-inline: auto;
+}
+
+/*
+ * 只有正文页带这一条：左侧目录树收起的那一段里整栏左移，让「正文 + 章节导航」
+ * 作为一整块居中。用 left 而不是 transform —— transform 会让 fixed 子元素
+ * （底部进度条）改以这一栏为定位基准，滚动时就不再钉在视口上了。
+ * 目录页没有右侧导航，不参与这次偏移。
+ */
+.docs-column-shift {
   left: var(--docs-shift);
 }
 
