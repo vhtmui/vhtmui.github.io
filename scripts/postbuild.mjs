@@ -1,4 +1,12 @@
-import { copyFileSync, existsSync, readdirSync, renameSync, rmSync } from "node:fs";
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  renameSync,
+  rmSync,
+  statSync,
+} from "node:fs";
 import { resolve } from "node:path";
 
 /**
@@ -24,6 +32,62 @@ const AT_ROOT = SITE_NAME === "";
 const CLIENT_DIR = resolve("build/client");
 const SITE_DIR = AT_ROOT ? CLIENT_DIR : resolve(CLIENT_DIR, SITE_NAME);
 
+/** 构建脚本里同步等一会儿就行，不值得为几百毫秒的退避把整段改成异步 */
+function sleepSync(ms) {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+}
+
+/** Windows 上"路径被占用"的几个错误码 */
+const BUSY_CODES = new Set(["EPERM", "EACCES", "EBUSY"]);
+
+/**
+ * 逐层复制文件树。
+ *
+ * 不用 fs.cpSync：它在某些环境下遇到非 ASCII 目录名（content 里的「其他」「ai问答」
+ * 会在产物里原样出现）会直接把进程搞崩，而且崩之前已经复制了一半。自己递归只用
+ * mkdirSync / readdirSync / copyFileSync，这三者对中文路径是可靠的。
+ */
+function copyTree(source, target) {
+  if (!statSync(source).isDirectory()) {
+    copyFileSync(source, target);
+    return;
+  }
+
+  mkdirSync(target, { recursive: true });
+  for (const name of readdirSync(source)) copyTree(resolve(source, name), resolve(target, name));
+}
+
+/**
+ * 移动一个文件或目录，搬不动就退化成「复制 + 尽力删除」。
+ *
+ * 优先 rename：同一分区里只是改目录项，最快。但 Windows 上只要目录被别的进程开了
+ * 句柄（杀毒、搜索索引、编辑器的预览/监听，甚至上一次构建残留的 watcher），rename
+ * 就会 EPERM —— 而且这种占用常常几百毫秒就没了，所以先重试几次。
+ *
+ * 重试还不行就复制过去：复制只要求读权限，基本不会再失败；源目录删不掉也只是在
+ * 站点根之外多留一份，不影响部署（只打一行警告）。
+ */
+function moveEntry(source, target) {
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      renameSync(source, target);
+      return;
+    } catch (error) {
+      if (!BUSY_CODES.has(error.code)) throw error;
+      if (attempt < 2) sleepSync(150 * (attempt + 1));
+    }
+  }
+
+  copyTree(source, target);
+  try {
+    rmSync(source, { recursive: true, force: true });
+  } catch (error) {
+    // 细节可能是长长一段（各种 shim / 系统错误），截断一下
+    const reason = error.code ?? String(error.message).split("\n")[0].slice(0, 80);
+    console.warn(`postbuild: ${source} 被占用没能删掉（${reason}），留着不影响部署`);
+  }
+}
+
 /** 把 URL 编码的目录名还原成原文，自底向上处理 */
 function decodeDirNames(dir) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
@@ -37,7 +101,7 @@ function decodeDirNames(dir) {
       // 名字里出现裸 % 时保持原样
     }
 
-    if (decoded !== entry.name) renameSync(full, resolve(dir, decoded));
+    if (decoded !== entry.name) moveEntry(full, resolve(dir, decoded));
   }
 }
 
@@ -51,9 +115,14 @@ if (!AT_ROOT) {
       entry.name === "index.html" ? "__spa-fallback.html" : entry.name,
     );
 
-    // 关掉 emptyOutDir 后这里可能残留上一次的同名内容，直接清掉再放新的
-    rmSync(target, { recursive: true, force: true });
-    renameSync(resolve(CLIENT_DIR, entry.name), target);
+    // 关掉 emptyOutDir 后这里可能残留上一次的同名内容，直接清掉再放新的；
+    // 清不掉也不要紧，后面的搬移会覆盖同名文件（moveEntry 里还有复制兜底）
+    try {
+      rmSync(target, { recursive: true, force: true });
+    } catch {
+      // 被占用就交给 moveEntry
+    }
+    moveEntry(resolve(CLIENT_DIR, entry.name), target);
   }
 }
 
@@ -72,7 +141,12 @@ decodeDirNames(SITE_DIR);
 
   if (source) {
     const fallback = resolve(SITE_DIR, "404.html");
-    rmSync(fallback, { force: true });
+    // copyFileSync 本来就会覆盖同名文件，旧的那个删不掉也无所谓
+    try {
+      rmSync(fallback, { force: true });
+    } catch {
+      // 忽略：下面直接覆盖
+    }
     copyFileSync(source, fallback);
   }
 }
