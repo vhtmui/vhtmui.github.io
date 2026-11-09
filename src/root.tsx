@@ -10,6 +10,8 @@ import {
 } from "react-router";
 import ThemeProvider from "@/components/custom/theme-provider";
 import { SITE_NAME } from "@/config/site";
+import geistLatin from "@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url";
+import geistMonoLatin from "@fontsource-variable/geist-mono/files/geist-mono-latin-wght-normal.woff2?url";
 import "./main.css";
 
 /**
@@ -30,6 +32,19 @@ export function Layout({ children }: { children: ReactNode }) {
           rel="icon"
           type="image/svg+xml"
           href={`${import.meta.env.BASE_URL}favicon.svg`}
+        />
+        {/*
+          字体提前拉：配合 fonts.css 里的 font-display: optional，首帧之前到位的
+          字体才会被这一屏用上。不带 crossorigin 的话浏览器会用另一种请求模式，
+          预加载的那份对 @font-face 无效，等于白拉。
+        */}
+        <link rel="preload" href={geistLatin} as="font" type="font/woff2" crossOrigin="anonymous" />
+        <link
+          rel="preload"
+          href={geistMonoLatin}
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
         />
         <Meta />
         <Links />

@@ -4,7 +4,6 @@ import BreadcrumbBar from "@/components/custom/breadcrumb-bar";
 import GithubIcon from "@/components/custom/github-icon";
 import HeaderNav from "@/components/custom/header-nav";
 import ThemeSelect from "@/components/custom/theme-select";
-import { useMediaQuery } from "@/hooks/use-media-query";
 import { LINKS, ROUTES } from "@/config/links";
 import { cn } from "@/lib/utils";
 
@@ -14,7 +13,6 @@ function isDocsRoute(pathname: string) {
 }
 
 export default function AppLayout() {
-  const showBrandName = useMediaQuery("(min-width: 640px)");
   const { pathname } = useLocation();
   /** docs 体系里顶栏与面包屑都铺满屏幕，正文仍按 5xl 居中 */
   const wideHeader = isDocsRoute(pathname);
@@ -47,7 +45,14 @@ export default function AppLayout() {
           >
             <div className="flex items-center gap-3 justify-self-start">
               <Link to={ROUTES.home} aria-label="返回首页">
-                <Brands showName={showBrandName} />
+                {/*
+                  窄屏只留图标、宽屏带字标。断点交给 CSS 而不是 useMediaQuery：
+                  那个 hook 首帧恒为 false（服务端没有 matchMedia），宽屏下要等水合
+                  后字标才冒出来，logo 会当场从 32px 撑到一百多像素——首屏那一闪。
+                  两份 SVG 都写在 HTML 里，首帧直接就是对的宽度。
+                */}
+                <Brands showName={false} className="sm:hidden" />
+                <Brands className="hidden sm:block" />
               </Link>
               <HeaderNav />
             </div>

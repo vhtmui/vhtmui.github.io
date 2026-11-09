@@ -38,7 +38,7 @@ export function Brands({
             x="112"
             y="62"
             className="fill-primary"
-            fontFamily="Geist, Arial, Helvetica, sans-serif"
+            fontFamily="Geist Variable, Arial, Helvetica, sans-serif"
             fontSize="56"
             fontWeight="700"
             letterSpacing="-1"

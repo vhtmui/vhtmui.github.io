@@ -1,0 +1,58 @@
+/*
+ * Geist 只用 latin / latin-ext 两个子集：正文以中文为主，汉字永远落到
+ * --font-cjk 那串系统字体上，Geist 负责的是拉丁字母和数字。西里尔、越南语这些
+ * 子集这站用不到，留着只会让浏览器多探几个字体文件。
+ *
+ * font-display 用 optional 而不是 fontsource 默认的 swap：
+ * swap 是「先用系统字体画，字体到了再整页换一遍」，首屏能明显看到文字挪位、
+ * 字重变样。optional 是「首帧没就位就这一屏都用系统字体」，一次画定，不再变；
+ * 再配合 root.tsx 里的 preload，正常情况下字体在首帧之前就已经到了。
+ *
+ * unicode-range 抄自 @fontsource-variable/geist，保持子集划分一致。
+ */
+
+@font-face {
+  font-family: "Geist Variable";
+  font-style: normal;
+  font-display: optional;
+  font-weight: 100 900;
+  src: url("@fontsource-variable/geist/files/geist-latin-ext-wght-normal.woff2")
+    format("woff2-variations");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308,
+    U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113,
+    U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Geist Variable";
+  font-style: normal;
+  font-display: optional;
+  font-weight: 100 900;
+  src: url("@fontsource-variable/geist/files/geist-latin-wght-normal.woff2")
+    format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
+    U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Geist Mono Variable";
+  font-style: normal;
+  font-display: optional;
+  font-weight: 100 900;
+  src: url("@fontsource-variable/geist-mono/files/geist-mono-latin-ext-wght-normal.woff2")
+    format("woff2-variations");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308,
+    U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113,
+    U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Geist Mono Variable";
+  font-style: normal;
+  font-display: optional;
+  font-weight: 100 900;
+  src: url("@fontsource-variable/geist-mono/files/geist-mono-latin-wght-normal.woff2")
+    format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
+    U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
